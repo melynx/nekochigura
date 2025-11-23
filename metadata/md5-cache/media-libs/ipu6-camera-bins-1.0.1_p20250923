@@ -1,0 +1,11 @@
+BDEPEND=app-admin/chrpath
+DEFINED_PHASES=install postinst prepare
+DESCRIPTION=Binary libraries for Intel IPU6 camera HAL
+EAPI=8
+HOMEPAGE=https://github.com/intel/ipu6-camera-bins
+KEYWORDS=~amd64
+LICENSE=intel-ipu6-camera-bins
+RESTRICT=strip mirror bindist
+SLOT=0
+SRC_URI=https://github.com/intel/ipu6-camera-bins/archive/refs/tags/20250923_ov02e.tar.gz -> ipu6-camera-bins-1.0.1_p20250923.tar.gz
+_md5_=e4a175a58279dd27d8b9384ee41f768c
