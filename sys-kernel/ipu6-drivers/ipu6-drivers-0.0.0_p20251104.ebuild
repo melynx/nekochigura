@@ -168,8 +168,12 @@ src_install() {
 pkg_preinst() {
 	if use dkms; then
 		# Add the source directory to DKMS and auto-install
-		einfo "Adding IPU6 drivers to DKMS..."
-		dkms add "${S}" || die "Failed to add DKMS module"
+		if [[ -d "/var/lib/dkms/${PN}/${DKMS_VER}" ]]; then
+			einfo "DKMS entry exists..."
+		else
+			einfo "Adding IPU6 drivers to DKMS..."
+			dkms add "${S}" || die "Failed to add DKMS module"
+		fi
 
 		einfo "Building and installing IPU6 drivers via DKMS..."
 		env -u ARCH dkms autoinstall "${PN}/${DKMS_VER}" || die "Failed to autoinstall DKMS module"
@@ -210,6 +214,13 @@ pkg_postinst() {
 }
 
 pkg_prerm() {
+    # If REPLACED_BY_VERSION is non-empty, this pkg is being replaced
+    # (upgrade or reinstall). Don't nuke the state in that case.
+    if [[ -n ${REPLACED_BY_VERSION} ]]; then
+        einfo "Skipping cleanup for ${PN}-${PV} (replaced by ${REPLACED_BY_VERSION})"
+        return
+    fi
+
 	if use dkms; then
 		einfo "Removing IPU6 drivers from DKMS..."
 		dkms uninstall "${PN}/${DKMS_VER}" --all 2>/dev/null || true
