@@ -1,0 +1,84 @@
+diff --git a/libs.json b/libs.json
+index 3825dfe..0e1b619 100644
+--- a/libs.json
++++ b/libs.json
+@@ -41,7 +41,7 @@
+         "pointer_size": 64,
+         "libdir": "",
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "so_name": "libcurl-impersonate-chrome.so",
+         "so_arch": "x86_64"
+@@ -52,7 +52,7 @@
+         "pointer_size": 64,
+         "libdir": "",
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "musl",
+         "so_name": "libcurl-impersonate-chrome.so",
+         "so_arch": "x86_64"
+@@ -63,7 +63,7 @@
+         "pointer_size": 32,
+         "libdir": "",
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "so_name": "libcurl-impersonate-chrome.so",
+         "so_arch": "i386"
+@@ -74,7 +74,7 @@
+         "pointer_size": 64,
+         "libdir": "",
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "so_name": "libcurl-impersonate-chrome.so",
+         "so_arch": "aarch64"
+@@ -96,7 +96,7 @@
+         "pointer_size": 32,
+         "libdir": "",
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnueabihf",
+         "so_name": "libcurl-impersonate-chrome.so",
+         "so_arch": "arm"
+@@ -107,7 +107,7 @@
+         "pointer_size": 32,
+         "libdir": "",
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnueabihf",
+         "so_name": "libcurl-impersonate-chrome.so",
+         "so_arch": "arm"
+diff --git a/scripts/build.py b/scripts/build.py
+index 4891867..926f2c1 100644
+--- a/scripts/build.py
++++ b/scripts/build.py
+@@ -103,7 +103,6 @@ def get_curl_libraries():
+ ffibuilder = FFI()
+ system = platform.system()
+ root_dir = Path(__file__).parent.parent
+-download_libcurl()
+ 
+ 
+ ffibuilder.set_source(
+@@ -113,7 +112,6 @@ ffibuilder.set_source(
+     """,
+     # FIXME from `curl-impersonate`
+     libraries=get_curl_libraries(),
+-    extra_objects=get_curl_archives(),
+     library_dirs=[arch["libdir"]],
+     source_extension=".c",
+     include_dirs=[
+@@ -132,4 +130,4 @@ with open(root_dir / "ffi/cdef.c") as f:
+ 
+ 
+ if __name__ == "__main__":
+-    ffibuilder.compile(verbose=False)
++    ffibuilder.compile(verbose=True)
