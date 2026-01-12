@@ -13,20 +13,36 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-DEPEND="virtual/linux-sources"
-RDEPEND=""
+DEPEND="
+	virtual/linux-sources
+	x11-libs/libdrm
+"
+RDEPEND="x11-libs/libdrm"
 
 CONFIG_CHECK="~DRM ~DRM_KMS_HELPER"
 
-S="${WORKDIR}/${P}/module"
-
 src_compile() {
+	# Build kernel module
+	cd "${WORKDIR}/${P}/module" || die
 	local modlist=( evdi=misc )
 	local modargs=( KERNEL_SRC="${KV_OUT_DIR}" )
 	linux-mod-r1_src_compile
+
+	# Build userspace library
+	cd "${WORKDIR}/${P}/library" || die
+	emake
 }
 
 src_install() {
+	# Install kernel module
+	cd "${WORKDIR}/${P}/module" || die
 	linux-mod-r1_src_install
-	dodoc ../README.md
+
+	# Install userspace library
+	cd "${WORKDIR}/${P}/library" || die
+	emake DESTDIR="${ED}" LIBDIR="/usr/$(get_libdir)" install
+
+	# Install documentation
+	cd "${WORKDIR}/${P}" || die
+	dodoc README.md
 }
