@@ -71,7 +71,7 @@ pkg_postinst() {
 	elog "You also need the following packages installed:"
 	elog "  - media-libs/ipu6-camera-bins (IPU firmware and libraries)"
 	elog "  - media-libs/ipu6-camera-hal (camera HAL)"
-	elog "  - sys-kernel/ipu6-drivers (IPU6 PSYS Driver)"
+	elog "  - media-video/ipu6-drivers (IPU6 PSYS Driver)"
 	elog ""
 	elog "Example usage:"
 	elog "  gst-launch-1.0 icamerasrc buffer-count=7 ! video/x-raw,format=NV12,width=1280,height=720 ! videoconvert ! ximagesink"
