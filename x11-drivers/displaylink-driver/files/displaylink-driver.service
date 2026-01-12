@@ -1,0 +1,15 @@
+[Unit]
+Description=DisplayLink Driver Service
+After=display-manager.service
+Conflicts=getty@tty7.service
+
+[Service]
+Type=simple
+ExecStartPre=/sbin/modprobe evdi
+ExecStart=/usr/libexec/displaylink/DisplayLinkManager
+Restart=always
+WorkingDirectory=/usr/libexec/displaylink
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
