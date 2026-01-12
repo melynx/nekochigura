@@ -9,7 +9,7 @@ KEYWORDS="~amd64"
 IUSE="systemd"
 
 RDEPEND="
-    sys-kernel/ipu6-drivers
+    media-video/ipu6-drivers
     media-libs/ipu6-camera-hal
     media-libs/ipu6-camera-bins
     media-plugins/gst-plugins-icamerasrc
