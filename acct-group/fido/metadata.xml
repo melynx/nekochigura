@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>czl@iiyume.org</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Group for FIDO U2F/FIDO2 authentication devices.
+	</longdescription>
+</pkgmetadata>
