@@ -6,6 +6,6 @@
 		<name>Chua Zheng Leong</name>
 	</maintainer>
 	<longdescription>
-		Group for 1Password password manager.
+		Group for 1Password CLI (op command).
 	</longdescription>
 </pkgmetadata>

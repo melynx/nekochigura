@@ -29,7 +29,7 @@ BDEPEND="
 "
 
 RDEPEND="
-	acct-group/onepassword
+	acct-group/onepassword-cli
 	x11-misc/xdg-utils
 	policykit? ( sys-auth/polkit )
 "
@@ -82,7 +82,7 @@ src_install() {
 	# Install 1Password CLI if USE flag enabled
 	if use cli; then
 		dobin "${WORKDIR}"/op
-		fowners root:onepassword /usr/bin/op
+		fowners root:onepassword-cli /usr/bin/op
 		fperms 2755 /usr/bin/op
 	fi
 
@@ -117,7 +117,7 @@ pkg_postinst() {
 	chmod 4755 "${EROOT}/opt/1Password/chrome-sandbox" || die "Failed to set setuid on chrome-sandbox"
 
 	# Set BrowserSupport group ownership (required for browser integration)
-	chgrp onepassword "${EROOT}/opt/1Password/1Password-BrowserSupport" || die "Failed to set group on BrowserSupport"
+	chgrp onepassword-cli "${EROOT}/opt/1Password/1Password-BrowserSupport" || die "Failed to set group on BrowserSupport"
 	chmod 2755 "${EROOT}/opt/1Password/1Password-BrowserSupport" || die "Failed to set permissions on BrowserSupport"
 
 	elog "1Password has been installed to /opt/1Password"
