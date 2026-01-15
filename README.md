@@ -1,6 +1,8 @@
 # nekochigura Gentoo Overlay
 
-My personal code basket — a place to stash scripts, configs, experiments, and anything else I am working on. Like its namesake (a nekochigura, a Japanese woven cat basket), it is cozy, a bit messy, and full of things I find useful.
+![Header](images/header-gemini.png)
+
+My personal code basket - a place to stash scripts, configs, experiments, and anything else I am working on. Like its namesake (a nekochigura, a Japanese woven cat basket), it is cozy, a bit messy, and full of things I find useful.
 
 ## Installation
 
