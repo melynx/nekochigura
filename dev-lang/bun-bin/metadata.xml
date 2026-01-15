@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Bun is an incredibly fast JavaScript runtime, bundler, transpiler and
+		package manager - all in one. It is designed as a drop-in replacement
+		for Node.js with native support for TypeScript, JSX, and modern JavaScript
+		features. Bun includes a fast npm-compatible package manager, a test runner,
+		and a bundler, making it an all-in-one toolkit for JavaScript development.
+	</longdescription>
+	<use>
+		<flag name="completions">Install shell completions for zsh and fish</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">oven-sh/bun</remote-id>
+		<bugs-to>https://github.com/oven-sh/bun/issues</bugs-to>
+		<doc>https://bun.sh/docs</doc>
+	</upstream>
+</pkgmetadata>
