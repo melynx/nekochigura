@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		OpenCode is an open source AI coding agent built for the terminal. It provides
+		an interactive CLI interface that assists with software development tasks,
+		offering features like code generation, refactoring, debugging, and project
+		exploration. OpenCode supports multiple AI providers including Claude, OpenAI,
+		and Google models, providing flexibility in model selection. It includes built-in
+		Language Server Protocol (LSP) support for enhanced code intelligence.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">anomalyco/opencode</remote-id>
+		<bugs-to>https://github.com/anomalyco/opencode/issues</bugs-to>
+		<doc>https://opencode.ai/docs</doc>
+	</upstream>
+</pkgmetadata>
