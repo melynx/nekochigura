@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Chua Zheng Leong</name>
+		<email>melynx@gmail.com</email>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">end-4/dots-hyprland</remote-id>
+	</upstream>
+	<longdescription>
+		Master metapackage for the complete illogical-impulse Hyprland desktop environment.
+		This includes all functional metapackages (audio, backlight, basic utilities, fonts/themes,
+		Hyprland compositor, KDE integration, XDG portals, Python development, screencapture tools,
+		system toolkit, and widgets) plus all standalone packages (bibata cursor theme, microtex,
+		OneUI4 icons, and quickshell widget toolkit).
+
+		Upstream: https://github.com/end-4/dots-hyprland
+	</longdescription>
+</pkgmetadata>
