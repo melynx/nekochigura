@@ -1,0 +1,69 @@
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -7,7 +7,7 @@
+ gtk4_dir        = join_paths(theme_dir, 'gtk-4.0')
+ gtk4_dir_dark   = join_paths(theme_dir_dark, 'gtk-4.0')
+ 
+-sass = find_program('sass')
++sass = find_program('sassc')
+ 
+ # Files can't have the same names in the build dir, so I need to put the meson junk in 2 dirs
+ subdir('theme-light')
+--- a/src/theme-light/meson.build
++++ b/src/theme-light/meson.build
+@@ -16,7 +16,7 @@
+ gtk_light_css_target = custom_target('generate_gtk_light_css',
+   input: '../sass/gtk.scss',
+   output: 'gtk.css',
+-  command: [sass, '--no-source-map', '@INPUT@', '@OUTPUT@'],
++  command: [sass, '-M', '@INPUT@', '@OUTPUT@'],
+   build_by_default: true,
+   install: true,
+   install_dir: gtk3_dir,
+@@ -26,7 +26,7 @@
+ gtk_light_dark_css_target = custom_target('generate_gtk_light_dark_css',
+   input: '../sass/gtk-dark.scss',
+   output: 'gtk-dark.css',
+-  command: [sass, '--no-source-map', '@INPUT@', '@OUTPUT@'],
++  command: [sass, '-M', '@INPUT@', '@OUTPUT@'],
+   build_by_default: true,
+   install: true,
+   install_dir: gtk3_dir,
+@@ -49,7 +49,7 @@
+ libadwaita_tweaks_target = custom_target('generate_libadwaita_tweaks_css',
+   input: '../sass/gtk4/libadwaita-tweaks.scss',
+   output: 'libadwaita-tweaks.css',
+-  command: [sass, '--no-source-map', '@INPUT@', '@OUTPUT@'],
++  command: [sass, '-M', '@INPUT@', '@OUTPUT@'],
+   build_by_default: true,
+   install: true,
+   install_dir: gtk4_dir,
+--- a/src/theme-dark/meson.build
++++ b/src/theme-dark/meson.build
+@@ -16,7 +16,7 @@
+ gtk_dark_css_target = custom_target('generate_gtk_dark_css',
+   input: '../sass/gtk.scss',
+   output: 'gtk.css',
+-  command: [sass, '--no-source-map', '@INPUT@', '@OUTPUT@'],
++  command: [sass, '-M', '@INPUT@', '@OUTPUT@'],
+   build_by_default: true,
+   install: true,
+   install_dir: gtk3_dir_dark,
+@@ -26,7 +26,7 @@
+ gtk_dark_dark_css_target = custom_target('generate_gtk_dark_dark_css',
+   input: '../sass/gtk-dark.scss',
+   output: 'gtk-dark.css',
+-  command: [sass, '--no-source-map', '@INPUT@', '@OUTPUT@'],
++  command: [sass, '-M', '@INPUT@', '@OUTPUT@'],
+   build_by_default: true,
+   install: true,
+   install_dir: gtk3_dir_dark,
+@@ -49,7 +49,7 @@
+ libadwaita_tweaks_dark_target = custom_target('generate_libadwaita_tweaks_dark_css',
+   input: '../sass/gtk4/libadwaita-tweaks.scss',
+   output: 'libadwaita-tweaks.css',
+-  command: [sass, '--no-source-map', '@INPUT@', '@OUTPUT@'],
++  command: [sass, '-M', '@INPUT@', '@OUTPUT@'],
+   build_by_default: true,
+   install: true,
+   install_dir: gtk4_dir_dark,
