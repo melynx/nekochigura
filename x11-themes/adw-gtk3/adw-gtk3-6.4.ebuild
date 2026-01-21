@@ -13,6 +13,10 @@ LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64"
 
+PATCHES=( "${FILESDIR}/${P}-sassc.patch" )
+
+BDEPEND=">=dev-lang/sassc-3.6.2"
+
 RDEPEND="
 	x11-libs/gtk+:3
 	>=gui-libs/gtk-4.16.0:4
