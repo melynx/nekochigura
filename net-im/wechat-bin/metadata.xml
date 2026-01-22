@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		WeChat is a messaging and calling app developed by Tencent.
+		This is the official Linux desktop client.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">tencent/wechat</remote-id>
+		<bugs-to>https://linux.weixin.qq.com/</bugs-to>
+	</upstream>
+</pkgmetadata>
