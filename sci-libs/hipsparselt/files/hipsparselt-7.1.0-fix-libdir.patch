@@ -1,0 +1,11 @@
+Respect CMAKE_INSTALL_LIBDIR from cmake.eclass
+--- a/CMakeLists.txt	2026-01-23 10:49:04.367996711 +0800
++++ b/CMakeLists.txt	2026-01-23 10:49:04.369078802 +0800
+@@ -92,7 +92,6 @@
+ project(hipsparselt LANGUAGES CXX)
+ 
+ # force library install path to lib (CentOS 7 defaults to lib64)
+-set(CMAKE_INSTALL_LIBDIR "lib" CACHE INTERNAL "Installation directory for libraries" FORCE)
+ 
+ if(BUILD_ADDRESS_SANITIZER)
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -shared-libasan")
