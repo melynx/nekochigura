@@ -25,7 +25,10 @@ src_compile() {
 	# Build kernel module
 	cd "${WORKDIR}/${P}/module" || die
 	local modlist=( evdi=misc )
-	local modargs=( KERNEL_SRC="${KV_OUT_DIR}" )
+	local modargs=(
+		KDIR="${KV_OUT_DIR}"
+		KVER="${KV_FULL}"
+	)
 	linux-mod-r1_src_compile
 
 	# Build userspace library
