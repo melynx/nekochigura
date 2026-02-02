@@ -84,6 +84,9 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
+	# Only clean up if no other version of this package remains installed
+	has_version "${CATEGORY}/${PN}" && return
+
 	# Clean up any leftover files in case make uninstall didn't remove everything
 	local files=(
 		"${EROOT}"/usr/$(get_libdir)/gstreamer-1.0/libgsticamerasrc.so*
