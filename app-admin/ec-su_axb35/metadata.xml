@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<!-- maintainer-needed -->
+	<longdescription>
+		Linux kernel driver for the embedded controller on Sixunited AXB35-02
+		boards, supporting GMKtec EVO-X2, Bosgame M5, FEVM FA-EX9, Peladn YO1,
+		and NIMO AI MiniPC. Provides sysfs interfaces for fan control,
+		temperature monitoring, and power mode selection.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">cmetz/ec-su_axb35-linux</remote-id>
+	</upstream>
+</pkgmetadata>
