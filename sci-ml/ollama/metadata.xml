@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>nekochigura@example.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<use>
+		<flag name="cuda">Enable NVIDIA CUDA acceleration support</flag>
+		<flag name="rocm">Enable AMD ROCm acceleration support</flag>
+		<flag name="vulkan">Enable Vulkan GPU acceleration support</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">ollama/ollama</remote-id>
+	</upstream>
+</pkgmetadata>
