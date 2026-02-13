@@ -33,13 +33,13 @@ src_install() {
 	dobin target/release/songrec
 	insinto /usr/share/applications
 
-	doins packaging/rootfs/usr/share/applications/com.github.marinm.songrec.desktop
+	doins packaging/rootfs/usr/share/applications/re.fossplant.songrec.desktop
 
 	insinto /usr/share/icons/hicolor/scalable/apps
-	doins packaging/rootfs/usr/share/icons/hicolor/scalable/apps/com.github.marinm.songrec.svg
+	doins packaging/rootfs/usr/share/icons/hicolor/scalable/apps/re.fossplant.songrec.svg
 
 	insinto /usr/share/metainfo
-	doins packaging/rootfs/usr/share/metainfo/com.github.marinm.songrec.metainfo.xml
+	doins packaging/rootfs/usr/share/metainfo/re.fossplant.songrec.metainfo.xml
 
 	insinto /usr/share/songrec/translations
 	doins -r translations/*
