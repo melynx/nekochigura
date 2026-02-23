@@ -14,6 +14,7 @@ RDEPEND="
 	app-misc/illogical-impulse-audio
 	app-misc/illogical-impulse-backlight
 	app-misc/illogical-impulse-basic
+	app-misc/illogical-impulse-dotfiles
 	app-misc/illogical-impulse-fonts-themes
 	app-misc/illogical-impulse-hyprland
 	app-misc/illogical-impulse-kde
