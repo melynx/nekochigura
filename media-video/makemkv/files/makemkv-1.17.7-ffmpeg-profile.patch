@@ -1,0 +1,21 @@
+diff -Naur makemkv-oss-1.17.7.orig/libffabi/src/ffabi.c makemkv-oss-1.17.7/libffabi/src/ffabi.c
+--- makemkv-oss-1.17.7.orig/libffabi/src/ffabi.c	2026-01-24 00:01:29.495809981 +0800
++++ makemkv-oss-1.17.7/libffabi/src/ffabi.c	2026-01-24 00:01:34.986239840 +0800
+@@ -374,7 +374,7 @@
+ #endif
+ 
+     ctx->avctx->profile = (info->profile != FFM_PROFILE_UNKNOWN) ?
+-        info->profile : FF_PROFILE_UNKNOWN;
++        info->profile : FFM_PROFILE_UNKNOWN;
+ 
+     if ((CodecFlags&FFM_CODEC_FLAG_GLOBAL_HEADER)!=0)
+         ctx->avctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+@@ -604,7 +604,7 @@
+     info->capabilities = codec->capabilities;
+     if (codec->profiles) {
+         for (i=0;i<32;i++) {
+-            if (codec->profiles[i].profile==FF_PROFILE_UNKNOWN)
++            if (codec->profiles[i].profile==FFM_PROFILE_UNKNOWN)
+                 break;
+             info->profiles_names[i]=codec->profiles[i].name;
+             info->profiles_values[i]=codec->profiles[i].profile;
