@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Chua Zheng Leong</name>
+		<email>melynx@gmail.com</email>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">end-4/dots-hyprland</remote-id>
+	</upstream>
+	<longdescription>
+		Dotfiles and setup scripts for the illogical-impulse Hyprland desktop environment.
+		Installs the upstream repository to /usr/share/dots-hyprland and provides the
+		illogical-impulse-setup wrapper to deploy configuration files to the user's home directory.
+	</longdescription>
+</pkgmetadata>
