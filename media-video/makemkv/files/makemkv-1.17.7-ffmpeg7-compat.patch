@@ -1,0 +1,32 @@
+--- makemkv-oss-1.17.7.orig/libffabi/src/ffabi.c	2026-01-24 00:04:59.967957096 +0800
++++ makemkv-oss-1.17.7/libffabi/src/ffabi.c	2026-01-24 00:05:35.036254637 +0800
+@@ -211,8 +211,7 @@
+     av_packet_free(&ctx->pck);
+ 
+     if (ctx->avctx) {
+-        avcodec_close(ctx->avctx);
+-        av_free(ctx->avctx);
++        avcodec_free_context(&ctx->avctx);
+     }
+ 
+     av_free(ctx);
+@@ -420,8 +419,7 @@
+     av_freep(&ctx->frame_extended_data);
+ 
+     if (ctx->avctx) {
+-        avcodec_close(ctx->avctx);
+-        av_free(ctx->avctx);
++        avcodec_free_context(&ctx->avctx);
+     }
+ 
+     av_free(ctx);
+@@ -695,8 +693,7 @@
+     }
+ 
+     if (avctx) {
+-        avcodec_close(avctx);
+-        av_free(avctx);
++        avcodec_free_context(&avctx);
+     }
+     return err;
+ }
