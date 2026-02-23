@@ -1,0 +1,15 @@
+--- a/sdata/subcmd-install/3.files.sh
++++ b/sdata/subcmd-install/3.files.sh
+@@ -194,8 +194,10 @@
+ esac
+
+
+-showfun auto_update_git_submodule
+-v auto_update_git_submodule
++if [ -d .git ]; then
++	showfun auto_update_git_submodule
++	v auto_update_git_submodule
++fi
+
+ # Backup
+ if [[ ! "${SKIP_BACKUP}" == true ]]; then auto_backup_configs; fi

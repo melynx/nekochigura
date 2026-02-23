@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+cd /usr/share/dots-hyprland || exit 1
+exec ./setup install --skip-alldeps "$@"

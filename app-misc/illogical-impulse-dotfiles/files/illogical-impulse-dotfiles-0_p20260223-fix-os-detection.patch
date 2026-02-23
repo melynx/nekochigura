@@ -1,0 +1,12 @@
+--- a/sdata/lib/dist-determine.sh
++++ b/sdata/lib/dist-determine.sh
+@@ -80,6 +80,9 @@
+ fi
+ export OS_DISTRO_ID=$(awk -F'=' '/^ID=/ { gsub("\"","",$2); print tolower($2) }' ${OS_RELEASE_FILE} 2> /dev/null)
+ export OS_DISTRO_ID_LIKE=$(awk -F'=' '/^ID_LIKE=/ { gsub("\"","",$2); print tolower($2) }' ${OS_RELEASE_FILE} 2> /dev/null)
++# Strip single quotes that some distros (e.g. Gentoo) use in os-release
++OS_DISTRO_ID="${OS_DISTRO_ID//\'/}"
++OS_DISTRO_ID_LIKE="${OS_DISTRO_ID_LIKE//\'/}"
+
+
+ ####################
