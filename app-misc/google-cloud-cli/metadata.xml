@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Google Cloud CLI provides the gcloud command-line tool and other
+		utilities for managing Google Cloud Platform resources and services.
+		Includes gsutil for Cloud Storage and bq for BigQuery.
+	</longdescription>
+	<use>
+		<flag name="alpha">Install gcloud alpha command group</flag>
+		<flag name="beta">Install gcloud beta command group</flag>
+	</use>
+	<upstream>
+		<doc>https://cloud.google.com/sdk/docs</doc>
+		<bugs-to>https://cloud.google.com/support</bugs-to>
+	</upstream>
+</pkgmetadata>
