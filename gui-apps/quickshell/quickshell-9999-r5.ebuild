@@ -35,7 +35,7 @@ RDEPEND="
 	kde-frameworks/syntax-highlighting:6
 	kde-frameworks/kirigami
 
-	crash-handler? ( sys-libs/libunwind )
+	crash-handler? ( dev-cpp/cpptrace[libunwind] )
 	jemalloc? ( dev-libs/jemalloc )
 	wayland? (
 		dev-libs/wayland
@@ -74,7 +74,6 @@ src_configure() {
 		-DDISTRIBUTOR="Gentoo Illogical-Impulses"
 		-DINSTALL_QML_PREFIX="lib64/qt6/qml"
 		-DCRASH_HANDLER=$(usex crash-handler ON OFF)
-		-DVENDOR_CPPTRACE=$(usex crash-handler ON OFF)
 		-DUSE_JEMALLOC=$(usex jemalloc ON OFF)
 		-DSOCKETS=$(usex sockets ON OFF)
 		-DWAYLAND=$(usex wayland ON OFF)

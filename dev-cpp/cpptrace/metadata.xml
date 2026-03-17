@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<use>
+		<flag name="libunwind">Use libunwind for signal-safe stack unwinding</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">jeremy-rifkin/cpptrace</remote-id>
+	</upstream>
+</pkgmetadata>
