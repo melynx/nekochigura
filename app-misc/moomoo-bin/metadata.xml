@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+<longdescription>
+		moomoo is a one-stop investment platform offering trading for stocks,
+		options, ETFs, and other financial instruments across multiple markets.
+		Features include real-time market data, advanced charting, and
+		analytical tools.
+	</longdescription>
+</pkgmetadata>
