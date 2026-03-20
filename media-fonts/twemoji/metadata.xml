@@ -5,4 +5,7 @@
 		<name>Chua Zheng Leong</name>
 		<email>melynx@gmail.com</email>
 	</maintainer>
+	<upstream>
+		<remote-id type="github">jdecked/twemoji</remote-id>
+	</upstream>
 </pkgmetadata>
