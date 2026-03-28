@@ -9,7 +9,7 @@ DESCRIPTION="Dotfiles and setup scripts for the illogical-impulse Hyprland deskt
 HOMEPAGE="https://github.com/end-4/dots-hyprland"
 
 EGIT_REPO_URI="https://github.com/end-4/dots-hyprland.git"
-EGIT_COMMIT="8bf279e571ff14a653d956eb23f63e54ae88dc8b"
+EGIT_COMMIT="be1838e40debcfbc06755e07eb3cc89a3cac7b5e"
 EGIT_SUBMODULES=("*")
 
 LICENSE="GPL-3"
