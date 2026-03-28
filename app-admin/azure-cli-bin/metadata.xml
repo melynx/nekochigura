@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Azure CLI is Microsoft's command-line tool for managing Azure resources.
+		This package installs the official pre-built binary distribution from
+		Microsoft's Debian repository into /opt/az.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">Azure/azure-cli</remote-id>
+		<remote-id type="pypi">azure-cli</remote-id>
+		<doc>https://learn.microsoft.com/en-us/cli/azure/</doc>
+		<bugs-to>https://github.com/Azure/azure-cli/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
