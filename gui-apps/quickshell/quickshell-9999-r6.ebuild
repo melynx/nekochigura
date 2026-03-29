@@ -9,7 +9,7 @@ DESCRIPTION="Toolkit for building desktop widgets using QtQuick"
 HOMEPAGE="https://quickshell.org/"
 
 EGIT_REPO_URI="https://github.com/quickshell-mirror/quickshell.git"
-EGIT_COMMIT="706d6de7b0236cec2c25556e284b91104a4e834b"
+EGIT_COMMIT="9bf752ac33b2181356d33251c3b1b4dedde0bbc6"
 
 LICENSE="LGPL-3"
 SLOT="0"
@@ -21,6 +21,7 @@ RDEPEND="
 	dev-qt/qtbase:6[dbus]
 	dev-qt/qtsvg:6
 	dev-qt/qt5compat:6
+	x11-libs/libdrm
 
 	dev-qt/qtimageformats:6
 	dev-qt/qtmultimedia:6
@@ -41,10 +42,7 @@ RDEPEND="
 		dev-libs/wayland
 		dev-qt/qtwayland:6
 	)
-	screencopy? (
-		x11-libs/libdrm
-		media-libs/mesa
-	)
+	screencopy? ( media-libs/mesa )
 	X? ( x11-libs/libxcb )
 	pipewire? ( media-video/pipewire )
 	pam? ( sys-libs/pam )
