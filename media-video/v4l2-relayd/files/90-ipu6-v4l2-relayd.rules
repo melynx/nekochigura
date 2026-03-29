@@ -1,0 +1,6 @@
+# Tag Intel IPU6 PSYS devices for systemd and trigger v4l2-relayd.
+# PSYS is the last device in the IPU6 init chain (PCI -> ISYS -> IVSC ->
+# sensor -> PSYS), so its appearance guarantees the full media pipeline
+# is ready for icamerasrc.
+ACTION=="add", SUBSYSTEM=="intel-ipu6-psys", TAG+="systemd", \
+  ENV{SYSTEMD_WANTS}+="v4l2-relayd@ipu6.service"

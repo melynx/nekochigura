@@ -14,7 +14,9 @@ S="${WORKDIR}/${MY_P}"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="systemd"
+IUSE="ipu6 systemd"
+
+REQUIRED_USE="ipu6? ( systemd )"
 
 RDEPEND="
 	>=dev-libs/glib-2.36:2
@@ -58,6 +60,16 @@ src_install() {
 	else
 		# Create instance configuration directory
 		keepdir /etc/v4l2-relayd.d
+
+		if use ipu6; then
+			# Udev rule: tag IPU6 PSYS device for systemd, trigger v4l2-relayd@ipu6
+			insinto /lib/udev/rules.d
+			doins "${FILESDIR}"/90-ipu6-v4l2-relayd.rules
+
+			# Systemd drop-in: bind service to IPU6 PSYS device node
+			insinto /usr/lib/systemd/system/v4l2-relayd@ipu6.service.d
+			newins "${FILESDIR}"/v4l2-relayd-ipu6-device.conf device.conf
+		fi
 	fi
 
 	# Remove libtool files
@@ -91,6 +103,17 @@ pkg_postinst() {
 		elog ""
 		elog "The v4l2-relayd.service will automatically manage all instances"
 		elog "that have .conf files in /etc/v4l2-relayd.d/"
+
+		if use ipu6; then
+			elog ""
+			elog "IPU6 camera support enabled:"
+			elog "  The v4l2-relayd@ipu6 instance will start automatically when"
+			elog "  the IPU6 PSYS device is ready (via udev rule)."
+			elog ""
+			elog "  If you have a manual override in"
+			elog "  /etc/systemd/system/v4l2-relayd@ipu6.service.d/override.conf"
+			elog "  you should remove it — the package now handles device ordering."
+		fi
 	else
 		elog "Example usage:"
 		elog "  v4l2-relayd -i videotestsrc \\"
