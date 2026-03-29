@@ -36,7 +36,7 @@ RDEPEND="
 	kde-frameworks/syntax-highlighting:6
 	kde-frameworks/kirigami
 
-	crash-handler? ( dev-cpp/cpptrace[libunwind] )
+	crash-handler? ( dev-cpp/cpptrace[unwind] )
 	jemalloc? ( dev-libs/jemalloc )
 	wayland? (
 		dev-libs/wayland
