@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>gentoo@chuazhenglong.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<use>
+		<flag name="dkms">Use DKMS to manage out-of-tree kernel module building and installation</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">intel/ipu6-drivers</remote-id>
+	</upstream>
+</pkgmetadata>

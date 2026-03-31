@@ -6,7 +6,7 @@ DESCRIPTION="Intel IPU6 kernel drivers for MIPI cameras"
 HOMEPAGE="https://github.com/intel/ipu6-drivers"
 
 MY_PV=20251226_1140_191_PTL_PV_IoT
-DKMS_VER="${PV%_*}"
+DKMS_VER="${PV}"
 
 SRC_URI="https://github.com/intel/ipu6-drivers/archive/${MY_PV}.tar.gz -> ${P}.tar.gz"
 
@@ -39,17 +39,17 @@ BDEPEND="
 RESTRICT="test"
 
 MODULES=(
-	    intel-ipu6-psys
-        hm11b1
-        gc5035
-        ov01a1s
-        ov02c10
-        ov02e10
-        ov05c10
-        hm2170
-        hm2172
-        imx471
-        s5k3j1
+	intel-ipu6-psys
+	hm11b1
+	gc5035
+	ov01a1s
+	ov02c10
+	ov02e10
+	ov05c10
+	hm2170
+	hm2172
+	imx471
+	s5k3j1
 )
 
 pkg_setup() {
@@ -103,8 +103,12 @@ src_prepare() {
 		fi
 	fi
 
-	# The driver has built-in version detection logic in Makefile and dkms.conf
-	# DKMS will handle patch application automatically
+	if use dkms; then
+		# Upstream dkms.conf hardcodes PACKAGE_VERSION=0.0.0 — patch it to
+		# match our snapshot-specific DKMS_VER so each ebuild gets its own
+		# DKMS slot and upgrades between snapshots work correctly.
+		sed -i "s/^PACKAGE_VERSION=.*/PACKAGE_VERSION=${DKMS_VER}/" dkms.conf || die
+	fi
 }
 
 src_configure() {
@@ -150,7 +154,9 @@ src_compile() {
 
 src_install() {
 	if use dkms; then
-		return
+		# Install source tree where DKMS expects it
+		insinto "/usr/src/${PN}-${DKMS_VER}"
+		doins -r .
 	else
 		# Manual module installation
 		linux-mod-r1_src_install
@@ -162,28 +168,21 @@ src_install() {
 
 	# Install documentation
 	einstalldocs
-	dodoc README.md SECURITY.md
-}
-
-pkg_preinst() {
-	if use dkms; then
-		# Add the source directory to DKMS and auto-install
-		if [[ -d "/var/lib/dkms/${PN}/${DKMS_VER}" ]]; then
-			einfo "DKMS entry exists..."
-		else
-			einfo "Adding IPU6 drivers to DKMS..."
-			dkms add "${S}" || die "Failed to add DKMS module"
-		fi
-
-		einfo "Building and installing IPU6 drivers via DKMS..."
-		env -u ARCH dkms autoinstall "${PN}/${DKMS_VER}" || die "Failed to autoinstall DKMS module"
-	else
-		default
-	fi
+	dodoc README.md
 }
 
 pkg_postinst() {
 	if use dkms; then
+		if [[ -d "${EROOT}/var/lib/dkms/${PN}/${DKMS_VER}" ]]; then
+			einfo "DKMS entry ${PN}/${DKMS_VER} already registered"
+		else
+			einfo "Adding IPU6 drivers to DKMS..."
+			dkms add "${PN}/${DKMS_VER}" || die "Failed to add DKMS module"
+		fi
+
+		einfo "Building and installing IPU6 drivers via DKMS..."
+		env -u ARCH dkms autoinstall "${PN}/${DKMS_VER}" || die "Failed to autoinstall DKMS module"
+
 		elog "IPU6 drivers have been installed via DKMS."
 		elog "The modules will be automatically built and installed for each kernel."
 		elog "Use 'dkms status' to check the status of the modules."
@@ -192,6 +191,10 @@ pkg_postinst() {
 		elog "  dkms build ${PN}/${DKMS_VER}"
 		elog "  dkms install ${PN}/${DKMS_VER}"
 		elog "  dkms uninstall ${PN}/${DKMS_VER}"
+		elog ""
+		elog "After upgrading, old DKMS versions are kept for safety."
+		elog "Use 'dkms status' to check and remove them manually:"
+		elog "  dkms remove ${PN}/<old-version> --all"
 	else
 		linux-mod-r1_pkg_postinst
 
@@ -214,12 +217,12 @@ pkg_postinst() {
 }
 
 pkg_prerm() {
-    # If REPLACED_BY_VERSION is non-empty, this pkg is being replaced
-    # (upgrade or reinstall). Don't nuke the state in that case.
-    if [[ -n ${REPLACED_BY_VERSION} ]]; then
-        einfo "Skipping cleanup for ${PN}-${PV} (replaced by ${REPLACED_BY_VERSION})"
-        return
-    fi
+	# If REPLACED_BY_VERSION is non-empty, this pkg is being replaced
+	# (upgrade or reinstall). Don't nuke the state in that case.
+	if [[ -n ${REPLACED_BY_VERSION} ]]; then
+		einfo "Skipping cleanup for ${PN}-${PV} (replaced by ${REPLACED_BY_VERSION})"
+		return
+	fi
 
 	if use dkms; then
 		einfo "Removing IPU6 drivers from DKMS..."
@@ -227,35 +230,35 @@ pkg_prerm() {
 		dkms remove "${PN}/${DKMS_VER}" --all || die "Failed to remove DKMS module"
 	else
 		# Remove module files manually if they exist
-        local kernel_version=$(uname -r)
-        local mod_path="/lib/modules/${kernel_version}/updates"
+		local kernel_version=$(uname -r)
+		local mod_path="/lib/modules/${kernel_version}/updates"
 
 		einfo "Cleaning up IPU6 Drivers..."
 
-        # if ! [[ -d "${mod_path}" ]]; then
-        # fi
+		if ! [[ -d "${mod_path}" ]]; then
+			einfo "No module directory at ${mod_path}, nothing to clean"
+			return
+		fi
 
-		! [[ -d "${mod_path}" ]] || die "${mod_path} not a directory..."
-
-        einfo "Cleaning up module files in ${mod_path}..."
+		einfo "Cleaning up module files in ${mod_path}..."
 
 		for mod in "${MODULES[@]}"; do
 			if lsmod | grep -q "^${mod}"; then
 				einfo "Unloading module: ${mod}"
-                rmmod "${mod}" 2>/dev/null || ewarn "Failed to unload ${mod} - may be in use"
-            fi
+				rmmod "${mod}" 2>/dev/null || ewarn "Failed to unload ${mod} - may be in use"
+			fi
 
 			local mod_file="${mod_path}/${mod}.ko"
 
 			if [[ -f "${mod_file}" ]]; then
-            	einfo "Removing ${mod_file}..."
-            	rm -f "${mod_file}" 2>/dev/null || true
+				einfo "Removing ${mod_file}..."
+				rm -f "${mod_file}" 2>/dev/null || true
 			fi
 		done
 
-        # Update module dependencies
-        einfo "Updating module dependencies..."
-        depmod -a 2>/dev/null || ewarn "Failed to update module dependencies"
+		# Update module dependencies
+		einfo "Updating module dependencies..."
+		depmod -a 2>/dev/null || ewarn "Failed to update module dependencies"
 
 	fi
 }
