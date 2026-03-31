@@ -5,7 +5,7 @@ inherit linux-mod-r1
 DESCRIPTION="Intel IPU6 kernel drivers for MIPI cameras"
 HOMEPAGE="https://github.com/intel/ipu6-drivers"
 
-MY_PV=20251104_0740_359
+MY_PV=20260327
 DKMS_VER="${PV}"
 
 SRC_URI="https://github.com/intel/ipu6-drivers/archive/${MY_PV}.tar.gz -> ${P}.tar.gz"
@@ -160,10 +160,6 @@ src_install() {
 	else
 		# Manual module installation
 		linux-mod-r1_src_install
-
-	#	# Install modules to updates directory like DKMS does
-	#	emake INSTALL_MOD_DIR=updates INSTALL_MOD_PATH="${ED}" modules_install \
-	#		KERNEL_SRC="${KV_DIR}" KERNELRELEASE="${KV_FULL}"
 	fi
 
 	# Install documentation
