@@ -3,13 +3,11 @@
 
 EAPI=8
 
-inherit cmake git-r3
+inherit cmake
 
 DESCRIPTION="Toolkit for building desktop widgets using QtQuick"
 HOMEPAGE="https://quickshell.org/"
-
-EGIT_REPO_URI="https://github.com/quickshell-mirror/quickshell.git"
-EGIT_COMMIT="9bf752ac33b2181356d33251c3b1b4dedde0bbc6"
+SRC_URI="https://github.com/quickshell-mirror/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="LGPL-3"
 SLOT="0"
