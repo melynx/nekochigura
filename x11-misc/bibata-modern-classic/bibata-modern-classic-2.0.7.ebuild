@@ -1,11 +1,11 @@
-# Copyright 2026 Chua Zheng Leong
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DESCRIPTION="Material Based Cursor Theme, installed for illogical-impulse dotfiles"
 HOMEPAGE=""
-SRC_URI="https://github.com/ful1e5/Bibata_Cursor/releases/download/v${PV}/Bibata-Modern-Classic.tar.xz -> bibata-modern-classic.tar.xz"
+SRC_URI="https://github.com/ful1e5/Bibata_Cursor/releases/download/v${PV}/Bibata-Modern-Classic.tar.xz -> ${P}.tar.xz"
 
 LICENSE="GPL-3+"
 SLOT="0"
