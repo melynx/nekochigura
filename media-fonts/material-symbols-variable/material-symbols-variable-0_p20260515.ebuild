@@ -8,7 +8,7 @@ inherit font
 DESCRIPTION="Material Design icons by Google - variable fonts"
 HOMEPAGE="https://github.com/google/material-design-icons"
 
-BASE_URL="https://github.com/google/material-design-icons/raw/refs/heads/master"
+BASE_URL="https://github.com/google/material-design-icons/raw/6d4a1cbb"
 
 SRC_URI="
 	${BASE_URL}/variablefont/MaterialSymbolsOutlined%5BFILL,GRAD,opsz,wght%5D.ttf -> MaterialSymbolsOutlined-FILL-GRAD-opsz-wght.ttf
