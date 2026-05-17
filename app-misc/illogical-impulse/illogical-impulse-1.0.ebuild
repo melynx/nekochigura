@@ -26,5 +26,5 @@ RDEPEND="
 	app-misc/illogical-impulse-bibata-modern-classic-bin
 	app-misc/illogical-impulse-microtex-git
 	app-misc/illogical-impulse-oneui4-icons-git
-	app-misc/illogical-impulse-quickshell-git
+	app-misc/illogical-impulse-quickshell
 "
