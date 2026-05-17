@@ -1,4 +1,4 @@
-# Copyright 2026 Chua Zheng Leong
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the MIT License
 
 EAPI=8
