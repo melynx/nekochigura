@@ -176,8 +176,22 @@ pkg_postinst() {
 			dkms add "${PN}/${DKMS_VER}" || die "Failed to add DKMS module"
 		fi
 
-		einfo "Building and installing IPU6 drivers via DKMS..."
-		env -u ARCH dkms autoinstall "${PN}/${DKMS_VER}" || die "Failed to autoinstall DKMS module"
+		# Skip autoinstall when kernel sources for the running kernel
+		# aren't present (e.g. when built on a binhost host that shares
+		# its kernel via nspawn but has no matching /usr/src/linux-*).
+		# Defer the compile to install time on the actual consumer.
+		local running_kernel kdir
+		running_kernel=$(uname -r)
+		kdir="${EROOT}/lib/modules/${running_kernel}/build"
+		if [[ ! -d "${kdir}" ]] && [[ ! -d "${EROOT}/lib/modules/${running_kernel}/source" ]]; then
+			ewarn "Kernel build dir for ${running_kernel} not found at ${kdir}."
+			ewarn "Skipping DKMS autoinstall on this host."
+			ewarn "Run it manually once kernel sources are available:"
+			ewarn "  dkms autoinstall ${PN}/${DKMS_VER}"
+		else
+			einfo "Building and installing IPU6 drivers via DKMS..."
+			env -u ARCH dkms autoinstall "${PN}/${DKMS_VER}" || die "Failed to autoinstall DKMS module"
+		fi
 
 		elog "IPU6 drivers have been installed via DKMS."
 		elog "The modules will be automatically built and installed for each kernel."
