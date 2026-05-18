@@ -18,6 +18,11 @@ KEYWORDS="~amd64"
 
 RDEPEND="gui-wm/hyprland"
 
+src_unpack() {
+	default
+	mv "${WORKDIR}/vendor" "${S}/vendor" || die
+}
+
 src_compile() {
 	ego build -ldflags "-s -w -X main.Version=${PV}" -o "${PN}" .
 }
