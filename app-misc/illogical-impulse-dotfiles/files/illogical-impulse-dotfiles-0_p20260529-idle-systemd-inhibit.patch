@@ -1,0 +1,35 @@
+--- a/dots/.config/quickshell/ii/services/Idle.qml
++++ b/dots/.config/quickshell/ii/services/Idle.qml
+@@ -2,6 +2,7 @@
+ import qs.modules.common
+ import QtQuick
+ import Quickshell
++import Quickshell.Io
+ import Quickshell.Wayland
+ 
+ /**
+@@ -33,6 +34,24 @@
+         Persistent.states.idle.inhibit = root.inhibit;
+     }
+ 
++    onInhibitChanged: {
++        if (inhibit) {
++            systemdInhibitProc.running = true;
++        } else {
++            systemdInhibitProc.signal(15); // SIGTERM
++        }
++    }
++
++    Process {
++        id: systemdInhibitProc
++        command: ["systemd-inhibit", "--what=idle:sleep", "--who=quickshell", "--why=Keep system awake toggle", "--mode=block", "sleep", "infinity"]
++        onExited: {
++            if (root.inhibit) {
++                systemdInhibitProc.running = true;
++            }
++        }
++    }
++
+     IdleInhibitor {
+         id: idleInhibitor
+         window: PanelWindow {
