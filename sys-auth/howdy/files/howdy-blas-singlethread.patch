@@ -1,0 +1,34 @@
+diff --git a/howdy/src/cli.py b/howdy/src/cli.py
+index 2a4b33b..2b665ce 100755
+--- a/howdy/src/cli.py
++++ b/howdy/src/cli.py
+@@ -1,3 +1,12 @@
++# --- Howdy: force single-threaded BLAS (Gentoo/nekochigura) ---
++# Multithreaded OpenBLAS/FlexiBLAS deadlocks dlib's ResNet compute_face_descriptor()
++# on some CPUs (e.g. Intel Lunar Lake). Must be set before numpy/dlib load the BLAS lib.
++import os as _blasfix_os
++_blasfix_os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
++_blasfix_os.environ.setdefault("OMP_NUM_THREADS", "1")
++_blasfix_os.environ.setdefault("FLEXIBLAS_NUM_THREADS", "1")
++# --- end ---
++
+ # CLI directly called by running the howdy command
+ 
+ # Import required modules
+diff --git a/howdy/src/compare.py b/howdy/src/compare.py
+index 35e85fb..aa45e4f 100644
+--- a/howdy/src/compare.py
++++ b/howdy/src/compare.py
+@@ -1,3 +1,12 @@
++# --- Howdy: force single-threaded BLAS (Gentoo/nekochigura) ---
++# Multithreaded OpenBLAS/FlexiBLAS deadlocks dlib's ResNet compute_face_descriptor()
++# on some CPUs (e.g. Intel Lunar Lake). Must be set before numpy/dlib load the BLAS lib.
++import os as _blasfix_os
++_blasfix_os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
++_blasfix_os.environ.setdefault("OMP_NUM_THREADS", "1")
++_blasfix_os.environ.setdefault("FLEXIBLAS_NUM_THREADS", "1")
++# --- end ---
++
+ # Compare incoming video with known faces
+ # Running in a local python instance to get around PATH issues
+ 

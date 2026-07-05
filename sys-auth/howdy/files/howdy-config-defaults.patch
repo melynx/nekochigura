@@ -1,0 +1,31 @@
+diff --git a/howdy/src/config.ini b/howdy/src/config.ini
+index 789347a..b1b1699 100644
+--- a/howdy/src/config.ini
++++ b/howdy/src/config.ini
+@@ -40,14 +40,14 @@ workaround = off
+ # The certainty of the detected face belonging to the user of the account
+ # On a scale from 1 to 10, values above 5 are not recommended
+ # The lower, the more accurate
+-certainty = 3.5
++certainty = 4.0
+ 
+ # The number of seconds to search before timing out
+-timeout = 4
++timeout = 8
+ 
+ # The path of the device to capture frames from
+ # Video devices are usually found in /dev/v4l/by-path/
+-device_path = none
++device_path = /dev/v4l/by-path/pci-0000:00:14.0-usb-0:4:1.2-video-index0
+ 
+ # Print a warning if the the video device is not found
+ warn_no_device = true
+@@ -66,7 +66,7 @@ frame_height = -1
+ # Skip the frame if the lowest 1/8 of the histogram is above this percentage
+ # of the total
+ # The lower this setting is, the more dark frames are ignored
+-dark_threshold = 60
++dark_threshold = 90
+ 
+ # The recorder to use. Can be either opencv (default), ffmpeg or pyv4l2.
+ # Switching from the default opencv to ffmpeg can help with grayscale issues.
