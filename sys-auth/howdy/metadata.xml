@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    Howdy provides Windows Hello-style facial authentication for Linux via PAM,
+    using an IR camera with dlib face recognition and OpenCV. This is the v3
+    (meson-built, compiled pam_howdy.so) snapshot, with the dlib recognition
+    models bundled and single-threaded BLAS forced to avoid an OpenBLAS deadlock
+    in dlib's ResNet on some CPUs.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">boltgolt/howdy</remote-id>
+  </upstream>
+</pkgmetadata>
