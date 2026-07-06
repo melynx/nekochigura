@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    Metapackage that installs the Caelestia desktop: the Quickshell shell and the
+    caelestia CLI. The dotfiles themselves are deployed by the CLI
+    (caelestia install --no-packages), not packaged separately.
+  </longdescription>
+</pkgmetadata>
