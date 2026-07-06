@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    Caelestia is a Quickshell-based desktop shell for Hyprland (bar, launcher,
+    notifications, lock screen, etc.). This packages the compiled C++/QML shell
+    (the Caelestia QML plugin plus the shell config) built against Qt6 and
+    Quickshell. Gentoo-specific fixes are baked in: QML modules install under
+    lib64, the build version is pinned (snapshot has no git metadata), and the
+    m3shapes dependency is pre-fetched rather than cloned during configure.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">caelestia-dots/shell</remote-id>
+  </upstream>
+</pkgmetadata>
