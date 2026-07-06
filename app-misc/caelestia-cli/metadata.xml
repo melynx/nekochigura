@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    The caelestia command-line tool that drives the Caelestia shell: colour
+    scheme management, screenshots and screen recording, wallpaper selection,
+    clipboard history, emoji picker, and the dotfiles install/update helpers.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">caelestia-dots/cli</remote-id>
+  </upstream>
+</pkgmetadata>
