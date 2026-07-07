@@ -31,7 +31,7 @@ COMMON_DEPEND="
 	sci-libs/libqalculate
 	media-libs/aubio
 	media-video/pipewire
-	media-sound/cava
+	media-sound/libcava
 	sys-apps/lm-sensors
 	sci-libs/fftw:3.0=
 "
