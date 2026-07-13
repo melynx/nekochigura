@@ -60,6 +60,10 @@ BDEPEND="
 "
 
 PATCHES=(
+	# Ignore transient no-main-keyboard gaps when deciding whether a valid
+	# keyboard layout change should produce a notification.
+	"${FILESDIR}/${PN}-ignore-transient-keyboard-layout-gaps.patch"
+
 	# Add missing Qt includes (QObject, QVariant, QQmlEngine, QString, QTimer,
 	# QPointer, QStringList) that upstream relied on transitively; Qt 6.11
 	# dropped those transitive includes so the plugin fails to build without them.

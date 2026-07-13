@@ -1,0 +1,58 @@
+From 67812e3c6e6433b255c86813c6a5f99a63b67524 Mon Sep 17 00:00:00 2001
+From: Chua Zheng Leong <melynx@gmail.com>
+Date: Mon, 13 Jul 2026 15:07:15 +0800
+Subject: [PATCH] fix: ignore transient keyboard layout gaps
+
+Caelestia can temporarily observe no main keyboard while reconciling a
+Hyprland device snapshot. Do not report that absence as an Unknown layout.
+Retain the last valid layout so a returning keyboard only produces a toast
+when its layout actually differs.
+---
+ services/Hypr.qml | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/services/Hypr.qml b/services/Hypr.qml
+index d890f098..232db1c8 100644
+--- a/services/Hypr.qml
++++ b/services/Hypr.qml
+@@ -38,6 +38,7 @@ Singleton {
+     readonly property alias devices: extras.devices
+ 
+     property bool hadKeyboard
++    property string lastKbLayout: ""
+     property string lastSpecialWorkspace: ""
+ 
+     signal configReloaded
+@@ -118,10 +119,26 @@ Singleton {
+     }
+ 
+     onKbLayoutFullChanged: {
+-        if (hadKeyboard && GlobalConfig.utilities.toasts.kbLayoutChanged)
+-            Toaster.toast(qsTr("Keyboard layout changed"), qsTr("Layout changed to: %1").arg(kbLayoutFull), "keyboard");
++        const layout = keyboard?.activeKeymap ?? "";
+ 
+-        hadKeyboard = !!keyboard;
++        if (!keyboard || !layout || layout === "Unknown") {
++            hadKeyboard = false;
++            return;
++        }
++
++        if (!hadKeyboard) {
++            hadKeyboard = true;
++
++            if (!lastKbLayout) {
++                lastKbLayout = layout;
++                return;
++            }
++        }
++
++        if (layout !== lastKbLayout && GlobalConfig.utilities.toasts.kbLayoutChanged)
++            Toaster.toast(qsTr("Keyboard layout changed"), qsTr("Layout changed to: %1").arg(layout), "keyboard");
++
++        lastKbLayout = layout;
+     }
+ 
+     Connections {
+-- 
+2.50.1
+
