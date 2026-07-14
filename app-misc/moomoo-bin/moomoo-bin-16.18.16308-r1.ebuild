@@ -19,10 +19,11 @@ RESTRICT="bindist mirror strip"
 
 BDEPEND="$(unpacker_src_uri_depends)"
 
+# Moomoo ships and loads its own Qt5 libraries and XCB platform plugin.
+# Keep only the system libraries used by that bundled runtime.
 RDEPEND="
 	dev-libs/glib:2
 	dev-libs/nss
-	dev-qt/qtwayland:5
 	x11-libs/libX11
 	x11-libs/libXext
 	x11-libs/libxcb
@@ -57,7 +58,7 @@ src_install() {
 	# Make shared libraries executable
 	find "${ED}"/opt/moomoo -name "*.so*" -type f -exec chmod +x {} \; || die
 
-	# Install wrapper script with Wayland support
+	# Install a wrapper that uses Moomoo's bundled Qt5/XCB runtime.
 	newbin "${FILESDIR}/${MY_PN}-wrapper.sh" ${MY_PN}
 
 	# Install desktop file and icon
