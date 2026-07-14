@@ -6,8 +6,9 @@
     <name>czl</name>
   </maintainer>
   <longdescription lang="en">
-    Metapackage that installs the Caelestia desktop: the Quickshell shell and the
-    caelestia CLI. The dotfiles themselves are deployed by the CLI
+    Metapackage that installs the Caelestia desktop: the Quickshell shell, the
+    caelestia CLI, and the qtengine platform theme used by its Qt configuration.
+    The dotfiles themselves are deployed by the CLI
     (caelestia install --no-packages), not packaged separately.
   </longdescription>
 </pkgmetadata>
