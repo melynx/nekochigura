@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    Sweet is a colorful XCursor theme featuring gradient-filled pointers. This
+    package also supplies the lowercase theme alias used by Caelestia.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">EliverLara/Sweet</remote-id>
+  </upstream>
+</pkgmetadata>
