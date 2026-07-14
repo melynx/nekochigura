@@ -47,6 +47,7 @@ RDEPEND="
 	gui-apps/swappy
 	gui-apps/wl-clipboard
 	net-misc/networkmanager
+	sys-power/power-profiles-daemon
 	media-fonts/material-symbols-variable
 	media-fonts/rubik-vf
 	media-fonts/nerdfonts[cascadiacode]
