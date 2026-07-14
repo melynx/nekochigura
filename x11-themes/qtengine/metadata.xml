@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    qtengine is a Qt 6 platform theme and style plugin configured through JSON.
+    It applies KDE color schemes, icon themes, widget styles, and fonts without
+    requiring a full Plasma desktop. Caelestia uses it for dynamically generated
+    Qt colors and icon-theme integration.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">kossLAN/qtengine</remote-id>
+  </upstream>
+</pkgmetadata>

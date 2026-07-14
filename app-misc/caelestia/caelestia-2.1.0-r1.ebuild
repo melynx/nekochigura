@@ -14,6 +14,7 @@ KEYWORDS="~amd64"
 RDEPEND="
 	>=gui-apps/caelestia-shell-2.1.0
 	app-misc/caelestia-cli
+	x11-themes/qtengine
 "
 
 pkg_postinst() {
