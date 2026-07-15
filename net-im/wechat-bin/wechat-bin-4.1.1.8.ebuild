@@ -5,11 +5,9 @@ EAPI=8
 
 inherit desktop unpacker xdg-utils
 
-MY_PN="${PN%-bin}"
-
 DESCRIPTION="WeChat desktop client for Linux (binary distribution)"
 HOMEPAGE="https://linux.weixin.qq.com/"
-SRC_URI="https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.deb -> ${P}_x86_64.deb"
+SRC_URI="https://sim.debiancn.org/debiancn/pool/main/w/wechat-stable/wechat_${PV}_amd64.deb"
 S="${WORKDIR}"
 
 LICENSE="all-rights-reserved"
@@ -17,13 +15,22 @@ SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="bindist mirror strip"
 
-BDEPEND="$(unpacker_src_uri_depends)"
+BDEPEND="
+	dev-util/patchelf
+	$(unpacker_src_uri_depends)
+"
 
 RDEPEND="
 	app-crypt/mit-krb5
 	dev-libs/glib:2
+	dev-libs/nspr
+	dev-libs/nss
 	media-fonts/noto-cjk
+	media-libs/fontconfig
+	media-libs/libpulse
+	sys-apps/dbus
 	virtual/udev
+	virtual/zlib
 	x11-libs/libX11
 	x11-libs/libXcomposite
 	x11-libs/libXdamage
@@ -34,9 +41,34 @@ RDEPEND="
 	x11-libs/libXtst
 	x11-libs/libxcb
 	x11-libs/libxkbcommon[X]
+	x11-libs/xcb-util
+	x11-libs/xcb-util-image
+	x11-libs/xcb-util-keysyms
+	x11-libs/xcb-util-renderutil
+	x11-libs/xcb-util-wm
 "
 
 QA_PREBUILT="opt/wechat/*"
+
+src_prepare() {
+	default
+
+	local elf
+	local -a bundled_elfs=(
+		opt/wechat/libconfService.so
+		opt/wechat/libilink2.so
+		opt/wechat/libilink_network.so
+		opt/wechat/libroam_migration.so
+		opt/wechat/libvoipChannel.so
+		opt/wechat/libvoipCodec.so
+		opt/wechat/RadiumWMPF/runtime/libilink2.so
+		opt/wechat/RadiumWMPF/runtime/libilink_network.so
+	)
+
+	for elf in "${bundled_elfs[@]}"; do
+		patchelf --set-rpath '${ORIGIN}' "${elf}" || die
+	done
+}
 
 src_install() {
 	# Install main application directory
@@ -73,7 +105,8 @@ src_install() {
 
 	# Install documentation
 	if [[ -f usr/share/doc/wechat/changelog.gz ]]; then
-		dodoc usr/share/doc/wechat/changelog.gz
+		gzip -cd usr/share/doc/wechat/changelog.gz > "${T}"/changelog || die
+		dodoc "${T}"/changelog
 	fi
 }
 

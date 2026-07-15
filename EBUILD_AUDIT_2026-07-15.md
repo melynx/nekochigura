@@ -346,14 +346,31 @@ Implemented with maintainer approval:
 
 ### Issue 4 — WeChat source artifact is mutable and currently mismatched
 
-Affected: `net-im/wechat-bin/wechat-bin-4.1.1.ebuild:12` and Manifest.
+Status: fixed by `net-im/wechat-bin/wechat-bin-4.1.1.8.ebuild`.
 
-- `SRC_URI` points to an unversioned URL that changes in place.
-- The current official Debian package embeds version 4.1.1.8.
-- Current remote size: 212,419,528 bytes.
-- Manifested size: 212,327,560 bytes.
-- Therefore the current ebuild is not freshly fetchable and the same local PV
-  can refer to different vendor binaries.
+- Replaced the mutable, mismatched 4.1.1 download with DebianCN's versioned
+  `wechat_4.1.1.8_amd64.deb` URL. The mirrored file and Tencent's current
+  official download were byte-identical: 212,419,528 bytes, SHA-256
+  `c9765e87ee5133bf4bb50d585c1814fafd995e3fb0da62c5ed07259b43dada7b`,
+  and SHA-512
+  `949a43c79abdc672f52588a07c2345ed5499ea269c88e6f82b4b3aaefb78d1ebb35d6200bbd6b6d47f7196870ad058d2cd4dc46d29da538b9221f4755ec365df`.
+  Its Debian metadata identifies version 4.1.1.8 and amd64 architecture.
+- Retained `RESTRICT="bindist mirror strip"`, so the overlay does not host or
+  redistribute the proprietary package. The versioned upstream mirror is the
+  sole distfile source.
+- Completed the binary runtime dependency closure found from the staged ELF
+  tree, including NSS/NSPR, fontconfig, PulseAudio, D-Bus, zlib, and the xcb
+  utility libraries.
+- Normalized eight vendor RUNPATHs to `${ORIGIN}` with `patchelf`; this removes
+  relative, empty, and vendor build-host paths. The compressed vendor changelog
+  is unpacked before `dodoc` so Portage installs it normally.
+- A clean staged install passed without QA or security notices. It installed
+  135 application files (718.3 MiB); the main PIE executable, wrapper, desktop
+  entry, icons, helper executables, and shared libraries were present and all
+  runtime libraries resolved on the test host.
+- Removed 4.1.0.13, 4.1.0.16, and 4.1.1, then regenerated the Manifest with
+  only the immutable 4.1.1.8 distfile. Final `pkgcheck`, XML validation,
+  Manifest validation, and `git diff --check` passed.
 
 ### Issue 5 — Mutable branch archives and Readex metadata/license
 
