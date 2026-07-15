@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>melynx</name>
+	</maintainer>
+	<longdescription lang="en">
+		Passless is a software FIDO2 authenticator that emulates a hardware
+		security key through Linux UHID and supports pass, local filesystem,
+		and experimental TPM-backed credential storage.
+	</longdescription>
+	<use>
+		<flag name="tpm">Enable the experimental TPM 2.0 storage backend</flag>
+	</use>
+	<upstream>
+		<bugs-to>https://github.com/pando85/passless/issues</bugs-to>
+		<changelog>https://github.com/pando85/passless/blob/master/CHANGELOG.md</changelog>
+		<remote-id type="github">pando85/passless</remote-id>
+	</upstream>
+</pkgmetadata>
