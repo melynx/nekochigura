@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		icamerasrc is a GStreamer source plugin for cameras connected through
+		Intel IPU6, IPU6EP, and IPU6SE image-processing units.
+	</longdescription>
+	<use>
+		<flag name="drm">Enable DRM-format DMA-BUF support through GStreamer VA</flag>
+	</use>
+	<upstream>
+		<bugs-to>https://github.com/intel/icamerasrc/issues</bugs-to>
+		<remote-id type="github">intel/icamerasrc</remote-id>
+	</upstream>
+</pkgmetadata>

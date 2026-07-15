@@ -1,4 +1,3 @@
-
 EAPI=8
 
 inherit autotools
@@ -6,11 +5,11 @@ inherit autotools
 DESCRIPTION="GStreamer plugin for Intel IPU6/IPU6EP/IPU6SE MIPI cameras"
 HOMEPAGE="https://github.com/intel/icamerasrc"
 
-MY_PV="20251226_1140_191_PTL_PV_IoT"
+MY_PV="20260629_1"
 SRC_URI="https://github.com/intel/icamerasrc/archive/refs/tags/${MY_PV}.tar.gz -> ${P}.tar.gz"
 S="${WORKDIR}/icamerasrc-${MY_PV}"
 
-LICENSE="LGPL-2.1"
+LICENSE="LGPL-2.1+"
 SLOT="0"
 KEYWORDS="~amd64"
 IUSE="+drm"
@@ -18,16 +17,13 @@ IUSE="+drm"
 RDEPEND="
 	>=media-libs/gstreamer-1.0.0:1.0
 	>=media-libs/gst-plugins-base-1.0.0:1.0
-	media-libs/ipu6-camera-hal
 	media-libs/ipu6-camera-bins
+	media-libs/ipu6-camera-hal
 	x11-libs/libdrm
 	drm? (
-		|| (
-			>=media-libs/gstreamer-1.23
-			=media-libs/gstreamer-1.22.6
-		)
-		media-libs/gst-plugins-bad:1.0
-		media-libs/libva
+		>=media-libs/gstreamer-1.23:1.0
+		media-libs/gst-plugins-bad:1.0[vaapi]
+		media-libs/libva:=
 	)
 "
 
