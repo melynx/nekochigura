@@ -1,0 +1,3 @@
+[submodule "nekochigura-dependencies"]
+	path = nekochigura-dependencies
+	url = https://github.com/melynx/nekochigura-dependencies.git

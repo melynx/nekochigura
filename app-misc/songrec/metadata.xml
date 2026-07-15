@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		SongRec is an unofficial Shazam client that recognizes audio from files
+		or recording devices and provides both a GTK interface and command-line
+		commands.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/marin-m/SongRec/issues</bugs-to>
+		<changelog>https://github.com/marin-m/SongRec/releases</changelog>
+		<remote-id type="github">marin-m/SongRec</remote-id>
+	</upstream>
+</pkgmetadata>
