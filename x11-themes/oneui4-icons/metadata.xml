@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		OneUI4 Icons provides light, dark, and default desktop icon themes based
+		on Samsung's One UI 4 design for the illogical-impulse desktop setup.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/end-4/OneUI4-Icons/issues</bugs-to>
+		<remote-id type="github">end-4/OneUI4-Icons</remote-id>
+	</upstream>
+</pkgmetadata>
