@@ -374,21 +374,32 @@ Status: fixed by `net-im/wechat-bin/wechat-bin-4.1.1.8.ebuild`.
 
 ### Issue 5 — Mutable branch archives and Readex metadata/license
 
-Affected:
+Status: fixed by `media-fonts/readex-pro/readex-pro-1.2_p20250213.ebuild`
+and `x11-themes/oneui4-icons/oneui4-icons-1.0_p20250425.ebuild`.
 
-- `media-fonts/readex-pro/readex-pro-1.0-r1.ebuild:8-16`
-- `x11-themes/oneui4-icons/oneui4-icons-1.0-r1.ebuild:8-18`
-
-Findings:
-
-- Both fetch branch archives (`master.tar.gz` or `main.tar.gz`) rather than a
-  pinned commit/tag, making distfiles mutable.
-- Readex declares GPL-2, but upstream `OFL.txt` is SIL Open Font License 1.1.
-- Readex description incorrectly says “Illogical Impulse Fonts and Theming
-  Dependencies” rather than describing Readex Pro.
-- Both have empty homepage/metadata gaps.
-- OneUI4 uses unquoted `${S}`, inconsistent whitespace, and unnecessary empty
-  dependency assignments.
+- Neither upstream publishes tags or releases. Replaced the mutable branch
+  archives with date-stamped snapshots pinned to full commits: Readex Pro
+  `563dfbb36ae45e52ec50829b016ce724ac2fca70` from 2025-02-13 and OneUI4
+  Icons `693095d45c67e6b48a9873e36af6283f05080e66` from 2025-04-25.
+- Corrected Readex's license from GPL-2 to the upstream `OFL.txt` declaration,
+  `OFL-1.1`, and replaced the unrelated description. Both packages now have
+  upstream homepages and `metadata.xml` files with maintainer, description,
+  issue tracker, and repository information.
+- Readex now uses `font.eclass` for installation. Its staged image contains all
+  six Readex Pro TTF styles, generated X font indexes, and upstream authors,
+  contributors, and README documentation.
+- OneUI4 now inherits `xdg`, depends on its declared hicolor parent theme, and
+  removes empty dependency assignments and unsafe/unnecessary path handling.
+  Staged installation contains the OneUI, OneUI-dark, and OneUI-light themes
+  with 10,628 regular files.
+- Found eight broken scalable MIME aliases in the upstream OneUI snapshot.
+  Five now target equivalent fixed-resolution icons shipped by the theme; the
+  three aliases with no available target are removed so lookup can fall back to
+  hicolor. The final installed tree has no broken symlinks.
+- Removed the mutable 1.0-r1 ebuilds and regenerated both Manifests with only
+  their commit-pinned distfiles. Clean staged installs completed without QA
+  notices; final `pkgcheck`, XML validation, Manifest validation, and
+  `git diff --check` passed.
 
 ### Issue 6 — icamerasrc has nonexistent/exact dependency atoms
 

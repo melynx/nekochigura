@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		Readex Pro expands the Lexend typeface to Latin and Arabic scripts and
+		is designed to improve reading fluency for low-proficiency readers.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/ThomasJockin/readexpro/issues</bugs-to>
+		<remote-id type="github">ThomasJockin/readexpro</remote-id>
+	</upstream>
+</pkgmetadata>
