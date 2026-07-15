@@ -259,7 +259,10 @@ Implemented with maintainer approval:
 
 Affected: `dev-tex/microtex/microtex-1.0-r1.ebuild`.
 
-- `DEPEND` and `RDEPEND` are empty at lines 16-22 despite compiling/linking
+Status: fixed and verified as `microtex-1.0-r2`; the broken revision was
+removed.
+
+- `DEPEND` was empty and `RDEPEND` was incomplete despite compiling/linking
   tinyxml2, gtkmm, gtksourceviewmm, cairomm, and Fontconfig.
 - CMake and pkg-config build dependencies are undeclared.
 - Build commands at lines 39-43 do not consistently use Gentoo helpers or
@@ -270,6 +273,31 @@ Affected: `dev-tex/microtex/microtex-1.0-r1.ebuild`.
   `tinyxml2` rather than embedding that SONAME.
 - arm64 dependencies are unsatisfiable in tested Gentoo profiles.
 - Missing `metadata.xml` remote ID and standard metadata.
+
+Implemented with maintainer approval:
+
+- Added `microtex-1.0-r2` using `cmake.eclass`, the full pinned upstream commit
+  hash, standard unpack/configure/compile phases, and a revision-independent
+  distfile name.
+- Declared the actual cairomm:0, gtkmm:3.0, gtksourceviewmm:3.0, tinyxml2,
+  Fontconfig, and pkg-config dependencies. Keywords are now `~amd64 ~x86`;
+  `arm64` was removed because Gentoo has no matching gtksourceviewmm:3.0.
+- Added a minimal upstream-source patch to include
+  `fontconfig/fcfreetype.h`, which current Fontconfig requires for
+  `FcFreeTypeQuery`.
+- Installed the executable with executable permissions, installed its required
+  `libLaTeX.so` into the normal library directory, and placed resources under
+  `/usr/share/clatexmath`, one of the paths used by `LaTeX::init()`.
+- Disabled the upstream production log/debug macros and build-tree RUNPATH.
+- Added `metadata.xml`, removed the ineffective tinyxml2 SONAME sed and strip
+  restriction, pruned `-r1`, and regenerated the Manifest.
+- A clean CMake/Ninja build and staged install passed. The staged executable had
+  no RUNPATH, resolved the staged `libLaTeX.so`, found the XDG resource tree,
+  and rendered `\\sqrt{x^2+y^2}` headlessly to a valid 10,022-byte SVG.
+- Final `pkgcheck`, XML validation, and `git diff --check` passed.
+- For verification, Portage installed `dev-libs/tinyxml2-11.0.0`,
+  `x11-libs/gtksourceview-3.24.11-r4`, and
+  `dev-cpp/gtksourceviewmm-3.18.0-r2` from binary packages on the test host.
 
 ### Issue 3 — Passless USE/features and dependency wiring
 
@@ -638,8 +666,7 @@ not substitute for a build test:
 
 ## Safe continuation point
 
-1. Verify the parent SongRec commit/push and confirm that only unrelated user
-   work remains dirty.
-2. Implement the approved Issue 2 (MicroTeX) proposal and verify it completely
-   before presenting Issue 3.
+1. Commit and push the completed MicroTeX fix, clean its temporary build data,
+   and confirm that only unrelated user work remains dirty.
+2. Present the Issue 3 (Passless) proposal and wait for permission.
 3. Continue strictly one issue at a time.

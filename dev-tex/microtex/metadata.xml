@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>melynx</name>
+	</maintainer>
+	<longdescription lang="en">
+		MicroTeX is an embeddable LaTeX rendering library and demonstration
+		application used by the illogical-impulse desktop configuration.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">NanoMichael/MicroTeX</remote-id>
+	</upstream>
+</pkgmetadata>
