@@ -403,16 +403,29 @@ and `x11-themes/oneui4-icons/oneui4-icons-1.0_p20250425.ebuild`.
 
 ### Issue 6 — icamerasrc has nonexistent/exact dependency atoms
 
-Affected: both `media-plugins/gst-plugins-icamerasrc` ebuilds, particularly
-lines 24-28.
+Status: fixed by
+`media-plugins/gst-plugins-icamerasrc/gst-plugins-icamerasrc-0.0.0_p20260629.ebuild`.
 
-- `=media-libs/gstreamer-1.22.6` omits an explicit `-r0` and is reported as a
-  nonexistent package.
-- If compatibility truly means any 1.22.6 revision, `~` is likely intended;
-  otherwise the compatibility constraint must be revalidated for the new
-  upstream snapshot.
-- `drm` USE is undocumented.
-- Update upstream snapshot to `20260629_1` as part of the compatibility review.
+- Updated to upstream tag `20260629_1`, commit
+  `fe01f98a09b7b864c36ef60a146cdc4e1bf125a6`, and removed the 20251104 and
+  20251226 snapshots.
+- Revalidated upstream's DRM-format checks. The current code first accepts
+  GStreamer 1.23 or newer and only retains exact 1.22.6 as a legacy fallback.
+  Replaced the nonexistent exact atom with a conditional
+  `>=media-libs/gstreamer-1.23:1.0` dependency.
+- Completed the DRM dependency closure with
+  `media-libs/gst-plugins-bad:1.0[vaapi]` for `gstreamer-va-1.0` and
+  `media-libs/libva:=` for `libva` and `libva-drm`. The base build continues
+  to require libdrm because upstream checks and links it unconditionally.
+- Corrected the license to `LGPL-2.1+` from upstream's LGPL 2.1-or-later
+  notices. Added `metadata.xml` with maintainer and upstream information and a
+  description of the `drm` USE flag.
+- Clean staged builds and installs passed with both USE=`-drm` and USE=`drm`
+  on GCC 16. The generated configurations respectively omitted and defined
+  `GST_DRM_FORMAT`; the DRM binary linked GStreamer VA, libva, and libva-drm.
+  Both installed plugins had no RPATH/RUNPATH, resolved their complete shared
+  library sets against staged IPU6 dependencies, and registered successfully
+  as `icamerasrc` with `gst-inspect-1.0` (without camera hardware available).
 
 ### Issue 7 — MakeMKV dependency set is obsolete
 
