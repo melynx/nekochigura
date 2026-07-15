@@ -1,0 +1,53 @@
+From: nekochigura maintainers
+Subject: [PATCH] Require measured eye motion for IR-only liveness
+
+The IR path has no MiniFASNet check. Treating an empty or one-frame landmark
+sequence as live makes its only liveness gate fail open. Keep the RGB behavior,
+where MiniFASNet is the primary gate, but require affirmative measured motion in
+the IR path.
+
+--- a/gaze/src/liveness.rs
++++ b/gaze/src/liveness.rs
+@@ -136,7 +136,7 @@ pub fn eye_motion_is_live(landmarks: &[[(f32, f32); 5]], min_ratio: Option<f32>
+     let threshold = min_ratio.unwrap_or(MIN_EYE_MOTION_RATIO);
+ 
+     let neutral = EyeMotion {
+-        live: true,
++        live: false,
+         motion_ratio: 0.0,
+         pairs: 0,
+     };
+@@ -274,16 +274,16 @@ mod tests {
+     }
+ 
+     #[test]
+-    fn one_frame_cannot_judge_motion_so_it_passes() {
++    fn one_frame_cannot_supply_motion_evidence() {
+         let seq = vec![eyes((100.0, 50.0), (140.0, 50.0))];
+         let motion = eye_motion_is_live(&seq, None);
+-        assert!(motion.live);
++        assert!(!motion.live);
+         assert_eq!(motion.pairs, 0);
+     }
+ 
+     #[test]
+-    fn no_frames_pass() {
++    fn no_frames_cannot_supply_motion_evidence() {
+         let motion = eye_motion_is_live(&[], None);
+-        assert!(motion.live);
++        assert!(!motion.live);
+         assert_eq!(motion.pairs, 0);
+     }
+--- a/gaze/src/daemon.rs
++++ b/gaze/src/daemon.rs
+@@ -1732,9 +1732,9 @@ impl GazeDaemon {
+                                 if liveness_enabled {
+                                     if let Some(eyes) = eyes_from_kpss(&data.kpss) {
+                                         landmark_seq.push(eyes);
+                                     }
+                                     let motion = crate::liveness::eye_motion_is_live(&landmark_seq, None);
+-                                    liveness_passed = !crate::liveness::confirmed_static(&motion);
++                                    liveness_passed = motion.live;
+ 
+                                     tracing::debug!(
+                                         "Liveness checked (IR): motion={:?}, overall={}",

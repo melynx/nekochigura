@@ -1,0 +1,28 @@
+From: nekochigura maintainers
+Subject: [PATCH] Contain Rust panics inside the PAM entry point
+
+Never allow a Rust panic to cross the C PAM ABI. Convert it into a closed
+authentication failure instead.
+
+--- a/pam-gaze/src/lib.rs
++++ b/pam-gaze/src/lib.rs
+@@ -1,6 +1,7 @@
+ #![allow(clippy::missing_safety_doc)]
+ use pam_gaze_core::*;
+ use std::os::raw::{c_char, c_int};
++use std::panic::{AssertUnwindSafe, catch_unwind};
+ use std::time::Duration;
+ use tokio::time::timeout;
+ 
+@@ -82,7 +83,10 @@ pub unsafe extern "C" fn pam_sm_authenticate(
+     _argc: c_int,
+     _argv: *const *const c_char,
+ ) -> c_int {
+-    unsafe { do_authenticate(pamh) }
++    match catch_unwind(AssertUnwindSafe(|| unsafe { do_authenticate(pamh) })) {
++        Ok(code) => code,
++        Err(_) => PAM_AUTH_ERR,
++    }
+ }
+ 
+ pam_gaze_core::pam_success_stubs!();

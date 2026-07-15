@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <use>
+    <flag name="gui">Install the GTK4/libadwaita configuration and enrollment application</flag>
+    <flag name="hyprlock">Install the opt-in sequential PAM service for Hyprlock</flag>
+  </use>
+  <longdescription lang="en">
+    Gaze provides an on-device face-recognition daemon, command-line and graphical
+    clients, liveness detection, TPM-backed template encryption, and a sequential
+    PAM module. The simultaneous grosshack PAM module is intentionally not built or
+    installed by this package.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">GunduLabs/gaze</remote-id>
+  </upstream>
+</pkgmetadata>
