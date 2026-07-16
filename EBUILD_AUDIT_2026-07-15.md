@@ -802,6 +802,9 @@ Resolution and verification:
 
 Affected: all `app-misc/illogical-impulse-dotfiles` ebuilds.
 
+Status: fixed with Manifested upstream archives and a current reproducible
+snapshot.
+
 - Pinned commits are reproducible, but the keyworded packages inherit
   `git-r3`, remain unmirrorable VCS packages, and trigger VisibleVcsPkg.
 - Switch to pinned GitHub commit tarballs plus Manifested submodule/source
@@ -809,6 +812,45 @@ Affected: all `app-misc/illogical-impulse-dotfiles` ebuilds.
 - FILESDIR contains multiple identical version-specific patch copies; use
   stable patch names where content is identical.
 - Update snapshot to current main only after packaging method is fixed.
+
+Resolution and verification:
+
+- Replaced the three keyworded `git-r3` ebuilds with `-r1` revisions using
+  immutable GitHub commit archives, and added current
+  `illogical-impulse-dotfiles-0_p20260716` at upstream commit
+  `446504ad427297dcbe5ee4a3d5bda1c458207cd9`. The retained snapshot dates now
+  continue to match their pinned upstream commit dates.
+- All four parent commits contain one identical gitlink at
+  `dots/.config/quickshell/ii/modules/common/widgets/shapes`, pinned to
+  `end-4/rounded-polygon-qmljs` commit
+  `e31ec4cb4ebf6a46b267f5c42eabf6874916fa16`. Each ebuild assembles that one
+  official submodule commit archive into the empty gitlink directory. No
+  dependency-repository artifact or other self-hosting is used.
+- Added a five-distfile Manifest covering the four parent snapshots and the
+  one shared submodule archive. Independent downloads matched Portage's
+  BLAKE2B/SHA512 values, archive roots, gitlink target, and assembled file
+  layout.
+- Corrected `LICENSE` from `GPL-3` to `GPL-3 Apache-2.0`; the installed parent
+  is GPL-3 and the installed shapes submodule is Apache-2.0. Runtime
+  `dev-vcs/git` remains necessary for the deployed update, merge, diagnostic,
+  and installer helpers.
+- Consolidated 16 version-specific patch files into seven stable shared
+  patches plus the unique March OS-detection patch. The archive-only
+  deployment keeps the submodule-update guard, and all declared patch sets
+  apply cleanly to their snapshots, including the July update.
+- Corrected executable-mode preservation: all installed shell scripts remain
+  executable as before, while executable Python helpers and extensionless
+  upstream entry points such as `diagnose` and `hypr_mon_guard` no longer lose
+  their modes through `doins`.
+- Two independent offline Portage installs of each of the four ebuilds passed.
+  Their normalized path/type/mode/size/content manifests are identical. The
+  images contain the submodule files and both licenses directly at the
+  expected paths, contain no `.git` metadata, nested archive root, patch
+  residue, or broken links, and pass the shell syntax sweep. The staged July
+  setup help also runs successfully without network access.
+- Package QA no longer reports `VisibleVcsPkg` or duplicate patch files. Its
+  only package result is `RedundantVersion` for the three deliberately
+  retained rollback snapshots; whitespace and ebuild syntax validation pass.
 
 ### Issue 17 — curl-cffi license and test dependencies
 
