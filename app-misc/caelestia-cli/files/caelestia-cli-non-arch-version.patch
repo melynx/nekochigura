@@ -1,0 +1,40 @@
+diff --git a/src/caelestia/utils/version.py b/src/caelestia/utils/version.py
+index 26df33a..d594e2c 100644
+--- a/src/caelestia/utils/version.py
++++ b/src/caelestia/utils/version.py
+@@ -4 +4 @@
+-from caelestia.utils.paths import config_dir
++from caelestia.utils.paths import config_dir, dots_dir
+@@ -20 +20,21 @@ def print_version() -> None:
+-        print("Packages: not on Arch")
++        if shutil.which("portageq"):
++            print("Packages:")
++            pkgs = [
++                "gui-apps/caelestia-shell",
++                "app-misc/caelestia-cli",
++                "app-misc/caelestia",
++            ]
++            for pkg in pkgs:
++                installed = subprocess.run(
++                    ["portageq", "best_version", "/", pkg],
++                    stdout=subprocess.PIPE,
++                    stderr=subprocess.DEVNULL,
++                    text=True,
++                ).stdout.strip()
++                if installed:
++                    package_version = installed.removeprefix(f"{pkg}-")
++                    print(f"    {pkg} {package_version}")
++                else:
++                    print(f"    {pkg} not installed")
++        else:
++            print("Packages: unsupported package manager")
+@@ -24 +44,3 @@ def print_version() -> None:
+-        caelestia_dir = (config_dir / "hypr").resolve().parent
++        caelestia_dir = (
++            dots_dir if (dots_dir / ".git").is_dir() else (config_dir / "hypr").resolve().parent
++        )
+@@ -26 +48,3 @@ def print_version() -> None:
+-            ["git", "--git-dir", caelestia_dir / ".git", "rev-list", "--format=%B", "--max-count=1", "HEAD"], text=True
++            ["git", "--git-dir", caelestia_dir / ".git", "rev-list", "--format=%B", "--max-count=1", "HEAD"],
++            text=True,
++            stderr=subprocess.DEVNULL,

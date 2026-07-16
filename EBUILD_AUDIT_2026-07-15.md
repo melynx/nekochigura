@@ -699,10 +699,13 @@ Resolution and verification:
 
 Affected user-modified files; preserve local branding/patch changes.
 
+Status: fixed with reproducible matching snapshots, complete direct runtime
+dependencies, and the missing CLI completion.
+
 `gui-apps/caelestia-shell`:
 
 - PV says snapshot 20260706, but pinned commit was made 2026-06-30.
-- Current main is 2026-07-12.
+- Current main at resolution time is 2026-07-16.
 - Pinned upstream README says Quickshell must be the Git version, while the
   ebuild accepts tagged `>=0.3.0`.
 - QML invokes `hyprctl` and `xmllint`, but dependencies on Hyprland and
@@ -714,6 +717,45 @@ Affected user-modified files; preserve local branding/patch changes.
   `dev-vcs/git` runtime dependency is absent.
 - Upstream ships a fish completion that is not installed.
 - Preserve the existing non-Arch version patch.
+
+Resolution and verification:
+
+- Replaced the inaccurately dated shell package with
+  `caelestia-shell-2.1.0_p20260716`, pinned to upstream commit
+  `dbb6d6c029021145422255dee6cd7ba607be3a20` from 2026-07-16. All three
+  existing local patches remain necessary and apply cleanly. The local
+  distributor value is preserved as `nekochigura`.
+- Added reproducible `quickshell-0.3.0_p20260710`, pinned to the exact
+  Quickshell revision in the shell's `flake.lock`,
+  `4df562dfb2475a9057f0f33a8db75808efad8670`. The shell now requires
+  `>=gui-apps/quickshell-0.3.0_p20260710`, excluding the incompatible tagged
+  release without introducing a moving live-ebuild dependency. The existing
+  stable Quickshell ebuild remains available.
+- Both existing Quickshell GCC 16/strict-aliasing patches apply to the pinned
+  snapshot. Because a commit archive has no Git metadata, the ebuild passes
+  `GIT_REVISION` explicitly; the staged executable reports the exact pin and
+  `nekochigura` distributor instead of an empty revision.
+- Added direct shell runtime dependencies for `hyprctl`, `xmllint`, `pidof`,
+  `notify-send`, and the directly read XKB rules data: `gui-wm/hyprland`,
+  `dev-libs/libxml2`, `sys-process/procps`, `x11-libs/libnotify`, and
+  `x11-misc/xkeyboard-config`.
+- Revised the still-current CLI release to `caelestia-cli-1.1.1-r1`, preserving
+  both the dots-only and non-Arch Portage-version patches. `dev-vcs/git` is now
+  an unconditional runtime dependency because install, update, legacy
+  detection, and diagnostics execute Git. The upstream Fish completion is
+  installed with the `shell-completion` eclass.
+- Clean amd64 builds and staged installs passed for Quickshell, the shell, and
+  CLI under both Python 3.13 and 3.14. Quickshell's full default feature set
+  built with GCC 16 and Qt 6.11; its ELF has a non-executable stack, no text
+  relocations, no unresolved symbols or libraries, and a valid `qs` symlink.
+  The shell installed 19 resolved ELF files and its QML modules under the
+  correct `lib64/qt6/qml` path with no broken symlinks. Its version helper
+  reports version 2.1.0, the exact pinned revision, and distributor
+  `nekochigura`.
+- The staged CLI reports version 1.1.1 through the Portage-aware patch, exposes
+  `install --no-packages`, and installs a byte-identical, syntax-valid Fish
+  completion under `vendor_completions.d`. Regenerated Manifests, final
+  `pkgcheck`, and whitespace validation passed.
 
 ### Issue 15 — cliphist uses an undocumented third-party vendored fork
 

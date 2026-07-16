@@ -6,7 +6,7 @@ EAPI=8
 inherit cmake
 
 # Untagged snapshot ahead of upstream tag v2.1.0. Pin master commit.
-EGIT_COMMIT="4a7773c5ded0699180ef61cdff28b1f2cc5deefb"
+EGIT_COMMIT="dbb6d6c029021145422255dee6cd7ba607be3a20"
 # m3shapes revision pinned in upstream CMakeLists.txt (fetched there via
 # FetchContent git clone, which the Gentoo network sandbox forbids -- ship it
 # as a tarball and point FetchContent at the unpacked dir instead).
@@ -39,21 +39,26 @@ DEPEND="${COMMON_DEPEND}"
 RDEPEND="
 	${COMMON_DEPEND}
 	>=dev-qt/qtshadertools-6.9:6
-	>=gui-apps/quickshell-0.3.0
+	>=gui-apps/quickshell-0.3.0_p20260710
 	app-misc/caelestia-cli
 	app-misc/ddcutil
 	app-misc/brightnessctl
 	app-shells/fish
+	dev-libs/libxml2
 	gui-apps/swappy
 	gui-apps/wl-clipboard
-	net-misc/networkmanager
-	sys-power/power-profiles-daemon
+	gui-wm/hyprland
 	media-fonts/material-symbols-variable
 	media-fonts/rubik-vf
 	media-fonts/nerdfonts[cascadiacode]
 	media-fonts/noto
 	media-fonts/noto-cjk
 	media-fonts/noto-emoji
+	net-misc/networkmanager
+	sys-power/power-profiles-daemon
+	sys-process/procps
+	x11-libs/libnotify
+	x11-misc/xkeyboard-config
 "
 BDEPEND="
 	>=dev-qt/qtshadertools-6.9:6
@@ -88,7 +93,7 @@ src_configure() {
 		# fatal-errors -- supply version metadata explicitly.
 		-DVERSION="2.1.0"
 		-DGIT_REVISION="${EGIT_COMMIT}"
-		-DDISTRIBUTOR="Gentoo"
+		-DDISTRIBUTOR="nekochigura"
 		# Use the pre-fetched m3shapes source instead of a network git clone.
 		-DFETCHCONTENT_FULLY_DISCONNECTED=ON
 		-DFETCHCONTENT_SOURCE_DIR_M3SHAPES_EXTERNAL="${WORKDIR}/m3shapes-${M3SHAPES_REV}"
