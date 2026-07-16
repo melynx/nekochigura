@@ -1,0 +1,18 @@
+Fix warnings that GCC 16 correctly diagnoses as possible undefined behavior.
+
+--- a/src/network/nm/device.cpp
++++ b/src/network/nm/device.cpp
+@@ -64,0 +65 @@
++		return ConnectionState::Unknown;
+--- a/src/network/nm/utils.cpp
++++ b/src/network/nm/utils.cpp
+@@ -116,0 +117 @@
++		[[fallthrough]];
+--- a/src/network/nm/wireless.cpp
++++ b/src/network/nm/wireless.cpp
+@@ -268,0 +269 @@
++		return WifiDeviceMode::Unknown;
+--- a/src/services/upower/powerprofiles.cpp
++++ b/src/services/upower/powerprofiles.cpp
+@@ -173,0 +174 @@
++	Q_UNREACHABLE_RETURN({});

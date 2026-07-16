@@ -529,13 +529,32 @@ Status: fixed by `dev-util/opencode-bin/opencode-bin-1.18.2.ebuild` and
 
 Affected: `gui-apps/quickshell/quickshell-0.3.0.ebuild`.
 
-- Keywords x86 but line 71 hardcodes `lib64/qt6/qml`.
-- Use `get_libdir`/multilib-safe installation paths.
-- Package has no `metadata.xml`; 23 local USE flags are undocumented and no
-  upstream remote ID is present.
-- The file has a pre-existing user modification setting distributor branding
-  to `nekochigura`; preserve it while fixing packaging. See the durable policy
-  note under "Pre-existing user changes" above.
+Status: fixed in `gui-apps/quickshell/quickshell-0.3.0-r1.ebuild`.
+
+- Replaced the hardcoded `lib64/qt6/qml` CMake argument with
+  `$(get_libdir)/qt6/qml`. The active profile maps amd64 to `lib64` and x86 to
+  `lib`, so the existing x86 keyword no longer installs QML metadata into the
+  wrong ABI directory.
+- Preserved the maintainer's `DISTRIBUTOR="nekochigura"` branding in the new
+  revision. The staged executable reports that distributor in `--version`.
+- Added `metadata.xml` with the upstream GitHub, documentation, and bug-tracker
+  links and descriptions for every package-local USE flag.
+- Added GURU's stable-version strict-aliasing fix for `ObjectModel::values()`.
+  It replaces an undefined type-punned `QList` access with an element-wise
+  conversion. Added a second focused patch for GCC 16 findings: unknown
+  NetworkManager states and Wi-Fi modes now return their `Unknown` values, an
+  intentional LEAP-to-WEP validation fallthrough is annotated, and the fatal
+  invalid-UPower-profile path is marked unreachable.
+- Clean source preparation applied both patches. Clean minimal-feature and
+  full default-feature amd64 builds and staged installs passed; an incremental
+  full rebuild after the GCC 16 patch produced no severe Portage QA notice.
+  The minimal and full images installed their QML metadata under
+  `/usr/lib64/qt6/qml`, and the full image contained the expected Networking,
+  UPower, Wayland, X11, I3, Hyprland, Bluetooth, and service modules.
+- The staged binary reported Quickshell 0.3.0 with `nekochigura` branding, all
+  ELF dependencies resolved, the image had no broken symlinks, and desktop-file
+  validation passed. Final Manifest, XML, `pkgcheck`, and whitespace validation
+  passed. Upstream's latest release remains v0.3.0.
 
 ### Issue 10 — Missing custom Intel camera-bins license
 
