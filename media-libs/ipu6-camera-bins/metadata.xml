@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Prebuilt Intel image-processing libraries and development files used by
+		the Intel IPU6 camera HAL on supported Intel platforms.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">intel/ipu6-camera-bins</remote-id>
+	</upstream>
+</pkgmetadata>
