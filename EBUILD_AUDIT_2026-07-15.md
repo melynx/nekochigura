@@ -761,6 +761,9 @@ Resolution and verification:
 
 Affected: `app-misc/cliphist/cliphist-0.7.0.ebuild:10`.
 
+Status: fixed with the official upstream source, a reproducible minimal vendor
+archive, and security/privacy backports.
+
 - Homepage/metadata identify official `sentriz/cliphist`.
 - Source archive comes from `henri-gasc/cliphist`.
 - Comparison found the fork differs mainly by a checked-in `vendor/` tree,
@@ -768,6 +771,32 @@ Affected: `app-misc/cliphist/cliphist-0.7.0.ebuild:10`.
 - Document this provenance/trust exception or replace it with a dependency
   archive generated and hosted using this overlay's dependency-repository
   convention.
+
+Resolution and verification:
+
+- Replaced `cliphist-0.7.0` with `cliphist-0.7.0-r1`, sourced from the official
+  `sentriz/cliphist` v0.7.0 tag. The release remains current.
+- Removed the source dependency on the third-party fork. The separate
+  dependency repository now contains only a deterministic `vendor/` archive,
+  pinned by immutable dependency commit
+  `43ec2e46b358b709ed53d4e07dc9870f7f02ca5e`. Its documented regeneration
+  recipe produces the same 692,916-byte archive with SHA-256
+  `045de9f3c291fb2bf190af9724cec8689310ac577f599d4890a2bc381cd214cf`.
+- Updated the reachable TIFF decoder from `golang.org/x/image` 0.21.0 to
+  0.44.0, resolving GO-2026-4815, and raised the build requirement to Go
+  1.25.0 as required by that module version.
+- Backported official upstream commit
+  `25cc3e4affb6d24398cbcb2f42d8e8cf9cf62823`, so newly created clipboard
+  databases use mode 0600 rather than 0644. `pkg_postinst` warns that existing
+  databases retain their permissions and gives the administrator a corrective
+  `chmod` command.
+- Build and test phases force the vendored module graph with network module
+  resolution disabled and use `-trimpath`. A clean Portage build passed the
+  full upstream test suite, including TIFF preview and no-permission tests.
+  The staged PIE has a non-executable stack, records `x/image v0.44.0` and
+  `-trimpath`, and an isolated store operation created its database with mode
+  0600. Regenerated Manifest, final `pkgcheck`, and whitespace validation
+  passed.
 
 ### Issue 16 — keyworded git-r3 dotfile snapshots
 
