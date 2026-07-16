@@ -936,6 +936,47 @@ Affected: `gui-apps/hyprdynamicmonitors-1.4.0.ebuild:35`.
 - Header says distributed under MIT rather than the standard overlay/Gentoo
   GPL-2 ebuild boilerplate.
 
+Resolution:
+
+- Verified that v1.4.0 remains upstream's latest release. Its tag resolves to
+  commit `693e68b2a59d784bb8723bb9ed57a79cc60ca4f0`, dated
+  `2025-12-01T15:10:38Z`.
+- Replaced the wall-clock `date` invocation with that immutable tag-commit
+  timestamp and replaced the misleading `cmd.Commit=gentoo` value with the
+  actual upstream short commit, `693e68b`. These fields now retain upstream's
+  intended version-reporting semantics without depending on build time.
+- Restored the standard Gentoo GPL-2 ebuild boilerplate. This governs the
+  ebuild itself; the packaged upstream program remains correctly declared MIT.
+- The first clean build exposed two related QA issues: `go.mod` requires Go
+  1.25, while the eclass default was older, and upstream's release flags
+  pre-stripped the executable. Added `>=dev-lang/go-1.25.0` to BDEPEND and
+  removed `-s -w` so Portage controls stripping and debug information.
+- The custom `src_unpack` bypassed the EAPI-8 `go-module` compile-environment
+  setup. Added an explicit `src_configure` call to restore the eclass's PIE,
+  architecture, cache, toolchain, and `-buildvcs=false` controls.
+- Once pre-stripping was removed, Go's debug information exposed absolute
+  source paths and builds in two directories differed. Added `-trimpath`; two
+  clean builds with separate caches are now byte-identical while retaining
+  Portage-managed debug information.
+- Validation covers the full vendored Go test suite, version output, generated
+  bash/zsh/fish completions, a clean Portage install, ELF QA, `pkgcheck`, and a
+  two-build byte-for-byte reproducibility comparison.
+- Upstream's unit scope (`go test ./internal/...`) and binary-backed integration
+  scope (`go test ./test/...`) pass outside the sandbox, where their local Unix
+  sockets and session D-Bus fixtures are available. No module download occurs.
+- With all completion USE flags enabled, the staged executable reports
+  `1.4.0 (commit 693e68b, built 2025-12-01T15:10:38Z)` and generates nonempty
+  bash, zsh, and fish completion files. The installed tree also contains both
+  user services and all shipped themes.
+- The final binary is PIE, has a non-executable stack, no RPATH/RUNPATH, and
+  resolves its sole shared-library dependency. `go version -m` confirms
+  `-buildmode=pie` and `-trimpath=true`.
+- Two clean Portage compiles in different build directories with separate Go
+  caches produced identical unstripped binaries
+  (`6ad0ca5c91b65da6bcc599fe75c1d03677df21459734bc10d624b4300b3732fc`).
+  The final build emits no Go-version or pre-stripping QA notice, and
+  `pkgcheck scan -v` plus `git diff --check` pass.
+
 ### Issue 20 — materialyoucolor invalid RESTRICT
 
 Affected: both `dev-python/materialyoucolor` ebuilds.
