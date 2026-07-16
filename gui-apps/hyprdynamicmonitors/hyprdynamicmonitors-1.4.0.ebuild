@@ -1,5 +1,5 @@
 # Copyright 2026 Gentoo Authors
-# Distributed under the terms of the MIT License
+# Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
@@ -17,6 +17,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE="bash-completion fish-completion zsh-completion"
 
+BDEPEND=">=dev-lang/go-1.25.0"
 RDEPEND="
 	gui-wm/hyprland
 	sys-apps/dbus
@@ -27,12 +28,17 @@ src_unpack() {
 	mv "${WORKDIR}/vendor" "${S}/vendor" || die
 }
 
+src_configure() {
+	go-module_src_configure
+}
+
 src_compile() {
 	ego build \
-		-ldflags "-s -w \
+		-trimpath \
+		-ldflags "\
 			-X github.com/fiffeek/hyprdynamicmonitors/cmd.Version=${PV} \
-			-X github.com/fiffeek/hyprdynamicmonitors/cmd.Commit=gentoo \
-			-X github.com/fiffeek/hyprdynamicmonitors/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+			-X github.com/fiffeek/hyprdynamicmonitors/cmd.Commit=693e68b \
+			-X github.com/fiffeek/hyprdynamicmonitors/cmd.BuildDate=2025-12-01T15:10:38Z" \
 		-o "${PN}" .
 }
 
