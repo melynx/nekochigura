@@ -617,10 +617,17 @@ dependency change in `illogical-impulse-basic-1.0-r3.ebuild`.
 
 ### Issue 12 — Invalid category-root app-misc files
 
-- `app-misc/metadata.xml` is cliphist `pkgmetadata`, not category
-  `catmetadata`.
-- `app-misc/Manifest` is a misplaced duplicate of the cliphist Manifest.
-- Remove the root Manifest and replace/delete category metadata as appropriate.
+Status: fixed by removing `app-misc/Manifest` and `app-misc/metadata.xml`.
+
+- The category-root Manifest was the exact same Git blob as
+  `app-misc/cliphist/Manifest`; Manifests belong in package directories.
+- The category-root metadata was likewise the exact same Git blob as
+  `app-misc/cliphist/metadata.xml`, containing cliphist `pkgmetadata` rather
+  than category `catmetadata`.
+- No replacement category file is needed because the master Gentoo repository
+  supplies valid `app-misc` category metadata. The legitimate cliphist
+  Manifest and metadata remain unchanged and pass Manifest, XML, all-profile
+  `pkgcheck`, and whitespace validation.
 
 ### Issue 13 — 1Password channel/version/install design
 
