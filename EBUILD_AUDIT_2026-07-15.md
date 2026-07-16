@@ -459,28 +459,36 @@ Status: fixed by `media-video/makemkv/makemkv-1.18.4.ebuild`.
 
 ### Issue 8 — CPU-dependent binary selection in OpenCode and Bun
 
-Affected:
+Status: fixed by `dev-util/opencode-bin/opencode-bin-1.18.2.ebuild` and
+`dev-lang/bun-bin/bun-bin-1.3.14-r1.ebuild`.
 
-- all `dev-util/opencode-bin` versions
-- all `dev-lang/bun-bin` versions
-
-OpenCode:
-
-- Downloads both optimized and baseline x64 archives.
-- Selects one at package build time by reading `/proc/cpuinfo`.
-- Resulting binpkg depends on the builder CPU; an AVX2 builder can produce a
-  binpkg that SIGILLs on a baseline target.
-- Selection should be deterministic: baseline by default or an explicit,
-  profile-visible CPU/USE choice.
-
-Bun:
-
-- Always downloads optimized x64/aarch64 binaries.
-- Official x64 baseline artifacts exist, while plain Gentoo `amd64` does not
-  guarantee AVX2.
-- All Bun ebuilds also lack standard copyright/license headers.
-
-Both packages need upstream version bumps after the selection policy is fixed.
+- Updated OpenCode from 1.17.3 to upstream 1.18.2 and removed all older
+  versions. The amd64 ebuild now fetches only upstream's x64 baseline archive;
+  it no longer downloads the optimized archive or reads `/proc/cpuinfo` during
+  `src_unpack`. Binpkgs are therefore deterministic and portable across the
+  Gentoo amd64 baseline. The arm64 archive remains unchanged.
+- Corrected OpenCode's package license from Apache-2.0 to MIT to match the
+  current upstream license.
+- Bun 1.3.14 remains the latest upstream release, so replaced it with revision
+  1.3.14-r1 and removed all older versions. The amd64 glibc and musl branches
+  now respectively use upstream's `x64-baseline` and `x64-musl-baseline`
+  archives. The regular aarch64 glibc and musl artifacts remain in use because
+  upstream's baseline distinction is x86-specific.
+- Added the standard Gentoo Authors/GPL-2 ebuild header that all previous Bun
+  ebuilds lacked. This header covers the packaging code; Bun itself remains
+  declared under its upstream MIT license. Replaced manual completion-path
+  installation with the `shell-completion` eclass helpers.
+- Clean staged amd64 installs passed for OpenCode and for Bun with completions
+  both disabled and enabled. OpenCode reported 1.18.2; Bun reported 1.3.14 and
+  executed a JavaScript smoke test. The disabled build contained no completion
+  files, while the enabled build installed both zsh and fish completions.
+- Revalidated all six release archives. The amd64 baseline glibc binaries use
+  the x86-64 glibc interpreter, Bun's amd64 musl baseline uses the x86-64 musl
+  interpreter, and the arm64 glibc/musl binaries use their corresponding
+  aarch64 interpreters. All archive layouts match the ebuild conditionals.
+  Staged amd64 ELF dependencies resolve, neither binary has RPATH/RUNPATH, and
+  the installed trees contain no broken symlinks. Final `pkgcheck`, Manifest,
+  XML, and whitespace validation passed.
 
 ### Issue 9 — Quickshell hardcodes lib64 and lacks metadata
 
