@@ -61,6 +61,10 @@ BDEPEND="
 "
 
 PATCHES=(
+	# Select one provider-neutral facial-authentication context and add Gaze
+	# alongside the existing Howdy PAM backend.
+	"${FILESDIR}/${PN}-configurable-facial-provider.patch"
+
 	# Ignore transient no-main-keyboard gaps when deciding whether a valid
 	# keyboard layout change should produce a notification.
 	"${FILESDIR}/${PN}-ignore-transient-keyboard-layout-gaps.patch"
