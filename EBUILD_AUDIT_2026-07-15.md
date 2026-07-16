@@ -23,8 +23,15 @@ These were already present before the audit and are not audit edits:
 
 - `app-misc/caelestia-cli/caelestia-cli-1.1.1.ebuild`
 - `app-misc/caelestia-cli/files/caelestia-cli-non-arch-version.patch`
-- `gui-apps/caelestia-shell/caelestia-shell-2.1.0_p20260706-r2.ebuild`
+- `gui-apps/caelestia-shell/caelestia-shell-2.1.0_p20260706-r3.ebuild`
 - `gui-apps/quickshell/quickshell-0.3.0.ebuild`
+
+The Caelestia Shell and Quickshell `DISTRIBUTOR` values identify the package's
+actual distribution/build channel, not the operating system or upstream
+copyright holder. These overlay builds are distributed by `nekochigura`, not
+the Gentoo repository, so preserve `DISTRIBUTOR="nekochigura"` when revising or
+renaming either ebuild. In Caelestia Shell this value is only embedded in the
+version-reporting helper; it does not alter licensing or runtime behavior.
 
 `git diff --check` was clean at audit time.
 
@@ -98,6 +105,34 @@ The parent SongRec correction was committed and pushed as `ca04229`, updating
 its ebuild and Manifest together with the dependency gitlink back to
 `b54c421`.
 
+### Claude Code stable-channel update
+
+`dev-util/claude-code` was updated from 2.1.173 to Anthropic's stable-channel
+release 2.1.204. At implementation time, the latest channel was 2.1.211;
+stable was deliberately selected because Anthropic describes it as a delayed
+channel that skips releases with major regressions.
+
+- Replaced the old unbranded Google Cloud Storage base URL with Anthropic's
+  documented `https://downloads.claude.ai/claude-code-releases` endpoint.
+- Added the amd64 `cpu_flags_x86_avx` and `cpu_flags_x86_avx2` requirements
+  used by the current native x64 binary. Arm64 remains unaffected.
+- Removed all twelve older ebuilds and their 48 Manifest entries. The Manifest
+  now contains only the four 2.1.204 glibc/musl binaries for amd64 and arm64.
+  `RESTRICT="bindist mirror strip"` remains in place, so none of Anthropic's
+  proprietary binaries are mirrored or redistributed by the overlay.
+- Removed the obsolete, unused `files/managed-settings.json`. The installed
+  native managed settings retain `DISABLE_AUTOUPDATER=1`,
+  `DISABLE_INSTALLATION_CHECKS=1`, and `installMethod=native`, keeping updates
+  under Portage control and preventing a second home-directory installation.
+- Downloaded Anthropic's release key, signed manifest, and detached signature
+  from the documented official endpoints. The key fingerprint matched
+  `31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE`, the signature was good,
+  and every downloaded Linux binary matched its signed SHA-256 checksum.
+- All four ELF files matched their declared architecture and libc interpreter.
+  A clean staged amd64 glibc install passed; `claude --version` reported
+  2.1.204, command-line help ran, all shared libraries resolved, no RPATH or
+  RUNPATH was present, and the installed tree contained no broken symlinks.
+
 ## Upstream updates found
 
 ### Accounts, administration, and crypto
@@ -137,7 +172,7 @@ is labeled 2.0.6 while the wrapped package and upstream are 2.0.7.
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
 | `dev-python/curl-cffi` | 0.14.0 | 0.15.0 | Update. https://pypi.org/project/curl-cffi/0.15.0/ |
-| `dev-util/claude-code` | 2.1.173 | stable 2.1.202; latest 2.1.210 | Update stable channel. https://downloads.claude.ai/claude-code-releases/stable |
+| `dev-util/claude-code` | 2.1.204 | stable 2.1.204; latest 2.1.211 | Updated to the verified stable channel. https://downloads.claude.ai/claude-code-releases/stable |
 | `dev-util/coder-bin` | 2.32.5 | 2.34.6 | Update. https://github.com/coder/coder/releases/tag/v2.34.6 |
 | `dev-util/ghidra-bin` | 12.1 | 12.1.2 | Update. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
 | `dev-util/opencode-bin` | 1.17.3 | 1.18.1 | Update. https://github.com/anomalyco/opencode/releases/tag/v1.18.1 |
@@ -498,8 +533,9 @@ Affected: `gui-apps/quickshell/quickshell-0.3.0.ebuild`.
 - Use `get_libdir`/multilib-safe installation paths.
 - Package has no `metadata.xml`; 23 local USE flags are undocumented and no
   upstream remote ID is present.
-- The file has a pre-existing user modification changing distributor branding;
-  preserve it while fixing packaging.
+- The file has a pre-existing user modification setting distributor branding
+  to `nekochigura`; preserve it while fixing packaging. See the durable policy
+  note under "Pre-existing user changes" above.
 
 ### Issue 10 — Missing custom Intel camera-bins license
 
@@ -734,7 +770,7 @@ Prune them per package after the newest replacement builds successfully, unless
 there is an intentional rollback/security/channel reason to retain them.
 
 Notable redundant groups include older 1Password, Azure CLI, Talosctl,
-Passless, Google Cloud CLI, SongRec, Bun, Claude Code, Coder, Ghidra, OpenCode,
+Passless, Google Cloud CLI, SongRec, Bun, Coder, Ghidra, OpenCode,
 Fuzzel, Hyprmon, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
