@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -9,13 +9,14 @@ MY_P=makemkv-oss-${PV}
 MY_PB=makemkv-bin-${PV}
 
 DESCRIPTION="Tool for ripping and streaming Blu-ray, HD-DVD and DVD discs"
-HOMEPAGE="http://www.makemkv.com/"
-SRC_URI="http://www.makemkv.com/download/old/${MY_P}.tar.gz
-	http://www.makemkv.com/download/old/${MY_PB}.tar.gz"
+HOMEPAGE="https://www.makemkv.com/"
+SRC_URI="https://www.makemkv.com/download/${MY_P}.tar.gz
+	https://www.makemkv.com/download/${MY_PB}.tar.gz"
 S="${WORKDIR}/${MY_P}"
+
 LICENSE="GPL-2 LGPL-2.1 MPL-1.1 MakeMKV-EULA openssl"
 SLOT="0"
-KEYWORDS="amd64 arm arm64 x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~x86"
 IUSE="+gui +java"
 RESTRICT="bindist mirror"
 
@@ -26,13 +27,8 @@ DEPEND="
 	dev-libs/openssl:0=[-bindist(-)]
 	>=media-video/ffmpeg-1.0.0:0=
 	sys-libs/glibc
-	sys-libs/zlib
-	gui? (
-		dev-qt/qtcore:5
-		dev-qt/qtdbus:5
-		dev-qt/qtgui:5
-		dev-qt/qtwidgets:5
-	)
+	virtual/zlib:=
+	gui? ( dev-qt/qtbase:6[dbus,gui,widgets] )
 "
 RDEPEND="
 	${DEPEND}
@@ -40,15 +36,14 @@ RDEPEND="
 "
 BDEPEND="
 	virtual/pkgconfig
-	gui? ( dev-qt/qtcore:5 )
+	gui? ( dev-qt/qtbase:6 )
 "
 
 CONFIG_CHECK="~CHR_DEV_SG"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-path.patch
-	"${FILESDIR}"/${P}-ffmpeg-profile.patch
-	"${FILESDIR}"/${P}-ffmpeg7-compat.patch
+	"${FILESDIR}"/${PN}-qt6.patch
 )
 
 src_prepare() {
@@ -67,7 +62,7 @@ src_configure() {
 		--enable-debug \
 		--disable-noec \
 		$(use_enable gui) \
-		$(use_enable gui qt5)
+		$(use_enable gui qt6)
 }
 
 src_install() {
@@ -85,8 +80,8 @@ src_install() {
 	dosym libdriveio.so.0 /usr/$(get_libdir)/libdriveio.so
 	dosym libmakemkv.so.1 /usr/$(get_libdir)/libmakemkv.so.1.${PV}
 	dosym libmakemkv.so.1 /usr/$(get_libdir)/libmakemkv.so
-	dosym libmmbd.so.0    /usr/$(get_libdir)/libmmbd.so
-	dosym libmmbd.so.0    /usr/$(get_libdir)/libmmbd.so.0.${PV}
+	dosym libmmbd.so.0 /usr/$(get_libdir)/libmmbd.so
+	dosym libmmbd.so.0 /usr/$(get_libdir)/libmmbd.so.0.${PV}
 
 	cd "${WORKDIR}"/${MY_PB} || die
 
@@ -126,4 +121,3 @@ pkg_postinst() {
 	elog "the following variables when launching the player:"
 	elog "LIBAACS_PATH=libmmbd LIBBDPLUS_PATH=libmmbd"
 }
-
