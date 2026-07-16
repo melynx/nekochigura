@@ -562,13 +562,29 @@ Status: fixed in `gui-apps/quickshell/quickshell-0.3.0-r1.ebuild`.
 
 ### Issue 10 — Missing custom Intel camera-bins license
 
-Affected: `media-libs/ipu6-camera-bins-1.0.1_p20250923.ebuild:11`.
+Affected: `media-libs/ipu6-camera-bins-1.0.1_p20250923.ebuild`.
 
-- Declares `LICENSE="intel-ipu6-camera-bins"`.
-- The overlay `licenses/` directory currently contains only `DisplayLink`.
-- pkgcheck reports UnknownLicense.
-- Add the exact vendor license text under `licenses/` only after validating its
-  redistribution terms and declared identifier.
+Status: fixed in `media-libs/ipu6-camera-bins-1.0.1_p20250923.ebuild`.
+
+- Added `licenses/intel-ipu6-camera-bins`, byte-for-byte identical to the
+  license in Intel's `20250923_ov02e` tag. It permits redistribution only in
+  unmodified binary form, prohibits reverse engineering, and includes a
+  limited patent grant; the package therefore retains `RESTRICT="strip mirror
+  bindist"` because removing unsafe vendor RUNPATH entries modifies the blobs.
+- Retained the existing `chrpath` cleanup. The tagged archive contains 12
+  libraries with `/p/ipu/external/intel/gcc-9.2.0/lib:` (including a dangerous
+  empty path element) and three with `/usr/lib`; the prepared and staged trees
+  contain no RPATH or RUNPATH entries after cleanup.
+- Added `metadata.xml` with the Intel GitHub remote. Added the standard Gentoo
+  Authors/GPL-2 ebuild header and corrected variable order and indentation.
+- A clean staged amd64 install passed. It contains all 57 source shared
+  libraries and 57 valid unversioned linker symlinks, has no broken symlinks or
+  unresolved ELF dependencies, and the installed binaries and headers match
+  the prepared source. Manifest, XML, `pkgcheck`, license checksum, and
+  whitespace validation passed.
+- No version bump is available: the later annotated tag `20260629_2` and the
+  packaged `20250923_ov02e` tag both resolve to source commit
+  `30e87664829782811a765b0ca9eea3a878a7ff29`.
 
 ### Issue 11 — Illogical Impulse keywords and wrong jq dependency
 

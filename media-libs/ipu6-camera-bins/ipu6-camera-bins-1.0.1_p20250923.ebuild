@@ -1,3 +1,6 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
 EAPI=8
 
 DESCRIPTION="Binary libraries for Intel IPU6 camera HAL"
@@ -7,6 +10,7 @@ MY_PV=20250923_ov02e
 
 SRC_URI="https://github.com/intel/ipu6-camera-bins/archive/refs/tags/${MY_PV}.tar.gz
 	-> ${P}.tar.gz"
+S="${WORKDIR}/${PN}-${MY_PV}"
 
 LICENSE="intel-ipu6-camera-bins"
 SLOT="0"
@@ -14,11 +18,7 @@ KEYWORDS="~amd64"
 
 RESTRICT="strip mirror bindist"
 
-BDEPEND="
-	app-admin/chrpath
-"
-
-S="${WORKDIR}/${PN}-${MY_PV}"
+BDEPEND="app-admin/chrpath"
 
 QA_PREBUILT="usr/lib*/lib*.so*"
 
@@ -62,18 +62,18 @@ src_install() {
 }
 
 pkg_postinst() {
-    elog "Intel IPU6 Camera Binary Libraries have been installed."
-    elog "This provides precompiled libraries and header files for Intel"
-    elog "Tiger Lake, Alder Lake, Raptor Lake, and Meteor Lake platforms."
-    elog ""
-    elog "Installation paths:"
-    elog "  Libraries: /usr/lib64/"
-    elog "  Headers: /usr/include/"
-    elog ""
-    elog "Supported IPU versions: IPU6, IPU6EP, IPU6EPMTL"
-    elog ""
-    elog "Note: Firmware files are not included in this package."
-    elog "IPU6 firmware is available in sys-kernel/linux-firmware."
-    elog ""
-    elog "This package a requirement for media-libs/ipu6-camera-hal to function properly."
+	elog "Intel IPU6 Camera Binary Libraries have been installed."
+	elog "This provides precompiled libraries and header files for Intel"
+	elog "Tiger Lake, Alder Lake, Raptor Lake, and Meteor Lake platforms."
+	elog ""
+	elog "Installation paths:"
+	elog "  Libraries: /usr/lib64/"
+	elog "  Headers: /usr/include/"
+	elog ""
+	elog "Supported IPU versions: IPU6, IPU6EP, IPU6EPMTL"
+	elog ""
+	elog "Note: Firmware files are not included in this package."
+	elog "IPU6 firmware is available in sys-kernel/linux-firmware."
+	elog ""
+	elog "This package a requirement for media-libs/ipu6-camera-hal to function properly."
 }
