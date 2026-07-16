@@ -1,0 +1,19 @@
+From 25cc3e4affb6d24398cbcb2f42d8e8cf9cf62823 Mon Sep 17 00:00:00 2001
+From: sentriz <senan@senan.xyz>
+Date: Mon, 8 Jun 2026 12:44:33 +0100
+Subject: [PATCH] fix: create db with 0600 permissions
+
+closes #182
+
+diff --git a/cliphist.go b/cliphist.go
+--- a/cliphist.go
++++ b/cliphist.go
+@@ -402 +402 @@ func initDBOption(path string, ro bool) (*bolt.DB, error) {
+-	db, err := bolt.Open(path, 0644, &bolt.Options{
++	db, err := bolt.Open(path, 0600, &bolt.Options{
+@@ -423 +423 @@ func compactDB(path string) error {
+-	srcDB, err := bolt.Open(path, 0644, &bolt.Options{
++	srcDB, err := bolt.Open(path, 0600, &bolt.Options{
+@@ -433 +433 @@ func compactDB(path string) error {
+-	dstDB, err := bolt.Open(tmpPath, 0644, &bolt.Options{
++	dstDB, err := bolt.Open(tmpPath, 0600, &bolt.Options{
