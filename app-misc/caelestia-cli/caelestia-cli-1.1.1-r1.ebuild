@@ -6,7 +6,7 @@ EAPI=8
 DISTUTILS_USE_PEP517=hatchling
 PYTHON_COMPAT=( python3_{13..14} )
 
-inherit distutils-r1
+inherit distutils-r1 shell-completion
 
 DESCRIPTION="CLI for the Caelestia shell (scheme, screenshot, record, wallpaper, ...)"
 HOMEPAGE="https://github.com/caelestia-dots/cli"
@@ -21,6 +21,7 @@ RDEPEND="
 	dev-python/pillow[${PYTHON_USEDEP}]
 	dev-python/materialyoucolor[${PYTHON_USEDEP}]
 	app-misc/cliphist
+	dev-vcs/git
 	gui-apps/fuzzel
 	gui-apps/grim
 	gui-apps/slurp
@@ -37,10 +38,18 @@ PATCHES=(
 	# without the Arch-only AUR-helper package step (upstream install always
 	# invokes an AUR helper, which does not exist on Gentoo).
 	"${FILESDIR}/${PN}-dots-only.patch"
+	# Report installed Caelestia package versions through Portage on Gentoo,
+	# equivalent to upstream's pacman-based diagnostics on Arch.
+	"${FILESDIR}/${PN}-non-arch-version.patch"
 )
 
 # Feed the version to hatch-vcs (setuptools_scm) since there is no .git here.
 export SETUPTOOLS_SCM_PRETEND_VERSION="${PV}"
+
+src_install() {
+	distutils-r1_src_install
+	dofishcomp completions/caelestia.fish
+}
 
 pkg_postinst() {
 	elog "Deploy the Caelestia dotfiles on Gentoo with:"
