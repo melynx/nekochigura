@@ -105,33 +105,37 @@ The parent SongRec correction was committed and pushed as `ca04229`, updating
 its ebuild and Manifest together with the dependency gitlink back to
 `b54c421`.
 
-### Claude Code stable-channel update
+### Claude Code stable and testing channel packaging
 
-`dev-util/claude-code` was updated from 2.1.173 to Anthropic's stable-channel
-release 2.1.204. At implementation time, the latest channel was 2.1.211;
-stable was deliberately selected because Anthropic describes it as a delayed
-channel that skips releases with major regressions.
+`dev-util/claude-code` now packages both Anthropic release channels: stable
+2.1.204 is `KEYWORDS="amd64"`, while latest 2.1.211 is `KEYWORDS="~amd64"`.
+This distinction is durable policy for this overlay: an upstream channel name
+does not replace Gentoo keyword policy. When the pointers diverge, retain the
+upstream stable version for stable Gentoo users and package the upstream latest
+version for testing users instead of choosing only one channel.
 
 - Replaced the old unbranded Google Cloud Storage base URL with Anthropic's
   documented `https://downloads.claude.ai/claude-code-releases` endpoint.
 - Added the amd64 `cpu_flags_x86_avx` and `cpu_flags_x86_avx2` requirements
-  used by the current native x64 binary. Arm64 remains unaffected.
+  used by the current native x64 binaries.
 - Removed all twelve older ebuilds and their 48 Manifest entries. The Manifest
-  now contains only the four 2.1.204 glibc/musl binaries for amd64 and arm64.
+  now contains only the glibc and musl amd64 binaries for stable 2.1.204 and
+  testing 2.1.211. Unkeyworded arm64 artifacts are not retained.
   `RESTRICT="bindist mirror strip"` remains in place, so none of Anthropic's
   proprietary binaries are mirrored or redistributed by the overlay.
 - Removed the obsolete, unused `files/managed-settings.json`. The installed
   native managed settings retain `DISABLE_AUTOUPDATER=1`,
   `DISABLE_INSTALLATION_CHECKS=1`, and `installMethod=native`, keeping updates
   under Portage control and preventing a second home-directory installation.
-- Downloaded Anthropic's release key, signed manifest, and detached signature
+- Downloaded Anthropic's release key, signed manifests, and detached signatures
   from the documented official endpoints. The key fingerprint matched
   `31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE`, the signature was good,
-  and every downloaded Linux binary matched its signed SHA-256 checksum.
-- All four ELF files matched their declared architecture and libc interpreter.
-  A clean staged amd64 glibc install passed; `claude --version` reported
-  2.1.204, command-line help ran, all shared libraries resolved, no RPATH or
-  RUNPATH was present, and the installed tree contained no broken symlinks.
+  and every retained binary matched its signed SHA-256 checksum.
+- The 2.1.211 glibc and musl ELF files matched their declared x86-64
+  architecture and libc interpreters. A clean staged amd64 glibc install
+  passed; `claude --version` reported 2.1.211, command-line help ran, all shared
+  libraries resolved, no RPATH or RUNPATH was present, and the installed tree
+  contained no broken symlinks.
 
 ## Upstream updates found
 
@@ -172,7 +176,7 @@ is labeled 2.0.6 while the wrapped package and upstream are 2.0.7.
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
 | `dev-python/curl-cffi` | 0.14.0 | 0.15.0 | Update. https://pypi.org/project/curl-cffi/0.15.0/ |
-| `dev-util/claude-code` | 2.1.204 | stable 2.1.204; latest 2.1.211 | Updated to the verified stable channel. https://downloads.claude.ai/claude-code-releases/stable |
+| `dev-util/claude-code` | stable 2.1.204; testing 2.1.211 | stable 2.1.204; latest 2.1.211 | Both verified channels packaged using Gentoo stable/testing keywords. https://downloads.claude.ai/claude-code-releases/stable |
 | `dev-util/coder-bin` | 2.32.5 | 2.34.6 | Update. https://github.com/coder/coder/releases/tag/v2.34.6 |
 | `dev-util/ghidra-bin` | 12.1 | 12.1.2 | Update. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
 | `dev-util/opencode-bin` | 1.17.3 | 1.18.1 | Update. https://github.com/anomalyco/opencode/releases/tag/v1.18.1 |
