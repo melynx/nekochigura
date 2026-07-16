@@ -4,7 +4,7 @@
 EAPI=8
 
 DESCRIPTION="Metapackage for OneUI4 icon theme (illogical-impulse)"
-HOMEPAGE=""
+HOMEPAGE="https://github.com/end-4/dots-hyprland"
 
 LICENSE="metapackage"
 SLOT="0"

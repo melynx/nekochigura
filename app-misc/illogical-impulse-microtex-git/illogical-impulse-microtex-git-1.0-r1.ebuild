@@ -4,10 +4,10 @@
 EAPI=8
 
 DESCRIPTION="Metapackage for microtex LaTeX renderer (illogical-impulse)"
-HOMEPAGE=""
+HOMEPAGE="https://github.com/end-4/dots-hyprland"
 
 LICENSE="metapackage"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~x86"
+KEYWORDS="~amd64 ~x86"
 
 RDEPEND="dev-tex/microtex"

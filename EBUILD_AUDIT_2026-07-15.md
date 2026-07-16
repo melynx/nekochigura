@@ -590,17 +590,30 @@ Status: fixed in `media-libs/ipu6-camera-bins-1.0.1_p20250923.ebuild`.
 
 Affected: multiple `app-misc/illogical-impulse-*` metapackages.
 
-- Many packages advertise arm64 and/or x86 even though their dependencies are
-  unsatisfiable on those profiles.
-- `illogical-impulse-hyprland` even uses stable `amd64 arm64 x86`, while recent
-  Hyprland/hyprsunset dependencies are not stable/available for that matrix.
-- The master meta transitively advertises combinations that cannot install.
-- Likely safe initial policy is `~amd64` only until each architecture is tested.
-- `illogical-impulse-basic-1.0-r2.ebuild:23` depends on `dev-python/jq`, but
-  upstream scripts invoke the `jq` executable. Use `app-misc/jq`.
-- Several metas use GPL-2 despite installing no payload; use
-  `LICENSE="metapackage"` consistently.
-- Empty homepage/dependency assignments and `RESTRICT=strip` are unnecessary.
+Status: fixed across the Illogical Impulse metapackages, with the functional
+dependency change in `illogical-impulse-basic-1.0-r3.ebuild`.
+
+- Replaced `dev-python/jq` with `app-misc/jq`. Current upstream describes `jq`
+  as a widely used command and its shell scripts invoke that executable;
+  `dev-python/jq` is a Python binding that only happened to pull in the CLI
+  transitively. Revision 1.0-r2 was removed so installed systems upgrade to the
+  corrected dependency.
+- Restricted the master, basic, fonts/themes, Hyprland, portal, screencapture,
+  toolkit, and widgets metapackages to `~amd64`, matching dependencies such as
+  current Hyprland, xdg-desktop-portal-hyprland, hyprshot, wtype, and fuzzel.
+  Preserved supported component arches instead of dropping them globally:
+  audio, backlight, and Python retain `~arm64`; MicroTeX retains `~x86`; and
+  Bibata, KDE, OneUI, and Quickshell retain both `~arm64` and `~x86`. Python's
+  x86 keyword was removed because `dev-python/uv` is profile-unsolvable there.
+- Corrected the Hyprland and KDE packages from `GPL-2` to `metapackage` because
+  they install no payload. Added the real dots-hyprland homepage and upstream
+  metadata throughout, and removed empty `DEPEND` assignments and ineffective
+  `RESTRICT="strip"`.
+- All 16 affected ebuilds parsed and completed clean staged installs with the
+  expected empty images. The complete amd64 master dependency graph resolved
+  against this checkout with zero backtracking and selected basic 1.0-r3;
+  `dev-python/jq` was absent. Final all-profile `pkgcheck`, Manifest, and
+  whitespace validation passed.
 
 ### Issue 12 — Invalid category-root app-misc files
 
