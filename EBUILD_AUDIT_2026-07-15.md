@@ -897,6 +897,36 @@ Affected: `gui-apps/wtype/wtype-0.4.ebuild`.
 - Upstream build conditionally reads Git and embeds `__DATE__`, making output
   dependent on host state/time. Patch or provide deterministic version/date.
 
+Resolution:
+
+- Verified that upstream v0.4 (tag commit
+  `d71be3a7b3f93b534a2823fd68cabd7ac2a02359`) remains the latest release and
+  that its release archive still matches the existing Manifest.
+- Replaced the incorrect CMake build dependency with
+  `dev-util/wayland-scanner` for the bundled protocol generation and
+  `virtual/pkgconfig` for Meson's Wayland/xkbcommon dependency discovery.
+- Added a patch that removes Git, branch, and `__DATE__` probing and always
+  defines `VERSION` from `meson.project_version()` (`0.4`). This also prevents
+  an enclosing, unrelated Git worktree from affecting the build.
+- `VERSION` is not referenced by wtype 0.4's C source, so the original date did
+  not enter the normal stripped binary. The build configuration was still
+  host/time-dependent, could leak into debug macro information, and was fragile
+  if upstream began using the existing define.
+- Removed the no-op `src_configure` override and kept the Meson eclass default.
+- Upstream ships no test suite; validation therefore covers configuration,
+  compilation, installation, ELF QA, the installed man page, and a two-build
+  reproducibility comparison.
+- A clean Portage build found pkg-config, `wayland-scanner`, Wayland 1.25.0, and
+  libxkbcommon 1.13.2; generated both protocol outputs; and installed the PIE,
+  README, and man page. The binary has no executable stack or RPATH/RUNPATH,
+  and all shared-library dependencies resolve.
+- Builds from different paths and source mtimes, with one source nested beneath
+  an unrelated `host-v9`/`host-branch` Git repository, produced byte-identical
+  binaries (`fd557c8f6efcd8f27d66f346d34b949c7bbfa05b7c9ca679fff6e285b28bd2c4`).
+  Both compile graphs contain only `-DVERSION="0.4"` and no Git/date value.
+- `pkgcheck scan -v`, Manifest verification, `git diff --check`, the no-argument
+  usage path, and invalid-modifier parsing all pass as expected.
+
 ### Issue 19 — hyprdynamicmonitors embeds wall-clock build time
 
 Affected: `gui-apps/hyprdynamicmonitors-1.4.0.ebuild:35`.

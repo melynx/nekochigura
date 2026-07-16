@@ -13,11 +13,12 @@ LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~amd64"
 
+PATCHES=( "${FILESDIR}/${P}-deterministic-version.patch" )
+
 DEPEND="dev-libs/wayland
 	x11-libs/libxkbcommon"
 RDEPEND="${DEPEND}"
-BDEPEND="dev-build/cmake"
-
-src_configure() {
-	meson_src_configure
-}
+BDEPEND="
+	dev-util/wayland-scanner
+	virtual/pkgconfig
+"

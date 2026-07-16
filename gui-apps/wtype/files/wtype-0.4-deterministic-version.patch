@@ -1,0 +1,22 @@
+From: Chua Zheng Leong <melynx@gmail.com>
+Subject: [PATCH] meson: use the project version for release builds
+
+Release archives do not contain Git metadata, but the existing check only
+tests whether the git executable exists.  This can produce an empty version,
+pick up an unrelated enclosing repository, and include the build date through
+__DATE__.  Use the version declared by the Meson project instead.
+
+--- a/meson.build
++++ b/meson.build
+@@ -11,10 +11 @@
+-git = find_program('git', native: true, required: false)
+-
+-if not git.found()
+-    add_project_arguments('-DVERSION="@0@"'.format(meson.project_version()), language: 'c')
+-else
+-    git_commit_hash = run_command([git.path(), 'describe', '--always', '--tags']).stdout().strip()
+-    git_branch = run_command([git.path(), 'rev-parse', '--abbrev-ref', 'HEAD']).stdout().strip()
+-    version = '"@0@ (" __DATE__ ", branch \'@1@\')"'.format(git_commit_hash, git_branch)
+-    add_project_arguments('-DVERSION=@0@'.format(version), language: 'c')
+-endif
++add_project_arguments('-DVERSION="@0@"'.format(meson.project_version()), language: 'c')
