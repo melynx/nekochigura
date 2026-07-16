@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		MakeMKV converts video from proprietary optical discs into MKV files
+		without changing the video and audio streams.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://forum.makemkv.com/forum/</bugs-to>
+		<changelog>https://www.makemkv.com/download/history.html</changelog>
+	</upstream>
+</pkgmetadata>

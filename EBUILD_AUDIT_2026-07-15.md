@@ -429,14 +429,33 @@ Status: fixed by
 
 ### Issue 7 — MakeMKV dependency set is obsolete
 
-Affected: both `media-video/makemkv` ebuilds; newest lines 24-44.
+Status: fixed by `media-video/makemkv/makemkv-1.18.4.ebuild`.
 
-- GUI depends on retired/nonexistent split Qt 5 atoms:
-  `dev-qt/qtcore:5`, `qtdbus:5`, `qtgui:5`, and `qtwidgets:5`.
-- `sys-libs/zlib` is deprecated in favor of the current virtual/package atom.
-- GUI dependencies are unsolvable on current Gentoo profiles.
-- Update to MakeMKV 1.18.4 and determine whether upstream can build with Qt 6
-  or whether a compatible Qt 5 packaging path still exists.
+- Updated to MakeMKV 1.18.4, released 2026-06-15. The proprietary archive
+  continues to provide amd64, arm64, armhf, and i386 executables; upstream's
+  1.18.4 release specifically fixes an armhf crash.
+- Upstream 1.18.4 still supports only Qt 5. Activated the existing local Qt 6
+  port, which converts the generated configure checks and MOC discovery to
+  Qt 6, selects C++17, and adjusts the four GUI source incompatibilities.
+- Replaced the removed split Qt 5 atoms with
+  `dev-qt/qtbase:6[dbus,gui,widgets]` and the host-side Qt base build tool.
+  Replaced deprecated `sys-libs/zlib` with `virtual/zlib:=`, and switched the
+  homepage and distfile URLs to HTTPS.
+- Retained `RESTRICT="bindist mirror"` and the existing EULA/license set, so
+  the proprietary upstream archive is neither mirrored nor redistributed.
+  Added package metadata with maintainer, forum, and release-history links.
+- A clean USE=`-gui -java` build and staged install passed on GCC 16 and FFmpeg
+  8. A second clean USE=`gui java` build and staged install passed against Qt
+  6.11.1; configure found Qt6 Core, Gui, Widgets, and DBus and used Qt 6's MOC.
+- The CLI reported MakeMKV 1.18.4 and handled a robot-mode information query.
+  The Java archive and policy were absent with USE=`-java` and present with
+  USE=`java`. The Qt 6 GUI started successfully with the offscreen backend and
+  stayed running until the test timeout.
+- All staged ELF dependencies resolved, including the Qt 6 GUI libraries, and
+  no installed ELF contained RPATH/RUNPATH. The desktop entry was valid, the
+  installed tree had no broken symlinks, and Portage emitted no QA or security
+  notices. Removed versions 1.17.7 and 1.18.3 plus the obsolete 1.17.7-only
+  FFmpeg patches; the Manifest now contains only the two 1.18.4 archives.
 
 ### Issue 8 — CPU-dependent binary selection in OpenCode and Bun
 
