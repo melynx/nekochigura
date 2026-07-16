@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>czl@iiyume.org</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Beta channel of the proprietary 1Password desktop password manager for
+		Linux. It is packaged under a separate atom so opting into prereleases
+		persists across upgrades without conflating upstream builds with Gentoo
+		ebuild revisions.
+	</longdescription>
+	<use>
+		<flag name="cli">Install the 1Password command-line client</flag>
+		<flag name="policykit">Install the PolicyKit policy used for system authentication</flag>
+	</use>
+</pkgmetadata>

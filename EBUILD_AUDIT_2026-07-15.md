@@ -143,7 +143,7 @@ version for testing users instead of choosing only one channel.
 
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
-| `app-admin/1password-bin` | 8.12.21, CLI 2.34.0 | 8.12.26, CLI 2.34.1 | Update. https://releases.1password.com/linux/stable/ and https://releases.1password.com/developers/cli/ |
+| `app-admin/1password-bin` | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | Current after Issue 13. https://releases.1password.com/linux/stable/, https://releases.1password.com/linux/beta/, and https://releases.1password.com/developers/cli/ |
 | `app-admin/azure-cli-bin` | 2.87.0 | 2.88.0 | Update. https://github.com/Azure/azure-cli/releases/latest |
 | `app-admin/talosctl-bin` | 1.13.3 | 1.13.6 | Update. https://github.com/siderolabs/talos/releases/latest |
 | `app-crypt/passless` | 0.11.2 | 0.13.0 | Update. https://github.com/pando85/passless/releases/tag/v0.13.0 |
@@ -151,7 +151,7 @@ version for testing users instead of choosing only one channel.
 | `app-admin/ryzen_smu` | snapshot 20260425 / `0bb95d9` | `1be4fb1`, 2026-06-25 | Optional snapshot update; only test formatting and HX 370 verification documentation changed. https://github.com/amkillam/ryzen_smu/compare/0bb95d961664c7a0ac180f849fa16fe7da71922d...main |
 | `app-crypt/picoforge` | 0.5.0 | 0.5.0 stable | Current. `v0.5.0+1` is a prerelease. https://github.com/librekeys/picoforge/releases/latest |
 
-The four `acct-*` packages are local account/group objects with no independent
+The `acct-*` packages are local account/group objects with no independent
 upstream version stream.
 
 ### `app-misc`
@@ -633,6 +633,9 @@ Status: fixed by removing `app-misc/Manifest` and `app-misc/metadata.xml`.
 
 Affected: all `app-admin/1password-bin` ebuilds.
 
+Status: fixed by splitting the release channels, updating all artifacts, and
+matching the current upstream helper-security model.
+
 - Stable and beta releases share the same package and SLOT, so users cannot
   select a persistent release channel.
 - Upstream beta build numbers are encoded using Gentoo `-rN`, conflating vendor
@@ -651,6 +654,46 @@ Related account issue:
 - `acct-group/onepassword-cli` hardcodes GID 1560. 1Password integration needs
   a group ID >=1000, so a normal dynamic system GID is unsuitable, but the
   fixed user-range allocation must be documented/reserved and collision-safe.
+
+Resolution and verification:
+
+- Stable remains `app-admin/1password-bin`, now at 8.12.28. Beta is the new
+  persistent atom `app-admin/1password-beta-bin`, with vendor build
+  `8.12.30-19.BETA` represented as Gentoo version `8.12.30_beta19`. Reciprocal
+  strong blockers prevent file collisions between the two channels. The two
+  beta builds formerly encoded as Gentoo `-rN` revisions and all other obsolete
+  versions were removed.
+- Both packages bundle the current stable CLI 2.35.0 behind the documented
+  `cli` USE flag. The `policykit` flag is documented as well.
+- All stable, beta, and CLI artifacts for both architectures were verified
+  against 1Password's published signing key, fingerprint
+  `3FEF9748469ADBE15DA7CA80AC2D62742012EA22`; all six detached signatures were
+  good before the Manifest hashes were accepted.
+- Upstream's installer scripts create three distinct regular-range groups for
+  peer authentication. The overlay therefore reserves GIDs 1559, 1560, and
+  1562 for `onepassword`, `onepassword-cli`, and `onepassword-mcp`
+  respectively. The CLI keeps its existing 1560 allocation to avoid a local
+  migration; 1561 was skipped because it is already assigned to `i2c` on the
+  maintainer's system. All three packages enforce their selected ID, reject
+  IDs below 1000, fail closed on collisions, and document the corresponding
+  `ACCT_GROUP_*_ID` override for sites that need another unused high GID.
+- Setuid/setgid ownership is now recorded in the image: `chrome-sandbox` is
+  root:root 4755, `1Password-BrowserSupport` is root:onepassword 2755,
+  `1password-mcp` is root:onepassword-mcp 2755, and optional `op` is
+  root:onepassword-cli 2755. No live-root permission changes remain in
+  `pkg_postinst`.
+- Current stable and beta amd64 artifacts report a non-executable GNU stack
+  (`RW-`) for the sandbox and primary helper binaries, so the obsolete
+  `QA_EXECSTACK` suppression was removed.
+- Installation now preserves upstream executable modes, omits upstream package
+  manager scripts, provides the current MCP aliases, installs the upstream
+  desktop/icons/PolicyKit/custom-browser files, and avoids duplicating the
+  complete Electron resources directory under documentation.
+- Clean staged amd64 installs passed for stable with `cli policykit` and beta
+  with both flags disabled. Image inspection confirmed the declared ownership
+  and modes, PolicyKit generation, custom-browser configuration, MCP aliases,
+  absence of removed installer scripts, resolved shared libraries, and no
+  broken symlinks. The CLI reported version 2.35.0.
 
 ### Issue 14 — Caelestia snapshot and runtime dependencies
 

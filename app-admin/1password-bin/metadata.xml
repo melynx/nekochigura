@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>czl@iiyume.org</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Stable channel of the proprietary 1Password desktop password manager
+		for Linux. The package includes browser, SSH agent, and MCP integration;
+		the independently released command-line client can also be installed.
+	</longdescription>
+	<use>
+		<flag name="cli">Install the 1Password command-line client</flag>
+		<flag name="policykit">Install the PolicyKit policy used for system authentication</flag>
+	</use>
+</pkgmetadata>

@@ -6,12 +6,12 @@ EAPI=8
 inherit acct-group
 
 # 1Password intentionally uses a regular-range group for peer authentication.
-ACCT_GROUP_ID=1560
+ACCT_GROUP_ID=1559
 ACCT_GROUP_ENFORCE_ID=yes
 
 pkg_pretend() {
 	acct-group_pkg_pretend
 
-	local group_id=${ACCT_GROUP_ONEPASSWORD_CLI_ID:-${ACCT_GROUP_ID}}
-	(( group_id >= 1000 )) || die "onepassword-cli requires a GID of at least 1000"
+	local group_id=${ACCT_GROUP_ONEPASSWORD_ID:-${ACCT_GROUP_ID}}
+	(( group_id >= 1000 )) || die "onepassword requires a GID of at least 1000"
 }
