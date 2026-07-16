@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Quickshell is a toolkit for building status bars, widgets, lock screens,
+		and other desktop components using QtQuick. It supports Wayland and X11
+		and provides integrations for common desktop-shell services.
+	</longdescription>
+	<use>
+		<flag name="crash-handler">Enable crash handling using <pkg>dev-cpp/cpptrace</pkg></flag>
+		<flag name="greetd">Enable integration with the greetd login daemon</flag>
+		<flag name="hyprland">Enable Hyprland-specific Wayland integrations</flag>
+		<flag name="hyprland-focus-grab">Enable Hyprland focus-grab protocol support</flag>
+		<flag name="hyprland-global-shortcuts">Enable Hyprland global-shortcuts protocol support</flag>
+		<flag name="hyprland-ipc">Enable communication with Hyprland's IPC interface</flag>
+		<flag name="hyprland-surface-extensions">Enable Hyprland surface-extension protocols</flag>
+		<flag name="i3">Enable i3 and Sway window-manager integration</flag>
+		<flag name="i3-ipc">Enable communication with the i3/Sway IPC interface</flag>
+		<flag name="layer-shell">Enable the wlroots layer-shell protocol for panels, overlays, and backgrounds</flag>
+		<flag name="mpris">Enable access to MPRIS-compatible media players</flag>
+		<flag name="network">Enable NetworkManager service integration</flag>
+		<flag name="notifications">Enable notification server integration</flag>
+		<flag name="pipewire">Enable viewing and management of <pkg>media-video/pipewire</pkg> nodes</flag>
+		<flag name="polkit">Enable creation of Polkit authentication agents</flag>
+		<flag name="screencopy">Enable streaming video from monitors and toplevel windows</flag>
+		<flag name="screencopy-hyprland-toplevel">Enable the Hyprland toplevel-export screencopy backend</flag>
+		<flag name="screencopy-icc">Enable the ext-image-copy-capture screencopy backend</flag>
+		<flag name="screencopy-wlr">Enable the wlroots screencopy backend</flag>
+		<flag name="session-lock">Enable the ext-session-lock Wayland protocol</flag>
+		<flag name="toplevel-management">Enable the wlroots foreign-toplevel-management protocol</flag>
+		<flag name="tray">Enable StatusNotifierItem system-tray support</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">quickshell-mirror/quickshell</remote-id>
+		<bugs-to>https://github.com/quickshell-mirror/quickshell/issues</bugs-to>
+		<doc>https://quickshell.org/docs/v0.3.0/</doc>
+	</upstream>
+</pkgmetadata>

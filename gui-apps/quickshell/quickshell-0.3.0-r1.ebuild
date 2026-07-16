@@ -64,11 +64,16 @@ BDEPEND="
 	virtual/pkgconfig
 "
 
+PATCHES=(
+	"${FILESDIR}/${P}-gcc-16-warnings.patch"
+	"${FILESDIR}/${P}-strict-aliasing.patch"
+)
+
 src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo
-		-DDISTRIBUTOR="Gentoo Illogical-Impulses"
-		-DINSTALL_QML_PREFIX="lib64/qt6/qml"
+		-DDISTRIBUTOR="nekochigura"
+		-DINSTALL_QML_PREFIX="$(get_libdir)/qt6/qml"
 		-DCRASH_HANDLER=$(usex crash-handler ON OFF)
 		-DUSE_JEMALLOC=$(usex jemalloc ON OFF)
 		-DSOCKETS=$(usex sockets ON OFF)
