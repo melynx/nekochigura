@@ -1,0 +1,97 @@
+From: Gentoo
+Subject: [PATCH] use the system curl-impersonate shared library on Linux
+
+Gentoo provides curl-impersonate as a separate package.  Link against its
+shared library instead of downloading and statically linking upstream's
+prebuilt archive during the build.
+
+--- a/libs.json
++++ b/libs.json
+@@ -52,7 +52,7 @@
+         "machine": "x86_64",
+         "pointer_size": 64,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "x86_64"
+@@ -62,7 +62,7 @@
+         "machine": "x86_64",
+         "pointer_size": 64,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "musl",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "x86_64"
+@@ -72,7 +72,7 @@
+         "machine": "i686",
+         "pointer_size": 32,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "i386"
+@@ -82,7 +82,7 @@
+         "machine": "aarch64",
+         "pointer_size": 64,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "aarch64"
+@@ -102,7 +102,7 @@
+         "machine": "riscv64",
+         "pointer_size": 64,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "riscv64"
+@@ -112,7 +112,7 @@
+         "machine": "aarch64",
+         "pointer_size": 64,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "musl",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "aarch64"
+@@ -122,7 +122,7 @@
+         "machine": "armv6l",
+         "pointer_size": 32,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnueabihf",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "arm"
+@@ -132,7 +132,7 @@
+         "machine": "armv7l",
+         "pointer_size": 32,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnueabihf",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "arm"
+@@ -142,7 +142,7 @@
+         "machine": "loongarch64",
+         "pointer_size": 64,
+         "sysname": "linux",
+-        "link_type": "static",
++        "link_type": "dynamic",
+         "libc": "gnu",
+         "obj_name": "libcurl-impersonate.a",
+         "arch": "loongarch64"
+--- a/scripts/build.py
++++ b/scripts/build.py
+@@ -149 +148,0 @@
+-download_libcurl()
+@@ -152 +151 @@
+-static_libs = get_curl_archives()
++static_libs = get_curl_archives() if is_static else []

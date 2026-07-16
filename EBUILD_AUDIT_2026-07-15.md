@@ -856,14 +856,37 @@ Resolution and verification:
 
 Affected: `dev-python/curl-cffi` 0.13.0 and 0.14.0.
 
-- Declares BSD-2, but upstream 0.14.0 LICENSE/pyproject are MIT.
-- Enables the full pytest suite without declaring test-only dependencies such
-  as proxy.py, trustme, uvicorn, websockets, cryptography, FastAPI, httpx, and
-  charset-normalizer; test collection is expected to fail unless dependencies
-  happen to be installed.
-- Update to 0.15.0 after correcting license and test dependency policy.
-- Python 3.15 pkgcheck suggestion is not proof of upstream support; 0.14
-  officially declared only 3.10–3.14. Test before adding 3.15.
+Status: fixed with the stable 0.15.0 PyPI sdist and system
+`curl-impersonate` linking.
+
+- Removed 0.13.0 and 0.14.0, corrected `LICENSE` from BSD-2 to MIT, and added
+  the new mandatory `rich` runtime dependency plus upstream's current minimum
+  versions for cffi, certifi, and curl-impersonate. The package uses only the
+  official PyPI sdist; no vendored dependency archive is hosted.
+- Refreshed the downstream patch for 0.15.0. Linux builds select dynamic
+  linking, do not call the upstream archive downloader, and do not inspect or
+  link the static archive path. The PyPI sdist's generated curl headers are
+  retained because the system curl-impersonate package intentionally removes
+  its development headers.
+- Replaced the undeclared, uncollectable full test suite with 59 focused
+  upstream cookie, header, CLI parsing, output, doctor, and help tests. The
+  ebuild tests the staged wheel rather than the source tree and disables
+  unrelated pytest configuration/plugins. All 59 tests pass under Python 3.13
+  and 3.14. The full suite remains unsuitable because Gentoo lacks several of
+  its pinned/test-only dependencies, including proxy.py and litestar.
+- A clean network-sandboxed Portage build/install passed for Python 3.13 and
+  3.14 against a separately staged curl-impersonate 1.5.6. CLI help and doctor
+  checks pass, and real loopback HTTP requests returned the expected response
+  on both interpreters.
+- The staged `_wrapper.abi3.so` needs the system
+  `libcurl-impersonate.so.4` and libc only, has no RPATH/RUNPATH, textrels, or
+  executable stack, and the wheel contains no static archive or bundled
+  libcurl. All dependencies resolve when the staged system library is present.
+- The current curl-impersonate ebuild does not enable ngtcp2/nghttp3, so doctor
+  correctly reports HTTP/2 but not HTTP/3. That optional library capability is
+  separate from curl-cffi packaging and is not replaced with a static bundle.
+  Pkgcheck's remaining results are the package-wide missing `metadata.xml`
+  tracked in Issue 25 and the intentionally deferred Python 3.15 suggestion.
 
 ### Issue 18 — wtype build-system dependency and reproducibility
 
