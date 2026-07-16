@@ -6,9 +6,10 @@
 		<name>Chua Zheng Leong</name>
 	</maintainer>
 	<longdescription>
-		Group used to authenticate the 1Password CLI to the desktop app. This
-		overlay reserves GID 1560 because upstream requires a regular-range GID.
-		If it conflicts locally, set ACCT_GROUP_ONEPASSWORD_CLI_ID to an unused
-		GID of at least 1000 before installing the package.
+		Group used to authenticate the 1Password browser helper to the desktop
+		app. This overlay reserves GID 1559 because upstream requires a
+		regular-range GID. If it conflicts locally, set
+		ACCT_GROUP_ONEPASSWORD_ID to an unused GID of at least 1000 before
+		installing the package.
 	</longdescription>
 </pkgmetadata>
