@@ -187,7 +187,7 @@ package vendored from GURU.
 | `dev-util/opencode-bin` | 1.18.2 | 1.18.2 at resolution | Current after Issue 8. https://github.com/anomalyco/opencode/releases/tag/v1.18.2 |
 | `gui-apps/caelestia-shell` | snapshot 20260716 / `dbb6d6c` | same HEAD at resolution | Current after Issue 14. https://github.com/caelestia-dots/shell/commit/dbb6d6c029021145422255dee6cd7ba607be3a20 |
 | `gui-apps/hyprmon` | 0.0.17 | 0.0.17 | Current after Issue 32. https://github.com/erans/hyprmon/releases/tag/v0.0.17 |
-| `gui-apps/hyprsunset` | 0.3.3 | 0.4.0 | Update. https://github.com/hyprwm/hyprsunset/releases/tag/v0.4.0 |
+| `gui-apps/hyprsunset` | 0.4.0 | 0.4.0 | Current after Issue 33. https://github.com/hyprwm/hyprsunset/releases/tag/v0.4.0 |
 | `kde-plasma/breeze-plus` | 6.26.0 | 6.28.0 | Update. https://github.com/mjkim0727/breeze-plus/releases/tag/6.28.0 |
 
 Current at audit time:
@@ -1586,16 +1586,81 @@ arm64.
   The authoritative full-tree scan now has 57 redundant versions and seven
   reports in each nonsolvable-dependency class.
 
+### Issue 33 — Hyprsunset 0.4.0 update and dependency corrections
+
+Status: fixed and verified on 2026-07-17 with `hyprsunset-0.4.0` for amd64.
+
+- Updated from 0.3.3 to the latest official non-prerelease release, v0.4.0,
+  published on 2026-07-13. The lightweight tag points directly to commit
+  `25f704346ec22e7623b0873ef8c4573b57ca1512`; there is no separate tag
+  signature, but GitHub verifies the commit's SSH signature as valid. The
+  release is not marked immutable and has no uploaded assets. Its generated
+  tag archive is 15,401 bytes with SHA-256
+  `5980e65ec650010e36c52e5f5acc0df9fd2d20051c63b89305bdc13276f237a6`.
+  The archive has a safe single-directory layout and no bundled dependencies;
+  its Manifest BLAKE2B and SHA-512 hashes were independently reproduced.
+- The release fixes a high-CPU event-loop busy loop; malformed gamma IPC
+  handling; reset/profile crashes with no profiles; max-gamma handling without
+  profiles; and malformed profile times. It also adds whole-profile and
+  per-field resets, current-profile reporting, identity query/set support, and
+  corrected trace filtering. The old 0.2.0 and 0.3.3 ebuilds and distfile
+  records were removed.
+- Fixed missing direct dependency metadata. The executable links Hyprlang and
+  uses an API introduced in 0.4.0, so the ebuild now requires
+  `>=dev-libs/hyprlang-0.4.0:=` rather than relying on Hyprland to pull it in
+  transitively. Upstream's README requires Hyprland 0.45.0 or newer; this is
+  now versioned accordingly without an ABI rebuild operator because Hyprland
+  is a runtime compositor, not a linked library. Wayland and Hyprutils remain
+  direct linked dependencies.
+- Upstream requests C++26. The ebuild now follows the Hypr ecosystem's
+  compiler policy with GCC 14 or newer or Clang 18 or newer in both BDEPEND
+  and the selected-toolchain check; binary merges bypass the compiler check.
+  Independent source builds passed with GCC 16.1.1 and Clang 22.1.8, both
+  selecting `-std=gnu++26` and providing `std::chrono::zoned_time`.
+- Added a release-archive patch. It removes unused Git probes and compile
+  definitions that emitted four fatal-not-a-repository diagnostics and falsely
+  labelled archive builds dirty. It also validates IPC reads before indexing
+  the receive buffer, sends complete replies while handling interruption and
+  suppressing SIGPIPE, and fixes the ignored-write-result compiler warning.
+  The same patch updates the user service's obsolete `wiki.hyprland.org` URL
+  to `wiki.hypr.land`; the ebuild homepage was updated likewise.
+- The stable upstream release is stable-keyworded `amd64` per maintainer
+  policy. Its now-unnecessary entry was removed from the overlay's supplied
+  `package.accept_keywords` template, while its now-direct testing-only
+  Hyprlang dependency is explicitly accepted there. The machine-local copy was
+  deliberately left unchanged because the live Portage checkout is an
+  unrelated dirty, ahead checkout still containing only the old testing
+  ebuild; its Hyprsunset entry will become redundant when that checkout is
+  synchronized.
+- A clean Portage configure/build/install completed with GCC 16.1.1 and no
+  compiler warning or install QA notice. The staged image contains a 0755
+  stripped PIE executable, a 0644 README, and a 0644 systemd user service at
+  the pkg-config-selected `/usr/lib/systemd/user` path. The binary has an NX
+  stack, full RELRO/BIND_NOW, no RPATH, RUNPATH, or text relocation, and direct
+  `DT_NEEDED` entries only for Wayland client, Hyprutils, Hyprlang, and standard
+  compiler/libc runtimes. The service passes structural verification and is
+  installed but not enabled.
+- Staged `--version` and `--help` commands pass in a clean environment. A
+  normal launch using an explicitly nonexistent Wayland socket and disposable
+  runtime/home reports the expected compositor connection failure, exits 1,
+  and writes no files. Hyprsunset was not installed or running on the laptop,
+  so no live package or Hyprland session was touched. Syntax, metadata XML,
+  patch application, Manifest integrity, and `git diff --check` pass.
+  Targeted pkgcheck reports only the intentional stable-keyword mismatch with
+  the testing-only Hypr dependency stack. The authoritative full-tree scan now
+  has 56 redundant versions and nine reports in each nonsolvable-dependency
+  class.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 57 | RedundantVersion |
+| 56 | RedundantVersion |
 | 6 | PythonCompatUpdate |
-| 7 | NonsolvableDepsInStable |
-| 7 | NonsolvableDepsInDev |
+| 9 | NonsolvableDepsInStable |
+| 9 | NonsolvableDepsInDev |
 | 5 | PotentialStable |
 | 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
@@ -1610,7 +1675,7 @@ there is an intentional rollback/security/channel reason to retain them.
 
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
-Fuzzel, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
+Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 

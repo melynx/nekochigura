@@ -1,0 +1,89 @@
+From: Chua Zheng Leong <melynx@gmail.com>
+Subject: [PATCH] avoid archive git probes and handle IPC I/O errors
+
+GitHub release archives do not contain a Git worktree.  The queried values are
+unused, and probing for them emits four fatal diagnostics and incorrectly marks
+the release build dirty.
+
+Also validate the IPC read before using it as an array index and send the full
+reply without triggering SIGPIPE.  This fixes the compiler's ignored-result
+warning and prevents a failed read from indexing before the receive buffer.
+Finally, update the documentation URL embedded in the installed user unit.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,26 +19,0 @@
+-# Get git info hash and branch
+-execute_process(
+-  COMMAND git rev-parse --abbrev-ref HEAD
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-  OUTPUT_VARIABLE GIT_BRANCH
+-  OUTPUT_STRIP_TRAILING_WHITESPACE)
+-
+-execute_process(
+-  COMMAND git rev-parse HEAD
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-  OUTPUT_VARIABLE GIT_COMMIT_HASH
+-  OUTPUT_STRIP_TRAILING_WHITESPACE)
+-
+-execute_process(
+-  COMMAND bash -c "git show ${GIT_COMMIT_HASH} | head -n 5 | tail -n 1"
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-  OUTPUT_VARIABLE GIT_COMMIT_MESSAGE
+-  OUTPUT_STRIP_TRAILING_WHITESPACE)
+-
+-execute_process(
+-  COMMAND bash -c "git diff-index --quiet HEAD -- || echo \"dirty\""
+-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-  OUTPUT_VARIABLE GIT_DIRTY
+-  OUTPUT_STRIP_TRAILING_WHITESPACE)
+-#
+-
+@@ -110,7 +84,0 @@
+-target_compile_definitions(hyprsunset
+-                           PRIVATE "-DGIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"")
+-target_compile_definitions(hyprsunset PRIVATE "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
+-target_compile_definitions(
+-  hyprsunset PRIVATE "-DGIT_COMMIT_MESSAGE=\"${GIT_COMMIT_MESSAGE}\"")
+-target_compile_definitions(hyprsunset PRIVATE "-DGIT_DIRTY=\"${GIT_DIRTY}\"")
+-
+--- a/src/IPCSocket.cpp
++++ b/src/IPCSocket.cpp
+@@ -66,4 +66,10 @@
+-                    auto                        messageSize              = read(ACCEPTEDCONNECTION, readBuffer, 1024);
+-                    readBuffer[messageSize == 1024 ? 1023 : messageSize] = '\0';
+-                    if (messageSize == 0)
++                    const auto messageSize = read(ACCEPTEDCONNECTION, readBuffer, sizeof(readBuffer));
++                    if (messageSize <= 0) {
++                        if (messageSize < 0)
++                            Debug::log(ERR, "Failed to read an IPC request: {}", strerror(errno));
+                         break;
++                    }
++
++                    const auto nullIndex = static_cast<size_t>(messageSize) == sizeof(readBuffer) ? sizeof(readBuffer) - 1 :
++                                                                                                   static_cast<size_t>(messageSize);
++                    readBuffer[nullIndex] = '\0';
+@@ -79,1 +85,17 @@
+-                    write(ACCEPTEDCONNECTION, m_szReply.c_str(), m_szReply.length());
++
++                    size_t replyOffset = 0;
++                    while (replyOffset < m_szReply.size()) {
++                        const auto written = send(ACCEPTEDCONNECTION, m_szReply.data() + replyOffset, m_szReply.size() - replyOffset, MSG_NOSIGNAL);
++                        if (written < 0) {
++                            if (errno == EINTR)
++                                continue;
++
++                            Debug::log(ERR, "Failed to send an IPC reply: {}", strerror(errno));
++                            break;
++                        } else if (written == 0) {
++                            Debug::log(ERR, "Failed to send the complete IPC reply");
++                            break;
++                        }
++
++                        replyOffset += static_cast<size_t>(written);
++                    }
+--- a/systemd/hyprsunset.service.in
++++ b/systemd/hyprsunset.service.in
+@@ -3,1 +3,1 @@
+-Documentation=https://wiki.hyprland.org/Hypr-Ecosystem/hyprsunset/
++Documentation=https://wiki.hypr.land/Hypr-Ecosystem/hyprsunset/
