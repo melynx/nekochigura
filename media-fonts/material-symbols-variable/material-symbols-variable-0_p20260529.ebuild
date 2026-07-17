@@ -9,18 +9,22 @@ DESCRIPTION="Material Design icons by Google - variable fonts"
 HOMEPAGE="https://github.com/google/material-design-icons"
 
 BASE_URL="https://github.com/google/material-design-icons/raw/fef175fe"
+FONT_URL="${BASE_URL}/variablefont"
 
 SRC_URI="
-	${BASE_URL}/variablefont/MaterialSymbolsOutlined%5BFILL,GRAD,opsz,wght%5D.ttf -> MaterialSymbolsOutlined-FILL-GRAD-opsz-wght-${PV}.ttf
-	${BASE_URL}/variablefont/MaterialSymbolsRounded%5BFILL,GRAD,opsz,wght%5D.ttf -> MaterialSymbolsRounded-FILL-GRAD-opsz-wght-${PV}.ttf
-	${BASE_URL}/variablefont/MaterialSymbolsSharp%5BFILL,GRAD,opsz,wght%5D.ttf -> MaterialSymbolsSharp-FILL-GRAD-opsz-wght-${PV}.ttf
+	${FONT_URL}/MaterialSymbolsOutlined%5BFILL,GRAD,opsz,wght%5D.ttf ->
+		MaterialSymbolsOutlined-FILL-GRAD-opsz-wght-${PV}.ttf
+	${FONT_URL}/MaterialSymbolsRounded%5BFILL,GRAD,opsz,wght%5D.ttf ->
+		MaterialSymbolsRounded-FILL-GRAD-opsz-wght-${PV}.ttf
+	${FONT_URL}/MaterialSymbolsSharp%5BFILL,GRAD,opsz,wght%5D.ttf ->
+		MaterialSymbolsSharp-FILL-GRAD-opsz-wght-${PV}.ttf
 "
+
+S="${WORKDIR}"
 
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64 ~x86"
-
-S="${WORKDIR}"
 
 FONT_SUFFIX="ttf"
 
@@ -37,4 +41,3 @@ src_unpack() {
 src_install() {
 	font_src_install
 }
-

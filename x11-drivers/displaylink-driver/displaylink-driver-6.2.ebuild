@@ -9,6 +9,8 @@ DESCRIPTION="DisplayLink USB Graphics Software userspace driver daemon"
 HOMEPAGE="https://www.synaptics.com/products/displaylink-graphics"
 SRC_URI="https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu${PV}-EXE.zip -> ${P}.zip"
 
+S="${WORKDIR}"
+
 LICENSE="DisplayLink"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64"
@@ -28,8 +30,6 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}"
-
-S="${WORKDIR}"
 
 QA_PREBUILT="
 	usr/libexec/displaylink/DisplayLinkManager
@@ -76,7 +76,7 @@ src_unpack() {
 		[[ -z "${marker}" ]] && marker=$(grep -axm1 'exit 0' "${run_file}" | cut -d: -f1)
 		[[ -z "${marker}" ]] && die "Could not find embedded archive marker"
 
-		tail -n +$((marker + 1)) "${run_file}" | tar xz -C "${S}/extracted" || die
+		tail -n +$((marker + 1)) "${run_file}" | tar -xzf - -C "${S}/extracted" || die
 	fi
 
 	S="${WORKDIR}/extracted"

@@ -1,3 +1,6 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
 EAPI=8
 
 DESCRIPTION="Meta package for Intel IPU6 webcam support"
@@ -9,9 +12,9 @@ KEYWORDS="~amd64"
 IUSE="systemd"
 
 RDEPEND="
-    media-video/ipu6-drivers
-    media-libs/ipu6-camera-hal
-    media-libs/ipu6-camera-bins
-    media-plugins/gst-plugins-icamerasrc
-    media-video/v4l2-relayd[systemd?]
+	media-video/ipu6-drivers
+	media-libs/ipu6-camera-hal
+	media-libs/ipu6-camera-bins
+	media-plugins/gst-plugins-icamerasrc
+	media-video/v4l2-relayd[systemd?]
 "

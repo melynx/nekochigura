@@ -5,7 +5,7 @@ EAPI=8
 
 PYTHON_COMPAT=( python3_{12..14} )
 
-inherit python-single-r1 bash-completion-r1
+inherit python-single-r1 shell-completion
 
 DESCRIPTION="Command-line interface for Google Cloud Platform"
 HOMEPAGE="https://cloud.google.com/sdk/"
