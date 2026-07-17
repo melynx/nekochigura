@@ -160,7 +160,7 @@ upstream version stream.
 |---|---:|---:|---|
 | `google-cloud-cli` | 576.0.0 | 576.0.0 | Current after Issue 27. https://docs.cloud.google.com/sdk/docs/release-notes |
 | `illogical-impulse-dotfiles` | snapshot 20260716 / `446504a` | same HEAD at resolution | Current after Issue 16. https://github.com/end-4/dots-hyprland/commit/446504ad427297dcbe5ee4a3d5bda1c458207cd9 |
-| `moomoo-bin` | 16.18.16308-r1 | 16.22.16708 | Update. https://www.moomoo.com/download/linux |
+| `moomoo-bin` | 16.24.16908 | 16.24.16908 | Current after Issue 28. https://www.moomoo.com/download/linux |
 | `songrec` | 0.7.4 | 0.7.4 | Current after Issue 1. https://github.com/marin-m/SongRec/releases/tag/0.7.4 |
 | `brightnessctl` | 0.5.1 | 0.5.1 | Current. https://github.com/Hummer12007/brightnessctl/releases |
 | `caelestia-cli` | 1.1.1-r1 | 1.1.1 | Current after Issue 14. https://github.com/caelestia-dots/cli/releases/tag/v1.1.1 |
@@ -1273,6 +1273,80 @@ Status: fixed on 2026-07-17 with `google-cloud-cli-576.0.0`.
   world-selected 567.0.0 until its configured overlay checkout is updated; no
   real `~/.config/gcloud` data was touched during testing.
 
+### Issue 28 — Moomoo update and binary-runtime repairs
+
+Status: fixed and verified on 2026-07-17 with `moomoo-bin-16.24.16908`.
+
+- Rechecked the live official Linux release state rather than relying on the
+  search index, which was one release stale. Stable (non-beta) 16.24.16908 was
+  released 2026-07-16 with bug fixes and performance improvements. The page
+  lists Ubuntu 18.04 or newer, 369.11 MB, and only the amd64 Debian package;
+  the plausible arm64, aarch64, and x86_64 filename variants return 404.
+  `~amd64` is therefore retained as the only keyword.
+- Downloaded the immutable vendor-CDN object directly. It is 387,038,448 bytes,
+  has a clean Debian ar structure and control version/architecture, and its MD5
+  `6d42a18451d4103154e1f82c21da6aac` matches the CDN ETag. Locally reproduced
+  hashes are SHA-256
+  `526dece68464ddab0940f8ddb876f51570f5040e16e8d296438604558b504e1c`,
+  BLAKE2B
+  `9ad90df6ffecfff95c2d274a95f64f662f28cb25ce208773bb1535d25c9f2f1410fc737f380be692e4d3544ddc759288af97ca32a5fbba91f5070031c1d46506`,
+  and SHA-512
+  `539237ffec3d684b596a69878c11d7169c6fe223297c0f4afed7567102764111fe9ce03823bf4bc0b56f6c001edcb6bc76c111cf30400500a1face0b2e84847c`.
+  Upstream publishes no SHA checksum or detached/embedded signature; the
+  Manifest uses the verified clean object. A separate interrupted temporary
+  download with trailing garbage was rejected and never used.
+- The official terms grant only a limited personal-use application license and
+  prohibit redistribution and modification outside the stated exceptions.
+  The payload files named `license.txt` are third-party notices, not a license
+  for Moomoo itself. `LICENSE="all-rights-reserved"` and
+  `RESTRICT="bindist mirror strip"` remain correct, and the archive continues
+  to be fetched from the vendor rather than mirrored or vendored.
+- Replaced the old `doins` plus partial chmod sequence with a mode-preserving
+  install and explicit root ownership. The old ebuild silently installed the
+  bundled `python3` and `NNPython` quant entrypoints as non-executable even
+  though upstream ships them as 0755. All retained upstream executable bits
+  now survive the staged install. The old 16.18.16308-r1 ebuild and distfile
+  entry were removed after the replacement passed.
+- Removed the overlay's unnecessary setuid grant from `chrome-sandbox`.
+  Upstream ships and installs the helper as ordinary 0755, so the staged image
+  now contains a root-owned 0755 helper rather than granting a proprietary
+  binary setuid-root privileges.
+- Completed the runtime dependency closure for the bundled Qt 5, CEF,
+  multimedia, XCB, Python 3.8, and image-plugin stack. This includes the
+  precise Gentoo compatibility providers for OpenSSL 1.1, libffi.so.6,
+  ncurses ABI 5, libtiff.so.5, Berkeley DB 5.3, and Tcl/Tk 8.6. The system
+  `libstdc++`/`libgcc_s` substitution remains necessary because upstream's
+  compiler runtime stops at `GLIBCXX_3.4.30`; the final loader trace selects
+  Gentoo's current libraries. `REQUIRED_USE="elibc_glibc"` makes the vendor
+  binary's libc requirement explicit.
+- Sanitized every vendor RPATH/RUNPATH to retain only deduplicated
+  `$ORIGIN`-relative entries, removing current-directory, empty, and leaked
+  Jenkins build-host paths. Cleared the unnecessary executable-stack request
+  from `CrashReporter`; the final tree has no executable stack or text
+  relocation. Retargeted Python's bzip2 module from Ubuntu's
+  `libbz2.so.1.0` spelling to Gentoo's ABI-equivalent `libbz2.so.1`. The
+  optional `_gdbm` and `readline` extensions were removed because no current
+  Gentoo compatibility package provides their obsolete SONAMEs; this avoids
+  claiming false dependencies for modules that could not load before.
+- A final clean unpack/prepare/install cycle succeeds. Its only unresolved
+  SONAME notice reflects compatibility packages declared in `RDEPEND` but not
+  installed on the build host; every remaining item maps to the declared
+  OpenSSL, ncurses, Berkeley DB, Tcl/Tk, or TIFF compatibility atom. Dependency
+  resolution selects those packages correctly for a real merge.
+- Static validation confirms root ownership, a 0755 sandbox helper, preserved
+  Python/quant executable modes, only x86-64 ELFs, no bundled compiler runtime,
+  no insecure RPATH, no executable stack, and no text relocations. The staged
+  Python 3.8 runtime imports JSON, lzma, sqlite3, zlib, and the patched bzip2
+  module successfully. An unprivileged, network-isolated Moomoo launch loads
+  the private Qt XCB plugin and all of its system libraries, then reaches the
+  expected `could not connect to display :99` failure because no virtual X
+  server is installed. No real Moomoo profile or brokerage session was used.
+- The laptop's world-selected 16.18.16308-r1 installation passes `qcheck`, and
+  no Moomoo process was running during the audit. It was deliberately not
+  upgraded live; publication updates the overlay only. Targeted pkgcheck has
+  only the intentional musl-profile `elibc_glibc` report; the repository-wide
+  summary below includes that additional result.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
@@ -1287,7 +1361,7 @@ Repository-wide non-network scan counts:
 | 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
-| 1 | RequiredUseDefaults |
+| 2 | RequiredUseDefaults |
 | 1 | BetterCompressionUri |
 
 Most of the originally reported 107 redundant versions are fully shadowed
