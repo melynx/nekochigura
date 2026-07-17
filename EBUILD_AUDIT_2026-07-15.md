@@ -985,6 +985,35 @@ Affected: both `dev-python/materialyoucolor` ebuilds.
 - Evaluate Python 3.15 only after upstream support/testing; pkgcheck's compat
   suggestion is not sufficient evidence.
 
+Resolution:
+
+- Upstream released v3.0.3 on 2026-07-15 after the original audit. Replaced
+  3.0.2 with the official v3.0.3 release sdist and retained the live ebuild.
+- Removed the invalid `RESTRICT="network-sandbox"` from both ebuilds. Their
+  import and upstream regression checks do not require external network access.
+- Added the missing `>=dev-python/pybind11-2.11.0` build dependency declared by
+  `pyproject.toml` and the `pillow` runtime dependency declared by package
+  metadata. The regression script's test-only `psutil` and `rich` dependencies
+  are also explicit.
+- Extended testing beyond the installed-package import check to run upstream's
+  included `tests/test_all.py`, which exercises the compiled C++ quantizer and
+  the v3.0.3 temperature-cache regression without downloading data.
+- The full installed-module import sweep exposed an upstream defect present in
+  both v3.0.3 and current `main`: `theme_utils.py` imports the nonexistent
+  `materialyoucolor.utils.string_utils` solely for an unused name. Added a
+  minimal patch removing that import and applied it to stable and live.
+- Retained Python 3.12 through 3.14. Upstream declares Python 3.7 or newer and
+  the current Gentoo pybind11/Pillow versions support 3.15, but no Python 3.15
+  interpreter is installed for an actual extension build and test; the pkgcheck
+  suggestion alone remains insufficient evidence.
+- Updated both ebuild copyright years to 2026.
+- A final clean Portage build, test, and install passes for the installed
+  Python 3.13 and 3.14 implementations. The import sweep covers every staged
+  module, upstream's regression script passes for both implementations, and
+  both compiled quantizer extensions have non-executable stacks, full RELRO,
+  resolved shared-library dependencies, and no RPATH/RUNPATH. `pkgcheck` is
+  clean apart from the intentionally deferred Python 3.15 suggestion.
+
 ### Issue 21 — hipSPARSELt deprecated eclass
 
 Affected: 7.1.0 and 7.2.0.
