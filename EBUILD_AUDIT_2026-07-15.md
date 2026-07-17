@@ -208,7 +208,7 @@ Current at audit time:
 
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
-| `material-symbols-variable` | snapshot 20260529 / `fef175fe` | `819d786`, 2026-07-10 | Update. https://github.com/google/material-design-icons/commit/819d78680a849ceef4c78f863d8753e3160b7c89 |
+| `material-symbols-variable` | snapshot 20260717 / `abd7f5c0` | same variable-font HEAD at resolution | Current after Issue 35. https://github.com/google/material-design-icons/commit/abd7f5c0e179c83f068c770650bd14ebac5d5a09 |
 | `twemoji` | 17.0.2 | 17.0.3 | Update. https://github.com/jdecked/twemoji/releases/tag/v17.0.3 |
 | `ipu6-camera-hal` | `20250923_ov02e` | `20260629_1` track available | Update/revalidate hardware track. https://github.com/intel/ipu6-camera-hal/tags |
 | `gst-plugins-icamerasrc` | `20260629_1` | `20260629_1` | Current after Issue 6. https://github.com/intel/icamerasrc/tags |
@@ -1695,6 +1695,44 @@ for amd64, arm64, and testing x86.
   x86, intentionally deferred until Breeze Icons is stable there. The fresh
   authoritative full-tree scan has 49 redundant versions and six potential
   stabilization reports; all other report counts are unchanged.
+
+### Issue 35 — Material Symbols variable-font snapshot update
+
+Status: fixed and verified on 2026-07-17 with
+`material-symbols-variable-0_p20260717` for testing amd64, arm64, and x86.
+
+- Updated the pinned variable-font snapshot from 2026-05-29 commit `fef175fe`
+  to the current path and repository head at resolution,
+  `abd7f5c0e179c83f068c770650bd14ebac5d5a09`, dated 2026-07-17. This is an
+  automated, unsigned upstream snapshot rather than a tagged release, so all
+  three architecture keywords remain testing. Apache-2.0 is confirmed by the
+  pinned repository license and upstream README.
+- Continued to fetch only the three required TTF files directly from the
+  immutable upstream commit; the overlay hosts no derived artifact. The final
+  fully percent-encoded raw URLs were independently exercised through an empty
+  Portage distdir, and the downloaded sizes and hashes matched the Manifest.
+  The old snapshot ebuild and its three distfile records were removed.
+- Tightened the custom unpack phase so directory creation and every controlled
+  filename copy terminate the build on failure. The bracketed canonical font
+  filenames remain unchanged for compatibility with the installed snapshot.
+- All three files are valid version 2.960 TrueType/OpenType variable fonts from
+  the Google foundry. Each contains 4,381 glyphs and 6,590 Unicode cmap entries,
+  56 glyphs and 20 cmap entries more than the installed version 2.944 files.
+  Their family and PostScript names are distinct and correct. All retain the
+  same four axes: FILL 0–1, GRAD -50–200, optical size 20–48, and weight
+  100–700, with seven named weight instances. Required variable/layout tables
+  are present, and HarfBuzz shapes representative icon ligatures at nondefault
+  axis extrema.
+- A clean Portage install produced byte-identical copies of the three fonts at
+  mode 0644, plus the expected 0644 `fonts.scale`, `fonts.dir`, and
+  `encodings.dir` files under one 0755 package directory. `mkfontscale`,
+  `mkfontdir`, Fontconfig parsing, and a cache refresh in a disposable HOME all
+  succeeded. The payload is architecture-independent font data with no ELF or
+  executable content. The laptop's installed 2026-05-29 snapshot and live font
+  caches were deliberately not changed.
+- Ebuild syntax, metadata XML, Manifest integrity, `git diff --check`, and
+  targeted pkgcheck pass. The fresh authoritative full-tree scan remains at
+  49 redundant versions and has no report-count changes from Issue 34.
 
 ## Automated pkgcheck summary
 
