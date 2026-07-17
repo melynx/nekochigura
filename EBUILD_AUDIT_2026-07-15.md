@@ -144,7 +144,7 @@ version for testing users instead of choosing only one channel.
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
 | `app-admin/1password-bin` | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | Current after Issue 13. https://releases.1password.com/linux/stable/, https://releases.1password.com/linux/beta/, and https://releases.1password.com/developers/cli/ |
-| `app-admin/azure-cli-bin` | 2.87.0 | 2.88.0 | Update. https://github.com/Azure/azure-cli/releases/latest |
+| `app-admin/azure-cli-bin` | 2.87.0-r1 | 2.87.0 | Current after Issue 23. https://github.com/Azure/azure-cli/releases/latest |
 | `app-admin/talosctl-bin` | 1.13.3 | 1.13.6 | Update. https://github.com/siderolabs/talos/releases/latest |
 | `app-crypt/passless` | 0.11.2 | 0.13.0 | Update. https://github.com/pando85/passless/releases/tag/v0.13.0 |
 | `app-admin/ec-su_axb35` | snapshot 20260522 / `b8cab5a` | same HEAD found | Current. https://github.com/cmetz/ec-su_axb35-linux |
@@ -1073,11 +1073,38 @@ Status: fixed and verified as `ec-su_axb35-0_p20260711` and
 
 Affected: all `app-admin/azure-cli-bin` ebuilds.
 
-- Binary Debian package is a self-contained `/opt/az` bundle.
-- `LICENSE="MIT"` likely under-declares bundled CPython/transitive library
-  licenses.
-- Audit Debian copyright/SBOM and expand LICENSE before or with the version
-  bump.
+- Resolved on 2026-07-17 by maintainer decision and the
+  `azure-cli-bin-2.87.0-r1` packaging revision. The broader bundled-license
+  declaration was deliberately not applied: the maintainer requested that
+  `LICENSE="MIT"` remain unchanged. This records a policy decision, not a
+  finding that every bundled work is MIT-licensed.
+- The official Noble Debian artifact is a self-contained `/opt/az` bundle
+  containing a private CPython 3.13 runtime. Its 168 `.dist-info/METADATA`
+  records and embedded notice files identify licenses including Apache-2.0,
+  BSD variants, ISC, LGPL variants, MIT, MPL-2.0, and PSF-2. The Debian
+  `copyright` file itself declares the aggregate package MIT and does not
+  enumerate those bundled works.
+- The revision preserves the Debian `copyright` and changelog under the
+  installed package documentation and generates a deterministic
+  `bundled-packages.txt` inventory. The inventory includes name, version,
+  declared license, and bundle location for all 168 distributions, including
+  the 12 distributions nested under setuptools' `_vendor` directory.
+- Runtime dependencies now match the Debian control metadata and a complete
+  ELF `DT_NEEDED` scan: bzip2, libffi.so.8, OpenSSL 3, glibc 2.38 or newer,
+  libuuid, a libgcc provider, and zlib. `REQUIRED_USE="elibc_glibc"` prevents
+  selection on musl profiles. The Ubuntu Python bzip2 extension's
+  `libbz2.so.1.0` dependency is rewritten to Gentoo's ABI-equivalent
+  `libbz2.so.1` SONAME during `src_prepare`.
+- Superseded 2.84.0, 2.86.0, and unrevisioned 2.87.0 ebuilds and their
+  Manifest entries were removed. The official upstream latest release was
+  rechecked as 2.87.0; the earlier 2.88.0 audit-table entry was incorrect.
+- Verification covered Manifest hashes, a clean staged Portage install with
+  no install QA notices, exact 168/168 inventory reconciliation, retained
+  documentation and completion files, the rewritten bzip2 dependency, and
+  an offline staged-runtime invocation reporting Azure CLI 2.87.0. Ebuild
+  syntax, metadata scan, and `git diff --check` also pass; `pkgcheck` only
+  reports the expected `RequiredUseDefaults` result for musl profiles that
+  cannot satisfy this upstream glibc binary.
 
 ### Issue 24 — Bibata old Manifest mismatch and stale wrapper
 
