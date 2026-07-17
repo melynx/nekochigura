@@ -61,11 +61,15 @@ The submodule was initialized at the already-recorded parent gitlink commit:
 b54c421b429f7844ac7592442ebee9af653c936d
 ```
 
-The restored archives were:
+The restored archives at that point were:
 
 - `gui-apps/hyprdynamicmonitors/hyprdynamicmonitors-1.4.0-vendor.tar.xz`
 - `gui-apps/hyprmon/hyprmon-0.0.12-vendor.tar.xz`
 - `gui-apps/hyprmon/hyprmon-0.0.15-vendor.tar.xz`
+
+Issue 32 later switched HyprMon to official upstream release binaries and
+purged both HyprMon vendor archives from the dependency repository's complete
+history. The HyprDynamicMonitors archive remains referenced.
 
 `.gitmodules` is included with the parent SongRec fix so fresh clones can
 initialize the dependency repository normally.
@@ -182,7 +186,7 @@ package vendored from GURU.
 | `dev-util/ghidra-bin` | 12.1.2 | 12.1.2 | Current after Issue 31. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
 | `dev-util/opencode-bin` | 1.18.2 | 1.18.2 at resolution | Current after Issue 8. https://github.com/anomalyco/opencode/releases/tag/v1.18.2 |
 | `gui-apps/caelestia-shell` | snapshot 20260716 / `dbb6d6c` | same HEAD at resolution | Current after Issue 14. https://github.com/caelestia-dots/shell/commit/dbb6d6c029021145422255dee6cd7ba607be3a20 |
-| `gui-apps/hyprmon` | 0.0.15 | 0.0.17 | Update. https://github.com/erans/hyprmon/releases/tag/v0.0.17 |
+| `gui-apps/hyprmon` | 0.0.17 | 0.0.17 | Current after Issue 32. https://github.com/erans/hyprmon/releases/tag/v0.0.17 |
 | `gui-apps/hyprsunset` | 0.3.3 | 0.4.0 | Update. https://github.com/hyprwm/hyprsunset/releases/tag/v0.4.0 |
 | `kde-plasma/breeze-plus` | 6.26.0 | 6.28.0 | Update. https://github.com/mjkim0727/breeze-plus/releases/tag/6.28.0 |
 
@@ -1522,16 +1526,76 @@ Status: fixed and verified on 2026-07-17 with `ghidra-bin-12.1.2`.
   full-tree summary now has 58 redundant versions and three such
   required-USE reports.
 
+### Issue 32 — HyprMon 0.0.17 official binary update
+
+Status: fixed and verified on 2026-07-17 with `hyprmon-0.0.17` for amd64 and
+arm64.
+
+- Updated from 0.0.15 to the latest official non-prerelease release, tag
+  `v0.0.17` at commit
+  `3131caffc371695b0acac9e61bc23de3910e4128`, published on 2026-05-18.
+  The annotated tag and commit are unsigned, and GitHub does not mark the
+  release immutable. The bot-uploaded release assets nevertheless carry
+  GitHub SHA-256 digests that exactly match the downloaded archives:
+  `0d21d9845183e12be640b622ed5adcaa04f77e835cc3671a26a291caf7f2e9c9`
+  for amd64 and
+  `f675a01a1ce43b2d219bb5dba23fbc3d4016fbc1fd9b217c6851068fe1264354`
+  for arm64. Both archives pass their Manifest BLAKE2B, SHA-512, and size
+  checks and contain only the expected executable, README, and upstream
+  Apache license.
+- Replaced the source-plus-private-Go-vendor build with upstream's official
+  statically linked amd64 and arm64 binaries. This avoids hosting another
+  generated dependency bundle and preserves the existing `gui-apps/hyprmon`
+  atom for seamless upgrades. The old 0.0.12 and 0.0.15 ebuilds and Manifest
+  objects were removed. Their two obsolete vendor archives were removed from
+  every revision of `nekochigura-dependencies`; the retained two-commit
+  history is signed and was force-pushed from `43ec2e4` to `94d2ae4` with an
+  exact force-with-lease guard. A deep clone therefore no longer downloads
+  either HyprMon archive.
+- Both official binaries identify version 0.0.17 and the tagged commit, were
+  built with Go 1.26.3 from an unmodified checkout, and use portable baselines:
+  `GOAMD64=v1` and `GOARM64=v8.0`. They are stripped, static ET_EXEC files
+  with non-executable stacks and no dynamic dependencies, RPATH, RUNPATH,
+  text relocations, or executable-stack request. The ebuild consequently
+  restricts stripping and registers the installed executable in
+  `QA_PREBUILT`.
+- Auditing the linked module graph found Apache-2.0, BSD, MIT, Unicode-3.0,
+  and Unicode-DFS-2016 terms. Upstream's binary archives include only
+  HyprMon's Apache license, so the overlay now installs that license plus a
+  comprehensive `THIRD-PARTY-NOTICES` document covering the Go runtime, every
+  linked module, and both generations of embedded Unicode data. All terms
+  permit binary redistribution with these notices; no `bindist` or `mirror`
+  restriction is needed.
+- The 0.0.17 changes include Hyprland 0.55-or-newer Lua configuration output,
+  managed sidecar configuration, and corrected vertical and negative-coordinate
+  layouts. Runtime inspection found only the `hyprctl` interface, so the
+  existing `gui-wm/hyprland` dependency remains sufficient and no Lua runtime
+  dependency is needed. Per maintainer policy, the stable upstream release is
+  stable-keyworded for both supplied architectures: `amd64 arm64`.
+- Clean native amd64 and arm64-profile Portage staging installs succeeded.
+  Each staged binary is byte-identical to its upstream payload, modes are
+  0755, documentation is 0644, and the installed compressed third-party notice
+  decompresses byte-for-byte to the overlay source. Native amd64 and QEMU
+  arm64 invocations both report 0.0.17 and produce complete help output.
+  Ebuild syntax, metadata XML, Manifest integrity, and `git diff --check` pass.
+- The laptop's installed 0.0.15 passed all three recorded content checks and
+  no HyprMon process was running. It was deliberately not upgraded live.
+  Targeted pkgcheck reports only the intentional dependency-policy mismatch:
+  Hyprland is testing-only on amd64 and has no arm64 keyword, so stable and
+  development profiles cannot currently solve the stable HyprMon dependency.
+  The authoritative full-tree scan now has 57 redundant versions and seven
+  reports in each nonsolvable-dependency class.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 58 | RedundantVersion |
+| 57 | RedundantVersion |
 | 6 | PythonCompatUpdate |
-| 6 | NonsolvableDepsInStable |
-| 6 | NonsolvableDepsInDev |
+| 7 | NonsolvableDepsInStable |
+| 7 | NonsolvableDepsInDev |
 | 5 | PotentialStable |
 | 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
@@ -1546,7 +1610,7 @@ there is an intentional rollback/security/channel reason to retain them.
 
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
-Fuzzel, Hyprmon, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
+Fuzzel, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 
