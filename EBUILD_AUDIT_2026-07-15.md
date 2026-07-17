@@ -1023,16 +1023,51 @@ Affected: 7.1.0 and 7.2.0.
 
 ### Issue 22 — unconditional kernel-module autoloading
 
-Affected:
+Status: fixed and verified as `ec-su_axb35-0_p20260711` and
+`ryzen_smu-0.1.7_p20260425-r1`.
 
-- `app-admin/ec-su_axb35`
-- `app-admin/ryzen_smu`
-
-Both install unconditional `/usr/lib/modules-load.d` entries for niche
-hardware modules. Consider optional autoload or installation without forced
-loading. Neither ebuild declares useful kernel `CONFIG_CHECK`/minimum-kernel
-guards. `ryzen_smu` also keywords `~x86`, despite practical support being
-x86-64 Ryzen systems.
+- Removed both packaged `/usr/lib/modules-load.d` entries. The two modules now
+  follow policies appropriate to their actual hardware detection rather than
+  being loaded unconditionally at boot.
+- `ec_su_axb35` has no ACPI, DMI, PCI, or other module device table. Its init
+  function immediately creates its interfaces, starts a once-per-second worker,
+  and reads fixed embedded-controller registers without checking the board.
+  The ebuild therefore leaves loading entirely to the administrator and emits
+  a post-install warning with explicit `modprobe` and local
+  `/etc/modules-load.d` instructions for confirmed Sixunited AXB35-02 systems.
+- Added `CONFIG_CHECK="ACPI_EC"` to `ec-su_axb35`, matching the kernel
+  `ec_read()` and `ec_write()` interfaces used by the driver.
+- Updated `ec-su_axb35` to upstream commit
+  `7a9f372edcaa99e562dece70204c4f609692a778`, dated 2026-07-11, and removed
+  the three superseded snapshots. The new upstream commit changes only the
+  optional Python GUI's Tk worker handling; the packaged kernel driver and
+  monitor are unchanged from the prior snapshot.
+- `ryzen_smu` already defines `MODULE_DEVICE_TABLE(pci, ...)`. The built module
+  exposes 13 AMD PCI aliases, allowing the normal kernel/udev modalias path to
+  load it only for matching hardware. Its redundant unconditional boot entry
+  was removed, and `CONFIG_CHECK="PCI"` now declares the facility required by
+  its PCI driver and configuration-space access.
+- Upstream `ryzen_smu` remains at commit
+  `0bb95d961664c7a0ac180f849fa16fe7da71922d` from 2026-04-25, so the current
+  snapshot was revision-bumped for the packaging change and the older snapshot
+  was removed. Its source archive uses a revision-independent distfile name.
+- Retained `~x86` for `ryzen_smu`. Source review found no `X86_64` requirement;
+  its CPUID and PCI interfaces exist on both x86 kernel architectures, and
+  Gentoo's existing `app-admin/ryzen_smu` also supports x86. The original audit
+  suggestion to remove the keyword was not supported by the implementation.
+- No minimum-kernel version was added: neither upstream declares one, both
+  modules build on the current supported kernel interfaces, and
+  `ec_su_axb35` contains an explicit compatibility branch around the Linux 6.4
+  `class_create()` API change. A speculative minimum would not improve QA.
+- Clean Portage builds and staged installs passed for both modules against
+  Linux 7.1.3 with GCC 16. The eclass validated both new `CONFIG_CHECK` values,
+  stripped and signed the modules, and installed no `modules-load.d` files.
+  The staged modules are non-executable-stack ET_REL objects; `modinfo`
+  confirmed no alias for `ec_su_axb35` and all 13 expected PCI aliases for
+  `ryzen_smu`. The automatically generated dracut configuration uses
+  `omit_drivers` for both modules unless initramfs inclusion is explicitly
+  enabled. Final `pkgcheck`, metadata XML validation, Manifest verification,
+  and `git diff --check` pass.
 
 ### Issue 23 — Azure CLI bundled license declaration
 

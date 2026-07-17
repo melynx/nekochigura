@@ -1,4 +1,4 @@
-# Copyright 2025 Gentoo Authors
+# Copyright 2025-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -9,12 +9,14 @@ DESCRIPTION="Kernel driver for AMD Ryzen's System Management Unit"
 HOMEPAGE="https://github.com/amkillam/ryzen_smu"
 
 COMMIT="0bb95d961664c7a0ac180f849fa16fe7da71922d"
-SRC_URI="https://github.com/amkillam/${PN}/archive/${COMMIT}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/amkillam/${PN}/archive/${COMMIT}.tar.gz -> ${PN}-${PV}.tar.gz"
 S="${WORKDIR}/${PN}-${COMMIT}"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
+
+CONFIG_CHECK="PCI"
 
 src_compile() {
 	local modlist=( ryzen_smu )
@@ -25,7 +27,4 @@ src_compile() {
 
 src_install() {
 	linux-mod-r1_src_install
-
-	insinto /usr/lib/modules-load.d
-	doins "${FILESDIR}"/ryzen_smu.conf
 }
