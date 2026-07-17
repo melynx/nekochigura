@@ -4,9 +4,13 @@ This overlay provides comprehensive support for the illogical-impulse Hyprland d
 
 ## Package Structure
 
-### Total: 30 Packages
+### Package Sources
 
-#### From GURU Overlay (15 packages - imported to nekochigura)
+#### GURU-Origin Packages
+
+These packages originated in GURU and are maintained as overlay-local copies,
+allowing nekochigura to control the versions used by its metapackages.
+
 - `app-misc/brightnessctl` - Screen brightness control
 - `app-misc/cliphist` - Wayland clipboard manager
 - `gui-apps/fuzzel` - Application launcher
@@ -21,27 +25,27 @@ This overlay provides comprehensive support for the illogical-impulse Hyprland d
 - `media-fonts/twemoji` - Twitter emoji font
 - `x11-misc/matugen` - Material You color generator
 - `x11-themes/adw-gtk3` - Adwaita GTK3 theme
+- `x11-themes/bibata-xcursors` - Material Design cursor themes
 
-#### Custom Standalone Packages (11 packages)
+#### Custom Standalone Packages
 
-**Fonts (4)**:
+**Fonts**:
 - `media-fonts/material-symbols-variable` - Material Design icons font
 - `media-fonts/readex-pro` - Readex Pro font family
 - `media-fonts/rubik-vf` - Rubik variable font
 - `media-fonts/space-grotesk` - Space Grotesk font
 
-**Themes (3)**:
+**Themes**:
 - `kde-plasma/breeze-plus` - Enhanced Breeze icon theme
 - `x11-themes/darkly` - Qt6 theme (Lightly fork)
 - `x11-themes/oneui4-icons` - Samsung OneUI icon theme
 
-**Widgets & Utilities (4)**:
+**Widgets & Utilities**:
 - `app-misc/songrec` - Shazam-like song recognition
-- `x11-misc/bibata-modern-classic` - Material Design cursor theme
 - `dev-tex/microtex` - LaTeX rendering library
 - `gui-apps/quickshell` - Qt6-based widget toolkit (live ebuild)
 
-#### Metapackages (16 packages in app-misc/)
+#### Metapackages in app-misc/
 
 **Master Metapackage**:
 - `illogical-impulse` - Install everything with one command
@@ -60,7 +64,6 @@ This overlay provides comprehensive support for the illogical-impulse Hyprland d
 - `illogical-impulse-widgets` - Widget dependencies
 
 **Wrapper Metapackages** (for standalone packages):
-- `illogical-impulse-bibata-modern-classic-bin` → `x11-misc/bibata-modern-classic`
 - `illogical-impulse-oneui4-icons-git` → `x11-themes/oneui4-icons`
 - `illogical-impulse-microtex-git` → `dev-tex/microtex`
 - `illogical-impulse-quickshell-git` → `gui-apps/quickshell`
@@ -75,12 +78,16 @@ emerge -av app-misc/illogical-impulse
 
 ### Prerequisites
 
-#### hyproverlay Repository (Required)
+#### GURU and hyproverlay Repositories (Required)
 
-Upstream now uses the `hyproverlay` overlay for Hyprland and related packages (hyprland >= 0.53.3, aquamarine, hyprgraphics, hyprutils, hyprwire, hyprtoolkit, hyprland-guiutils, glaze).
+This overlay declares both repositories as masters. GURU supplies inherited
+repository data and additional dependencies, while `hyproverlay` provides
+Hyprland and related packages (Hyprland >= 0.53.3, aquamarine, hyprgraphics,
+hyprutils, hyprwire, hyprtoolkit, hyprland-guiutils, and glaze). Bibata is
+vendored in nekochigura rather than consumed from GURU directly.
 
 ```bash
-eselect repository enable hyproverlay
+eselect repository enable guru hyproverlay
 emerge --sync
 ```
 
@@ -96,7 +103,8 @@ Most dependencies (~60+ packages) are available in official Gentoo repositories.
 
 ### Overlay Priority (Important!)
 
-To ensure nekochigura packages are preferred over GURU, set overlay priority in `/etc/portage/repos.conf/nekochigura.conf`:
+To ensure overlay-owned nekochigura packages are preferred when package names
+overlap, set its priority in `/etc/portage/repos.conf/nekochigura.conf`:
 
 ```ini
 [nekochigura]
@@ -132,7 +140,7 @@ emerge -av app-misc/songrec
 
 **Tier 4: Complex Special Packages**:
 ```bash
-emerge -av x11-misc/bibata-modern-classic
+emerge -av x11-themes/bibata-xcursors
 emerge -av dev-tex/microtex
 emerge -av gui-apps/quickshell
 ```
@@ -199,13 +207,16 @@ ls ~/.icons/ /usr/share/icons/ | grep -i bibata
 
 ## Overlay Design
 
-**External Overlay Dependency**: The `hyproverlay` overlay is required for Hyprland core packages (>=0.53.3). GURU packages were imported into nekochigura to avoid requiring the GURU overlay.
+**External Overlay Dependencies**: GURU supplies inherited repository data and
+additional general packages, while `hyproverlay` supplies Hyprland core
+packages (>=0.53.3). Both are declared as repository masters. Bibata is an
+overlay-local package based on the GURU packaging.
 
 ## Package Sources
 
 - **Upstream**: https://github.com/end-4/dots-hyprland
 - **Gentoo Distribution Files**: `/home/czl/experimental/dots-hyprland/sdata/dist-gentoo/`
-- **GURU Imports**: Imported from https://gitweb.gentoo.org/repo/proj/guru.git
+- **GURU Imports**: Overlay-local copies based on https://gitweb.gentoo.org/repo/proj/guru.git
 
 ## Maintenance Notes
 

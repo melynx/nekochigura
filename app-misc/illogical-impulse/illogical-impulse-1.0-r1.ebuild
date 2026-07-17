@@ -18,13 +18,13 @@ RDEPEND="
 	app-misc/illogical-impulse-fonts-themes
 	app-misc/illogical-impulse-hyprland
 	app-misc/illogical-impulse-kde
+	app-misc/illogical-impulse-microtex-git
+	app-misc/illogical-impulse-oneui4-icons-git
 	app-misc/illogical-impulse-portal
 	app-misc/illogical-impulse-python
+	app-misc/illogical-impulse-quickshell
 	app-misc/illogical-impulse-screencapture
 	app-misc/illogical-impulse-toolkit
 	app-misc/illogical-impulse-widgets
-	app-misc/illogical-impulse-bibata-modern-classic-bin
-	app-misc/illogical-impulse-microtex-git
-	app-misc/illogical-impulse-oneui4-icons-git
-	app-misc/illogical-impulse-quickshell
+	x11-themes/bibata-xcursors
 "
