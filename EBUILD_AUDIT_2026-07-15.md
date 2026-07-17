@@ -209,7 +209,7 @@ Current at audit time:
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
 | `material-symbols-variable` | snapshot 20260717 / `abd7f5c0` | same variable-font HEAD at resolution | Current after Issue 35. https://github.com/google/material-design-icons/commit/abd7f5c0e179c83f068c770650bd14ebac5d5a09 |
-| `twemoji` | 17.0.2 | 17.0.3 | Update. https://github.com/jdecked/twemoji/releases/tag/v17.0.3 |
+| `twemoji` | 17.0.3 | 17.0.3 | Current after Issue 36. https://github.com/jdecked/twemoji/releases/tag/v17.0.3 and https://github.com/JoeBlakeB/ttf-twemoji/releases/tag/17.0.3 |
 | `ipu6-camera-hal` | `20250923_ov02e` | `20260629_1` track available | Update/revalidate hardware track. https://github.com/intel/ipu6-camera-hal/tags |
 | `gst-plugins-icamerasrc` | `20260629_1` | `20260629_1` | Current after Issue 6. https://github.com/intel/icamerasrc/tags |
 | `ipu6-drivers` | 20260327 | `20260629_1` | Update. https://github.com/intel/ipu6-drivers/tags |
@@ -1734,13 +1734,71 @@ Status: fixed and verified on 2026-07-17 with
   targeted pkgcheck pass. The fresh authoritative full-tree scan remains at
   49 redundant versions and has no report-count changes from Issue 34.
 
+### Issue 36 — Twemoji 17.0.3 update and conservative Fontconfig policy
+
+Status: fixed and verified on 2026-07-17 with `twemoji-17.0.3` for amd64,
+arm64, and x86.
+
+- Updated to the stable jdecked Twemoji 17.0.3 artwork/project release and the
+  corresponding stable TTF release from its actual Linux font distributor,
+  JoeBlakeB/ttf-twemoji. Both releases use unsigned lightweight tags: the
+  project tag points to `b6b55fef1e8636b540a6d016a4729ca8cdf2e60b`, and
+  the font tag points to automated build commit
+  `26b26f4281aca2415bc76ac76315fd969b597bfe`. Neither GitHub release is marked
+  immutable. Package metadata and the homepage now identify both the artwork
+  upstream and the binary-font distributor rather than attributing the TTF to
+  the artwork repository alone.
+- The 3,857,500-byte release asset matches GitHub's published SHA-256 digest,
+  `e7c433a9847eeae644a76bd6b915febd97f8e7835e66b538525e08d36de73fc3`,
+  and the independently reproduced Manifest hashes. Its public successful
+  build workflow checks out jdecked v17.0.3 plus pinned Fedora and Noto build
+  inputs. The complete aggregate license remains
+  `Apache-2.0 CC-BY-4.0 MIT OFL-1.1`, covering the build work, graphics,
+  project source, and font template respectively.
+- Upstream 17.0.3 changes parser handling for variation-selector cases but does
+  not change the emoji artwork. Accordingly, the 17.0.2 and 17.0.3 TTFs have
+  identical bitmap, layout, cmap, metric, and glyph tables: only 14 bytes differ
+  for the internal version string, build timestamp, and derived checksums. The
+  new file nevertheless correctly reports version 17.0.3.
+- Replaced the legacy `75-twemoji.conf`, which forcibly rewrote requests for
+  competing emoji and broad symbol fonts, appended Twemoji to every generic
+  text stack, and globally removed part of DejaVu's charset. Those invasive
+  rules did not reliably guarantee color rendering. The new conservative
+  `45-twemoji.conf` maps only the standard generic `emoji` family and genuine
+  historical Twemoji family names. Priority 45 is required because Fontconfig
+  expands `emoji` at priority 60; keeping the rule at 75 would make it
+  ineffective. Full ordered-config tests select Twemoji for those aliases while
+  leaving explicit Noto, Apple, Symbola, Segoe, sans, serif, and monospace
+  patterns unmodified. As with other `font.eclass` configurations, the file is
+  installed in `conf.avail` and remains administrator-enabled via
+  `eselect fontconfig`. Because eselect-owned `conf.d` symlinks are not owned
+  by the package, an upgrade that finds the old priority-75 symlink emits exact
+  instructions to remove that stale link and enable the priority-45 policy; it
+  does not silently change administrator-managed enablement.
+- The font is a valid architecture-independent CBDT/CBLC color SFNT with 4,057
+  glyphs and 1,502 base cmap codepoints. Its exact global checksum, table
+  alignment, family/version/license metadata, Fontconfig classification, and
+  representative single, flag, keycap, skin-tone, and ZWJ sequence shaping all
+  pass. Its lack of general Latin language coverage is expected for an emoji
+  symbol font, not corruption.
+- A clean Portage install produced the byte-identical 0644 font, the 0644
+  conservative configuration, and the expected 0644 X font index files under
+  0755 directories. The zero-entry `fonts.scale` and `fonts.dir` files are
+  expected for a bitmap color font. Disposable Fontconfig cache generation
+  succeeded; no ELF, executable, or live-system content was present. Twemoji
+  was not installed on the laptop, so no live font or configuration changed.
+- Ebuild syntax, metadata and Fontconfig XML, Manifest integrity,
+  `git diff --check`, and targeted pkgcheck pass. Removing the obsolete 15.1.0
+  and 17.0.2 ebuilds and distfile records reduces the authoritative full-tree
+  scan to 48 redundant versions; all other report counts are unchanged.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 49 | RedundantVersion |
+| 48 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 9 | NonsolvableDepsInDev |
