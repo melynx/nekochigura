@@ -11,8 +11,8 @@
 		Includes gsutil for Cloud Storage and bq for BigQuery.
 	</longdescription>
 	<use>
-		<flag name="alpha">Install gcloud alpha command group</flag>
-		<flag name="beta">Install gcloud beta command group</flag>
+		<flag name="alpha-commands">Install gcloud alpha command group</flag>
+		<flag name="beta-commands">Install gcloud beta command group</flag>
 	</use>
 	<upstream>
 		<doc>https://cloud.google.com/sdk/docs</doc>

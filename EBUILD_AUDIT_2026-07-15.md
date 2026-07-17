@@ -158,7 +158,7 @@ upstream version stream.
 
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
-| `google-cloud-cli` | 567.0.0 | 576.0.0 | Update. https://docs.cloud.google.com/sdk/docs/release-notes |
+| `google-cloud-cli` | 576.0.0 | 576.0.0 | Current after Issue 27. https://docs.cloud.google.com/sdk/docs/release-notes |
 | `illogical-impulse-dotfiles` | snapshot 20260716 / `446504a` | same HEAD at resolution | Current after Issue 16. https://github.com/end-4/dots-hyprland/commit/446504ad427297dcbe5ee4a3d5bda1c458207cd9 |
 | `moomoo-bin` | 16.18.16308-r1 | 16.22.16708 | Update. https://www.moomoo.com/download/linux |
 | `songrec` | 0.7.4 | 0.7.4 | Current after Issue 1. https://github.com/marin-m/SongRec/releases/tag/0.7.4 |
@@ -1207,14 +1207,80 @@ Status: fixed on 2026-07-17 with `talosctl-bin-1.13.6`.
   required. Ebuild syntax, metadata XML, targeted pkgcheck, Manifest,
   repository-wide pkgcheck accounting, and `git diff --check` pass.
 
+### Issue 27 — Google Cloud CLI update and redundant versions
+
+Status: fixed on 2026-07-17 with `google-cloud-cli-576.0.0`.
+
+- Rechecked Google's release notes, install documentation, and rapid-channel
+  manifest. Version 576.0.0, released 2026-07-14, is current. It changes
+  `gcloud storage rsync` to decompress downloaded gzip objects by default
+  unless `--do-not-decompress` is used. It also refreshes bundled Linux Python
+  to 3.14.6 for CVE-2026-34182; the ebuild removes bundled Python and uses the
+  selected Gentoo interpreter instead.
+- Downloaded both immutable versioned archives. They contain internal
+  `VERSION` 576.0.0 and the expected 64-bit static `gcloud-crc32c` binaries:
+  x86-64 for amd64 and AArch64 for arm64. The x86 archive is 88,267,839 bytes
+  with SHA-256
+  `7094a08e8fc3772cdbfb1a8a1920300f52fec5e370c9f9c803c2a3c8824a32c2`;
+  the Arm archive is 61,127,594 bytes with SHA-256
+  `be6077ade7b08312a250b49b5838473253c52e25358c63cfb2cfb4095503b5f2`.
+  Their generated BLAKE2B/SHA-512 Manifest entries were independently
+  reproduced.
+- Google's install page publishes SHA-256 values for the rolling unversioned
+  filenames, whose gzip headers differ from the immutable versioned objects by
+  eight bytes. Those moving-file hashes were therefore not misapplied to the
+  ebuild distfiles. The versioned objects were additionally verified through
+  Google's canonical Cloud Storage object sizes, generations, MD5 metadata,
+  valid gzip/tar structure, and embedded version.
+- Replaced 567.0.0 with 576.0.0 and removed fully shadowed 558.0.0 and 561.0.0
+  as well. The Manifest now has only the two 576.0.0 architecture archives
+  rather than six historical artifacts.
+- Corrected package-manager ownership: upstream's supported
+  `disable_updater` switch is enabled, so routine commands no longer advertise
+  updates and `gcloud components update` refuses before changing the
+  Portage-owned tree.
+- Made `PYTHON_SINGLE_TARGET` authoritative in all six shell launchers while
+  preserving explicit `CLOUDSDK_PYTHON`, `CLOUDSDK_BQ_PYTHON`, and
+  `CLOUDSDK_GSUTIL_PYTHON` overrides. Clean staged builds selected Python 3.13
+  and 3.14 correctly. Python 3.15 was not added because upstream supports only
+  Python 3.10 through 3.14.
+- Limited shebang rewriting to the four Python entry points under `bin`, so
+  gsutil's source tree is not modified. Its self-checksum now reports `OK`.
+  Bytecode compilation is limited to the active gcloud bootstrapping, core,
+  and command-surface trees, avoiding syntax errors from bundled Python 2
+  compatibility and test sources.
+- The old `alpha` local USE flag collided with Gentoo's Alpha architecture flag
+  and was discarded on amd64. Renamed the two options to `alpha-commands` and
+  `beta-commands`; both were observed in Portage's recorded USE state and both
+  loaded real `gcloud ... firebase test --help` command surfaces. With the
+  flags disabled, the external-package-manager guard refuses component
+  installation as intended.
+- Replaced the incomplete Apache-only declaration with the retained runtime's
+  cumulative `Apache-2.0 BSD BSD-2 ISC LGPL-2.1+ MIT MPL-2.0 PSF-2
+  public-domain` licenses. Non-runtime tests, documentation, examples, a
+  PyInstaller hook, and charset-normalizer sample corpora were pruned to avoid
+  distributing irrelevant or ambiguously licensed fixtures. The complete
+  `lib/googlecloudsdk`,
+  `lib/surface`, and self-checksummed `platform/gsutil/gslib` runtime boundaries
+  are deliberately preserved because their test-named paths implement real
+  installed commands.
+- Narrowed `QA_PREBUILT` to the sole retained ELF,
+  `usr/share/google-cloud-sdk/bin/gcloud-crc32c`. Final staged QA found no
+  broken `/usr/bin` links, bundled Python, unexpected bytecode tags, RPATH, or
+  extra ELF files. `gcloud version`, `gcloud info`, `bq version`, `gsutil
+  version -l`, both optional tracks, updater refusal, ebuild syntax, metadata
+  XML, Manifest, and `git diff --check` pass. The laptop remains on its existing
+  world-selected 567.0.0 until its configured overlay checkout is updated; no
+  real `~/.config/gcloud` data was touched during testing.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 64 | RedundantVersion |
-| 8 | PythonCompatUpdate |
+| 57 | RedundantVersion |
+| 6 | PythonCompatUpdate |
 | 6 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
 | 5 | PotentialStable |
@@ -1224,12 +1290,13 @@ Repository-wide non-network scan counts:
 | 1 | RequiredUseDefaults |
 | 1 | BetterCompressionUri |
 
-Most of the 107 redundant versions are fully shadowed older point releases.
+Most of the originally reported 107 redundant versions are fully shadowed
+older point releases.
 Prune them per package after the newest replacement builds successfully, unless
 there is an intentional rollback/security/channel reason to retain them.
 
-Notable redundant groups include older 1Password, Azure CLI, Talosctl,
-Passless, Google Cloud CLI, SongRec, Bun, Coder, Ghidra, OpenCode,
+Notable redundant groups include older 1Password, Azure CLI, Passless,
+SongRec, Bun, Coder, Ghidra, OpenCode,
 Fuzzel, Hyprmon, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
