@@ -145,7 +145,7 @@ version for testing users instead of choosing only one channel.
 |---|---:|---:|---|
 | `app-admin/1password-bin` | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | Current after Issue 13. https://releases.1password.com/linux/stable/, https://releases.1password.com/linux/beta/, and https://releases.1password.com/developers/cli/ |
 | `app-admin/azure-cli-bin` | 2.87.0-r1 | 2.87.0 | Current after Issue 23. https://github.com/Azure/azure-cli/releases/latest |
-| `app-admin/talosctl-bin` | 1.13.3 | 1.13.6 | Update. https://github.com/siderolabs/talos/releases/latest |
+| `app-admin/talosctl-bin` | 1.13.6 | 1.13.6 | Current after Issue 26. https://github.com/siderolabs/talos/releases/tag/v1.13.6 |
 | `app-crypt/passless` | 0.13.0 | 0.13.0 | Current after Issue 3. https://github.com/pando85/passless/releases/tag/v0.13.0 |
 | `app-admin/ec-su_axb35` | snapshot 20260522 / `b8cab5a` | same HEAD found | Current. https://github.com/cmetz/ec-su_axb35-linux |
 | `app-admin/ryzen_smu` | snapshot 20260425 / `0bb95d9` | `1be4fb1`, 2026-06-25 | Optional snapshot update; only test formatting and HX 370 verification documentation changed. https://github.com/amkillam/ryzen_smu/compare/0bb95d961664c7a0ac180f849fa16fe7da71922d...main |
@@ -1185,13 +1185,35 @@ deliberately kept out of this issue.
   `/home/czl/projects/nekochigura`. All authoritative verification was rerun
   against `/home/czl/nekochigura` by absolute path with an isolated cache.
 
+### Issue 26 — Talosctl update and shadowed versions
+
+Status: fixed on 2026-07-17 with `talosctl-bin-1.13.6`.
+
+- Rechecked the official immutable GitHub release: v1.13.6, released
+  2026-07-09, remains marked latest. The release tag resolves to signed commit
+  `04318854e` and provides Linux binaries for all three overlay keywords.
+- Replaced 1.13.3 with 1.13.6 and removed the six older, fully shadowed ebuilds
+  from the 1.12 and 1.13 series. The Manifest now contains only the amd64,
+  arm64, and armv7 v1.13.6 assets instead of 21 historical binaries.
+- Downloaded all three binaries and the official SHA-256 and SHA-512 lists.
+  Every asset matched both official checksums and the generated Manifest.
+  ELF inspection identified the expected x86-64, AArch64, and 32-bit ARM EABI5
+  statically linked executables.
+- Added `RESTRICT="strip"` after the first staged install exposed Portage
+  re-stripping the already stripped upstream Go binary. The final clean staged
+  amd64 install emits no QA notice, is byte-identical to the checksum-verified
+  release asset, and reports `Talos v1.13.6` through its client version command.
+- Talosctl is not installed on the laptop, so no live package migration was
+  required. Ebuild syntax, metadata XML, targeted pkgcheck, Manifest,
+  repository-wide pkgcheck accounting, and `git diff --check` pass.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 65 | RedundantVersion |
+| 64 | RedundantVersion |
 | 8 | PythonCompatUpdate |
 | 6 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
