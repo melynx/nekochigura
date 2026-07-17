@@ -148,7 +148,7 @@ version for testing users instead of choosing only one channel.
 | `app-admin/talosctl-bin` | 1.13.6 | 1.13.6 | Current after Issue 26. https://github.com/siderolabs/talos/releases/tag/v1.13.6 |
 | `app-crypt/passless` | 0.13.0 | 0.13.0 | Current after Issue 3. https://github.com/pando85/passless/releases/tag/v0.13.0 |
 | `app-admin/ec-su_axb35` | snapshot 20260522 / `b8cab5a` | same HEAD found | Current. https://github.com/cmetz/ec-su_axb35-linux |
-| `app-admin/ryzen_smu` | snapshot 20260425 / `0bb95d9` | `1be4fb1`, 2026-06-25 | Optional snapshot update; only test formatting and HX 370 verification documentation changed. https://github.com/amkillam/ryzen_smu/compare/0bb95d961664c7a0ac180f849fa16fe7da71922d...main |
+| `app-admin/ryzen_smu` | snapshot 20260626 / `1be4fb1` | same HEAD found | Current after Issue 29. https://github.com/amkillam/ryzen_smu/commit/1be4fb1cd9d60b5ddefc2a4201a898766a731400 |
 | `app-crypt/picoforge` | 0.5.0 | 0.5.0 stable | Current. `v0.5.0+1` is a prerelease. https://github.com/librekeys/picoforge/releases/latest |
 
 The `acct-*` packages are local account/group objects with no independent
@@ -1347,13 +1347,48 @@ Status: fixed and verified on 2026-07-17 with `moomoo-bin-16.24.16908`.
   only the intentional musl-profile `elibc_glibc` report; the repository-wide
   summary below includes that additional result.
 
+### Issue 29 — ryzen_smu snapshot update
+
+Status: fixed and verified on 2026-07-17 with
+`ryzen_smu-0.1.7_p20260626`.
+
+- Pinned the newest upstream `main` commit,
+  `1be4fb1cd9d60b5ddefc2a4201a898766a731400`. The two commits after the old
+  `0bb95d9` snapshot repair a false failure in `scripts/test.py` by dropping a
+  trailing newline from its formatted expected version and document verified
+  Ryzen AI 9 HX 370 / Strix Point PM-table support. The driver code path and
+  advertised module version remain unchanged; the C edits are comments on
+  already-existing model and PM-table cases.
+- The immutable GitHub snapshot archive is 414,071 bytes. Its Manifest hashes
+  are BLAKE2B
+  `eb68379c81d247ff7a37babc784f9e2608989f83c934f908f9011ac6a928ac8e8bd4e306b7671fc0cab0880148facf3182f5e6f3b733f380157da25e267e7473`
+  and SHA-512
+  `8909727b4549c0da2434d77e9b85515562918b5b6ead6150e94182c0b6f61996b0cca9ba0272d288fc8dc2a7dd8b8f4db9d226fc7e8a6481b3c76f2a6e51e90f`.
+  The shadowed 20260425-r1 ebuild and old distfile entry were removed.
+- A clean unpack, prepare, compile, and staged install succeeds against the
+  active `7.1.3-gentoo-dist` kernel sources with `CONFIG_PCI` enabled. The
+  staged x86-64 `ryzen_smu.ko` reports GPL, upstream version 0.1.7, the
+  expected AMD PCI aliases, retpoline support, and matching
+  `7.1.3-gentoo-dist` vermagic. Upstream's corrected Python test script also
+  passes bytecode compilation.
+- The build warns that the installed distribution kernel was compiled with
+  GCC 15 while the currently selected and only available module compiler is
+  GCC 16. The module nevertheless compiles, links, signs, and stages
+  successfully. This is a host kernel/toolchain synchronization warning, not
+  an ebuild or upstream-source failure.
+- Targeted pkgcheck is clean. No package was merged and no module was loaded;
+  the live system has neither an installed `ryzen_smu` package nor a loaded
+  `/sys/module/ryzen_smu`. The repeatable authoritative full-tree scan reports
+  62 `RedundantVersion` results; the earlier ledger value of 57 was corrected
+  below and is unrelated to this single-version package.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 57 | RedundantVersion |
+| 62 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 6 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |

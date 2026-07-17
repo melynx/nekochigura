@@ -8,7 +8,7 @@ inherit linux-mod-r1
 DESCRIPTION="Kernel driver for AMD Ryzen's System Management Unit"
 HOMEPAGE="https://github.com/amkillam/ryzen_smu"
 
-COMMIT="0bb95d961664c7a0ac180f849fa16fe7da71922d"
+COMMIT="1be4fb1cd9d60b5ddefc2a4201a898766a731400"
 SRC_URI="https://github.com/amkillam/${PN}/archive/${COMMIT}.tar.gz -> ${PN}-${PV}.tar.gz"
 S="${WORKDIR}/${PN}-${COMMIT}"
 
