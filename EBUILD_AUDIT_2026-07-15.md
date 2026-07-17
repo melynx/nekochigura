@@ -1456,7 +1456,7 @@ Status: fixed and verified on 2026-07-17 with `ghidra-bin-12.1.2`.
 - Updated to the latest official non-prerelease release, tag
   `Ghidra_12.1.2_build` at commit
   `c0f584bf229fffba61b36431f3ce30c0c3e4e682`, published on 2026-06-05.
-  The sole official asset, `ghidra_12.1.2_PUBLIC_20260605.zip`, is
+  The sole uploaded release asset, `ghidra_12.1.2_PUBLIC_20260605.zip`, is
   572,803,866 bytes. Its locally reproduced SHA-256 is
   `b62e81a0390618466c019c60d8c2f796ced2509c4c1aea4a37644a77272cf99d`,
   exactly matching GitHub's release-asset digest, and a complete ZIP
@@ -1508,9 +1508,10 @@ Status: fixed and verified on 2026-07-17 with `ghidra-bin-12.1.2`.
   group/other-writable entries, no unsupported native platform payload, no
   batch files, valid wrapper syntax, valid metadata XML, and a valid desktop
   file. The previous unregistered `ReverseEngineering` desktop category was
-  removed. Unprivileged, network-isolated launches against the staged image
-  with a disposable home succeed through Java 25: `analyzeHeadless`, BSim,
-  and Sleigh reach their expected usage output, while a foreground GUI launch
+  removed. Unprivileged, network-isolated commands against the staged image
+  with a disposable home execute correctly under Java 25:
+  `analyzeHeadless`, BSim, and Sleigh reach their expected usage output,
+  while a foreground GUI launch
   reaches the expected no-display diagnostic. No project, user profile,
   server, network session, or live package was used.
 - The laptop still has 12.1 installed and its file checksums pass, but its
