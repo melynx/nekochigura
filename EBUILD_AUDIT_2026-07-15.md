@@ -188,7 +188,7 @@ package vendored from GURU.
 | `gui-apps/caelestia-shell` | snapshot 20260716 / `dbb6d6c` | same HEAD at resolution | Current after Issue 14. https://github.com/caelestia-dots/shell/commit/dbb6d6c029021145422255dee6cd7ba607be3a20 |
 | `gui-apps/hyprmon` | 0.0.17 | 0.0.17 | Current after Issue 32. https://github.com/erans/hyprmon/releases/tag/v0.0.17 |
 | `gui-apps/hyprsunset` | 0.4.0 | 0.4.0 | Current after Issue 33. https://github.com/hyprwm/hyprsunset/releases/tag/v0.4.0 |
-| `kde-plasma/breeze-plus` | 6.26.0 | 6.28.0 | Update. https://github.com/mjkim0727/breeze-plus/releases/tag/6.28.0 |
+| `kde-plasma/breeze-plus` | 6.28.0 | 6.28.0 | Current after Issue 34. https://github.com/mjkim0727/breeze-plus/releases/tag/6.28.0 |
 
 Current at audit time:
 
@@ -1651,17 +1651,62 @@ Status: fixed and verified on 2026-07-17 with `hyprsunset-0.4.0` for amd64.
   has 56 redundant versions and nine reports in each nonsolvable-dependency
   class.
 
+### Issue 34 — Breeze Plus 6.28.0 update and icon-theme metadata repair
+
+Status: fixed and verified on 2026-07-17 with `breeze-plus-6.28.0`, keyworded
+for amd64, arm64, and testing x86.
+
+- Updated from 6.26.0 to the latest official non-prerelease release, 6.28.0,
+  published on 2026-06-30. The annotated tag points to commit
+  `a7a9dcb6bcb8045966472744f3e8350905b560da`; both the tag and target commit
+  are unsigned. The generated tag archive is 593,368 bytes with SHA-256
+  `2462371450507e224aa04404666919e16dcebc4ef120b1349f21cef316d21a73`.
+  Its single-root archive layout is safe, and its 499 SVG files all pass
+  non-networked XML validation. The obsolete 6.2.5-r1, 6.19.0, and 6.26.0
+  ebuilds and distfile records were removed.
+- Corrected the aggregate license from LGPL-2.1 alone to
+  `LGPL-2.1 CC-BY-SA-4.0`: upstream's top-level license is LGPL-2.1, while
+  embedded metadata in supplied icons identifies CC-BY-SA-4.0 content.
+  Replaced the indirect Plasma Breeze dependency with the packages that own
+  the themes named by both indexes: `kde-frameworks/breeze-icons` for Breeze
+  and Breeze Dark, and `x11-themes/hicolor-icon-theme` for Hicolor.
+- Added a version-scoped upstream metadata patch. Both themes advertised the
+  nonexistent `status/32`, `status/48`, and `status/64` directories while
+  omitting populated 24px and scaled 24px app, place, and status paths. They
+  also contained two sections for nonexistent scaled Preferences paths. The
+  patch removes all stale declarations and sections and adds every missing
+  declaration and fixed-size/scaled section. Each theme now has exact equality
+  between its 45 payload directories, declared directories, and sections.
+- Stable keywords are used on amd64 and arm64. x86 remains testing because
+  the required Breeze Icons package is testing-only there; marking Breeze
+  Plus stable on x86 would create an unsatisfiable stable package. The payload
+  itself is architecture-independent SVG, INI, and relative-symlink data.
+- A clean Portage prepare/install completed. The staged image exactly retains
+  501 regular files and 349 relative symlinks under the two unique theme roots,
+  with files normalized to 0644 and directories to 0755. No symlink is broken,
+  absolute, or escapes `/usr/share/icons`; all 499 SVG files parse; and
+  `gtk-update-icon-cache` successfully builds a cache for each disposable
+  staged theme. The unique roots create no filesystem collision with KDE's
+  fallback themes, and the light/dark cross-theme symlinks resolve because
+  both roots are installed together. Breeze Plus was not installed on the
+  laptop, so no live package or theme configuration was touched.
+- Ebuild syntax, metadata XML, patch application, Manifest integrity, and
+  `git diff --check` pass. Targeted pkgcheck reports only `PotentialStable` on
+  x86, intentionally deferred until Breeze Icons is stable there. The fresh
+  authoritative full-tree scan has 49 redundant versions and six potential
+  stabilization reports; all other report counts are unchanged.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 56 | RedundantVersion |
+| 49 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 9 | NonsolvableDepsInDev |
-| 5 | PotentialStable |
+| 6 | PotentialStable |
 | 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
