@@ -168,8 +168,9 @@ upstream version stream.
 | `cliphist` | 0.7.0 | 0.7.0 | Current. https://github.com/sentriz/cliphist/releases/tag/v0.7.0 |
 
 The other `illogical-impulse-*` split packages are overlay-local dependency
-groupings and have no independent upstream release streams. The Bibata wrapper
-is labeled 2.0.6 while the wrapped package and upstream are 2.0.7.
+groupings and have no independent upstream release streams. The obsolete
+Bibata wrapper was removed in Issue 24 in favor of a generic all-variants
+package vendored from GURU.
 
 ### Development and desktop
 
@@ -230,7 +231,7 @@ Current at audit time:
 - EVDI 1.15.0
 - RyzenAdj 0.19.0
 - libxcb 1.17.0
-- Bibata 2.0.7
+- Bibata 2.0.7, with the all-variants ebuild vendored from GURU
 - Matugen 4.1.0
 - adw-gtk3 6.5
 - Catppuccin Neovim 2.0.0
@@ -603,7 +604,8 @@ dependency change in `illogical-impulse-basic-1.0-r3.ebuild`.
   current Hyprland, xdg-desktop-portal-hyprland, hyprshot, wtype, and fuzzel.
   Preserved supported component arches instead of dropping them globally:
   audio, backlight, and Python retain `~arm64`; MicroTeX retains `~x86`; and
-  Bibata, KDE, OneUI, and Quickshell retain both `~arm64` and `~x86`. Python's
+  Bibata, KDE, OneUI, and Quickshell retain `~x86`; KDE, OneUI, and Quickshell
+  also retain `~arm64`. Python's
   x86 keyword was removed because `dev-python/uv` is profile-unsolvable there.
 - Corrected the Hyprland and KDE packages from `GPL-2` to `metapackage` because
   they install no payload. Added the real dots-hyprland homepage and upstream
@@ -1108,12 +1110,38 @@ Affected: all `app-admin/azure-cli-bin` ebuilds.
 
 ### Issue 24 — Bibata old Manifest mismatch and stale wrapper
 
-- `x11-misc/bibata-modern-classic-2.0.6-r1` expects one distfile name while
-  Manifest contains a revision-suffixed, unknown distfile. pkgcheck reports
-  both MissingManifest and UnknownManifest. The version is also fully shadowed.
-- `illogical-impulse-bibata-modern-classic-bin-2.0.6-r1` is labeled 2.0.6 while
-  its unversioned dependency resolves to Bibata 2.0.7. Bump/decouple the wrapper
-  version and add an upstream homepage/version constraint if intended.
+Status: fixed on 2026-07-17 by replacing the old single-theme package and
+versioned wrapper with a generic all-variants package maintained in this
+overlay.
+
+- Deleted `x11-misc/bibata-modern-classic`, including the shadowed 2.0.6-r1
+  ebuild, current 2.0.7 ebuild, and invalid old Manifest entry. Deleted the
+  redundant `app-misc/illogical-impulse-bibata-modern-classic-bin` wrapper.
+- Vendored `x11-themes/bibata-xcursors-2.0.7` from GURU into nekochigura and
+  assigned it to the local maintainer. It continues to fetch the official
+  upstream release archive directly, so no release artifact is hosted by the
+  overlay.
+- `app-misc/illogical-impulse-1.0-r1` now depends directly on
+  `x11-themes/bibata-xcursors`. The revision bump ensures existing master
+  metapackage installations receive the dependency change. The supplied
+  package-accept-keywords configuration and Illogical Impulse README use the
+  generic atom and no longer reference either deleted package.
+- The vendored 2.0.7 ebuild tracks the current official Bibata release and
+  installs all 12 Modern and Original variants. A clean staged Portage install
+  produced no QA notices. Its `Bibata-Modern-Classic` directory contains the
+  same 58 files, byte-for-byte, as the laptop's former custom 2.0.7 package, so
+  the configured cursor theme is preserved after migration.
+- The laptop was actively using the deleted custom 2.0.7 package through both
+  `XCURSOR_THEME` and the GNOME cursor setting. After the replacement content
+  was verified, the custom package was removed and GURU's
+  `x11-themes/bibata-xcursors-2.0.7` was installed and recorded in the world
+  set. It was then reinstalled from nekochigura after the ebuild was vendored.
+  The old atom is no longer installed, both settings remain
+  `Bibata-Modern-Classic`, and its content still exactly matches the
+  pre-migration backup.
+- Targeted `pkgcheck` returns no reports for both the vendored package and the
+  revised master metapackage. Reference scans, Manifest and metadata
+  validation, clean staged installs, and `git diff --check` pass.
 
 ### Issue 25 — miscellaneous metadata and policy cleanup
 

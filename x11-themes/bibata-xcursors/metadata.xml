@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		Bibata provides Modern and Original material-designed cursor themes in
+		Amber, Classic, and Ice colors, including left- and right-handed variants.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/ful1e5/Bibata_Cursor/issues</bugs-to>
+		<remote-id type="github">ful1e5/Bibata_Cursor</remote-id>
+	</upstream>
+</pkgmetadata>
