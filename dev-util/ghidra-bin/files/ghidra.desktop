@@ -6,5 +6,5 @@ Comment=Software reverse engineering framework
 Exec=ghidra
 Icon=ghidra
 Terminal=false
-Categories=Development;Debugger;ReverseEngineering;
+Categories=Development;Debugger;
 StartupWMClass=ghidra-Ghidra

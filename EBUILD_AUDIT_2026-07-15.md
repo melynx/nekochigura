@@ -179,7 +179,7 @@ package vendored from GURU.
 | `dev-python/curl-cffi` | 0.15.0 | 0.15.0 | Current after Issue 17. https://pypi.org/project/curl-cffi/0.15.0/ |
 | `dev-util/claude-code` | stable 2.1.204; testing 2.1.211 | stable 2.1.204; latest 2.1.211 | Both verified channels packaged using Gentoo stable/testing keywords. https://downloads.claude.ai/claude-code-releases/stable |
 | `dev-util/coder-bin` | stable 2.34.6; testing 2.35.2 | stable 2.34.6; mainline 2.35.2 | Both verified channels current after Issue 30. https://github.com/coder/coder/releases/tag/v2.34.6 and https://github.com/coder/coder/releases/tag/v2.35.2 |
-| `dev-util/ghidra-bin` | 12.1 | 12.1.2 | Update. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
+| `dev-util/ghidra-bin` | 12.1.2 | 12.1.2 | Current after Issue 31. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
 | `dev-util/opencode-bin` | 1.18.2 | 1.18.2 at resolution | Current after Issue 8. https://github.com/anomalyco/opencode/releases/tag/v1.18.2 |
 | `gui-apps/caelestia-shell` | snapshot 20260716 / `dbb6d6c` | same HEAD at resolution | Current after Issue 14. https://github.com/caelestia-dots/shell/commit/dbb6d6c029021145422255dee6cd7ba607be3a20 |
 | `gui-apps/hyprmon` | 0.0.15 | 0.0.17 | Update. https://github.com/erans/hyprmon/releases/tag/v0.0.17 |
@@ -1449,13 +1449,85 @@ testing `coder-bin-2.35.2`.
   so no live package or service was changed. Targeted pkgcheck is clean; the
   full-tree redundant-version total falls from 62 to 59.
 
+### Issue 31 — Ghidra 12.1.2 update, licenses, and installed modes
+
+Status: fixed and verified on 2026-07-17 with `ghidra-bin-12.1.2`.
+
+- Updated to the latest official non-prerelease release, tag
+  `Ghidra_12.1.2_build` at commit
+  `c0f584bf229fffba61b36431f3ce30c0c3e4e682`, published on 2026-06-05.
+  The sole official asset, `ghidra_12.1.2_PUBLIC_20260605.zip`, is
+  572,803,866 bytes. Its locally reproduced SHA-256 is
+  `b62e81a0390618466c019c60d8c2f796ced2509c4c1aea4a37644a77272cf99d`,
+  exactly matching GitHub's release-asset digest, and a complete ZIP
+  integrity test passes. Portage records BLAKE2B
+  `143df3c443552daf7f7d7d562c391d298733301f3cd9d1b9a06a526250306c213eaacb095d943abe7b852e67ed44669d6aa07146a9f522041334ef8d8cf62e76`
+  and SHA-512
+  `5d10c086ac1099fd2a63eb9417d8f12fcaad962292b3f4410e8ad356fd72875205772371dd9a6d789f721ca44f00025de3195420da746d4023bddec333c37246`.
+- The official public build provides Linux x86-64 native binaries only, so
+  the released package is stable-keyworded `amd64` and explicitly requires
+  glibc. Its metadata specifies a 64-bit JDK 21 minimum with no maximum and
+  Python 3.9-3.14 for debugger/PyGhidra support. Runtime linkage also makes
+  the GCC runtime a direct dependency. The old 12.0.4 and 12.1 ebuilds and
+  their Manifest objects were removed.
+- Fixed a substantial pre-existing license defect. The top-level program is
+  Apache-2.0, but 103 module manifests declare bundled BSD, GPL, LGPL, MIT,
+  MPL, PostgreSQL, PSF, icon, public-domain, and other components. The
+  CycloneDX SBOM has 203 components but no license fields and omits the
+  nested Jython fat JAR. The ebuild now declares the complete audited set,
+  including `CNRI-Jython` and `Ghidra-CPP`; their missing terms were added as
+  overlay licenses from the canonical JPython license and Ghidra's tagged
+  CPP parser notice. All applicable terms permit redistribution when their
+  notices and supplied source are retained, so the unjustified `bindist` and
+  `mirror` restrictions were removed. The installed license manifests,
+  `licenses/`, `GPL/`, nested notices, and supplied source archives remain
+  intact; only `strip` remains restricted because stripping the packaged
+  training binaries would alter their instructional payload.
+- Replaced the mode-destroying `doins -r` installation. The former installed
+  12.1 tree is owned by `nobody:nobody`; it restored only a handful of
+  launchers, leaving supported commands such as `support/bsim`,
+  `support/ghidraDebug`, `support/sleigh`, `server/ghidraSvr`,
+  `server/svrAdmin`, and debugger launchers non-executable. Conversely, its
+  blanket shared-library chmod incorrectly made data libraries executable.
+  The new install is root-owned, normalizes directories to 0755 and ordinary
+  files to 0644, then restores exactly 67 semantic upstream executables:
+  runtime/server/debugger/Docker launchers, BSim's setup helper, five Linux
+  native commands, and 16 executable training samples. Together with the two
+  overlay wrappers, the staged image has 69 executable regular files. This
+  also clears erroneous executable bits from 68 upstream JAR, source, XML,
+  manifest, and image files while retaining every supported launcher.
+- Platform pruning now also removes the overlooked Windows x86-32 native
+  directory and the separate macOS/Windows 7-Zip JNI payloads, in addition to
+  macOS and Windows x86-64 runtime directories and batch launchers. Cross-target
+  analysis data remains installed. All 22 remaining ELF files are little-
+  endian x86-64: five operational native commands, the 7-Zip JNI library,
+  and 16 training files. `QA_PREBUILT` now covers all 22 instead of only five.
+  None has an executable stack, text relocation, RPATH, or RUNPATH; runtime
+  requirements are limited to glibc and the GCC C++ runtime.
+- A clean unpack/prepare/install cycle produces a root-owned image with no
+  group/other-writable entries, no unsupported native platform payload, no
+  batch files, valid wrapper syntax, valid metadata XML, and a valid desktop
+  file. The previous unregistered `ReverseEngineering` desktop category was
+  removed. Unprivileged, network-isolated launches against the staged image
+  with a disposable home succeed through Java 25: `analyzeHeadless`, BSim,
+  and Sleigh reach their expected usage output, while a foreground GUI launch
+  reaches the expected no-display diagnostic. No project, user profile,
+  server, network session, or live package was used.
+- The laptop still has 12.1 installed and its file checksums pass, but its
+  ownership and launcher modes exhibit the defects above; no Ghidra process
+  was running during inspection. It was deliberately not upgraded live.
+  Targeted pkgcheck reports only the intentional `RequiredUseDefaults` result
+  on musl profiles for this glibc-only upstream binary. The authoritative
+  full-tree summary now has 58 redundant versions and three such
+  required-USE reports.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 59 | RedundantVersion |
+| 58 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 6 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -1463,7 +1535,7 @@ Repository-wide non-network scan counts:
 | 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
-| 2 | RequiredUseDefaults |
+| 3 | RequiredUseDefaults |
 | 1 | BetterCompressionUri |
 
 Most of the originally reported 107 redundant versions are fully shadowed
@@ -1472,7 +1544,7 @@ Prune them per package after the newest replacement builds successfully, unless
 there is an intentional rollback/security/channel reason to retain them.
 
 Notable redundant groups include older 1Password, Azure CLI, Passless,
-SongRec, Bun, Ghidra, OpenCode,
+SongRec, Bun, OpenCode,
 Fuzzel, Hyprmon, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
