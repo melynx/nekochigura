@@ -2,7 +2,11 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>czl@iiyume.org</email>
+		<email>melynx@gmail.com</email>
 		<name>Chua Zheng Leong</name>
 	</maintainer>
+	<upstream>
+		<remote-id type="github">lexiforest/curl_cffi</remote-id>
+		<remote-id type="pypi">curl-cffi</remote-id>
+	</upstream>
 </pkgmetadata>

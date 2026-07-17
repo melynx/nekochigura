@@ -1,3 +1,6 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
 EAPI=8
 
 DESCRIPTION="Split-screen video comparison tool using FFmpeg and SDL2"
@@ -5,6 +8,8 @@ HOMEPAGE="https://github.com/pixop/video-compare"
 
 MY_PN="video-compare"
 SRC_URI="https://github.com/pixop/${MY_PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
+
+S="${WORKDIR}/${MY_PN}-${PV}"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -17,8 +22,6 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
-
-S="${WORKDIR}/${MY_PN}-${PV}"
 
 PATCHES=( "${FILESDIR}/${PN}-0001-gentoo-build.patch" )
 

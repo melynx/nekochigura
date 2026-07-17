@@ -1,3 +1,6 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
 EAPI=8
 
 inherit cmake
@@ -95,25 +98,25 @@ src_configure() {
 #}
 
 pkg_postinst() {
-    elog "Intel IPU6 Camera HAL has been installed."
-    elog ""
-    elog "This provides userspace camera processing for Intel Tiger Lake,"
-    elog "Alder Lake, Raptor Lake, and Meteor Lake platforms."
-    elog ""
+	elog "Intel IPU6 Camera HAL has been installed."
+	elog ""
+	elog "This provides userspace camera processing for Intel Tiger Lake,"
+	elog "Alder Lake, Raptor Lake, and Meteor Lake platforms."
+	elog ""
 	elog "Build configuration:"
-    if use plugin && use adapter; then
-        elog "  Mode: Plugin with adaptor (runtime hardware detection)"
-        elog "  Libraries: /usr/$(get_libdir)/libcamhal/plugins/"
-    else
-        elog "  Mode: Standard shared library"
-        elog "  Library: /usr/$(get_libdir)/libcamhal.so"
-    fi
+	if use plugin && use adapter; then
+		elog "  Mode: Plugin with adaptor (runtime hardware detection)"
+		elog "  Libraries: /usr/$(get_libdir)/libcamhal/plugins/"
+	else
+		elog "  Mode: Standard shared library"
+		elog "  Library: /usr/$(get_libdir)/libcamhal.so"
+	fi
 
-    local enabled_ipus=()
-    use ipu6 && enabled_ipus+=( "IPU6" )
-    use ipu6ep && enabled_ipus+=( "IPU6EP" )
-    use ipu6epmtl && enabled_ipus+=( "IPU6EPMTL" )
-    elog "  Supported IPU versions: ${enabled_ipus[*]}"
+	local enabled_ipus=()
+	use ipu6 && enabled_ipus+=( "IPU6" )
+	use ipu6ep && enabled_ipus+=( "IPU6EP" )
+	use ipu6epmtl && enabled_ipus+=( "IPU6EPMTL" )
+	elog "  Supported IPU versions: ${enabled_ipus[*]}"
 
-    use live-tuning && elog "  Live tuning: Enabled"
+	use live-tuning && elog "  Live tuning: Enabled"
 }

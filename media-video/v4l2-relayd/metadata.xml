@@ -2,7 +2,13 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>czl@iiyume.org</email>
+		<email>melynx@gmail.com</email>
 		<name>Chua Zheng Leong</name>
 	</maintainer>
+	<use>
+		<flag name="ipu6">Install IPU6-specific udev and systemd integration</flag>
+	</use>
+	<upstream>
+		<remote-id type="gitlab">vicamo/v4l2-relayd</remote-id>
+	</upstream>
 </pkgmetadata>

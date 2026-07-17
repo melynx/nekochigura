@@ -113,15 +113,17 @@ inherit cargo
 DESCRIPTION="Automatic Language-Agnostic Subtitle Synchronization (Command Line Tool)"
 HOMEPAGE="https://github.com/kaegi/alass"
 SRC_URI="
-    https://github.com/melynx/alass/archive/refs/tags/v${PVR}.tar.gz -> ${PVR}.tar.gz
-    ${CARGO_CRATE_URIS}
+	https://github.com/melynx/alass/archive/refs/tags/v${PVR}.tar.gz -> ${PVR}.tar.gz
+	${CARGO_CRATE_URIS}
 "
+
+S="${WORKDIR}/alass-${PVR}/${PN}"
 
 LICENSE="GPL-3"
 # Dependent crate licenses
 LICENSE+="
-    BSD CC0-1.0 LGPL-3 MIT MPL-2.0 Unicode-3.0
-    || ( Apache-2.0 Boost-1.0 )
+	BSD CC0-1.0 LGPL-3 MIT MPL-2.0 Unicode-3.0
+	|| ( Apache-2.0 Boost-1.0 )
 "
 SLOT="0"
 KEYWORDS="~amd64"
@@ -129,10 +131,8 @@ KEYWORDS="~amd64"
 DEPEND="media-video/ffmpeg"
 RDEPEND="${DEPEND}"
 
-S="${WORKDIR}/alass-${PVR}/${PN}"
-
 src_unpack() {
-    default || die "src_unpack failed"
+	default || die "src_unpack failed"
 	cargo_src_unpack || die "cargo_src_unpack failed"
 }
 
@@ -141,6 +141,6 @@ src_configure() {
 }
 
 src_install() {
-    cargo_src_install
+	cargo_src_install
 	dosym alass-cli /usr/bin/alass
 }

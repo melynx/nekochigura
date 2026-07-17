@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<use>
+		<flag name="adapter">Build the camera HAL adaptor</flag>
+		<flag name="live-tuning">Enable live camera tuning support</flag>
+		<flag name="plugin">Build per-IPU camera HAL plugins</flag>
+		<flag name="pglite-pipe">Use the PG Lite processing pipeline</flag>
+		<flag name="ipu6">Build support for Intel IPU6</flag>
+		<flag name="ipu6ep">Build support for Intel IPU6 EP</flag>
+		<flag name="ipu6epmtl">Build support for Intel IPU6 EP on Meteor Lake</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">intel/ipu6-camera-hal</remote-id>
+	</upstream>
+</pkgmetadata>

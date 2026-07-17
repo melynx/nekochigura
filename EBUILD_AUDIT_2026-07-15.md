@@ -146,7 +146,7 @@ version for testing users instead of choosing only one channel.
 | `app-admin/1password-bin` | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | stable 8.12.28; beta 8.12.30-19; CLI 2.35.0 | Current after Issue 13. https://releases.1password.com/linux/stable/, https://releases.1password.com/linux/beta/, and https://releases.1password.com/developers/cli/ |
 | `app-admin/azure-cli-bin` | 2.87.0-r1 | 2.87.0 | Current after Issue 23. https://github.com/Azure/azure-cli/releases/latest |
 | `app-admin/talosctl-bin` | 1.13.3 | 1.13.6 | Update. https://github.com/siderolabs/talos/releases/latest |
-| `app-crypt/passless` | 0.11.2 | 0.13.0 | Update. https://github.com/pando85/passless/releases/tag/v0.13.0 |
+| `app-crypt/passless` | 0.13.0 | 0.13.0 | Current after Issue 3. https://github.com/pando85/passless/releases/tag/v0.13.0 |
 | `app-admin/ec-su_axb35` | snapshot 20260522 / `b8cab5a` | same HEAD found | Current. https://github.com/cmetz/ec-su_axb35-linux |
 | `app-admin/ryzen_smu` | snapshot 20260425 / `0bb95d9` | `1be4fb1`, 2026-06-25 | Optional snapshot update; only test formatting and HX 370 verification documentation changed. https://github.com/amkillam/ryzen_smu/compare/0bb95d961664c7a0ac180f849fa16fe7da71922d...main |
 | `app-crypt/picoforge` | 0.5.0 | 0.5.0 stable | Current. `v0.5.0+1` is a prerelease. https://github.com/librekeys/picoforge/releases/latest |
@@ -159,11 +159,11 @@ upstream version stream.
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
 | `google-cloud-cli` | 567.0.0 | 576.0.0 | Update. https://docs.cloud.google.com/sdk/docs/release-notes |
-| `illogical-impulse-dotfiles` | snapshot 20260529 / `3cb611c` | main `c04b0bb`, 2026-06-14 | Snapshot update. Formal release 2026.05.11 is older than local. https://github.com/end-4/dots-hyprland/commit/c04b0bbc8143a2b2166c1f699f7583cb28ff78fe |
+| `illogical-impulse-dotfiles` | snapshot 20260716 / `446504a` | same HEAD at resolution | Current after Issue 16. https://github.com/end-4/dots-hyprland/commit/446504ad427297dcbe5ee4a3d5bda1c458207cd9 |
 | `moomoo-bin` | 16.18.16308-r1 | 16.22.16708 | Update. https://www.moomoo.com/download/linux |
-| `songrec` | 0.7.3 | 0.7.4 | Update. https://github.com/marin-m/SongRec/releases/tag/0.7.4 |
+| `songrec` | 0.7.4 | 0.7.4 | Current after Issue 1. https://github.com/marin-m/SongRec/releases/tag/0.7.4 |
 | `brightnessctl` | 0.5.1 | 0.5.1 | Current. https://github.com/Hummer12007/brightnessctl/releases |
-| `caelestia-cli` | 1.1.1 | 1.1.1 | Current. https://github.com/caelestia-dots/cli/releases/tag/v1.1.1 |
+| `caelestia-cli` | 1.1.1-r1 | 1.1.1 | Current after Issue 14. https://github.com/caelestia-dots/cli/releases/tag/v1.1.1 |
 | `caelestia` | 2.1.0-r2 synthetic meta | Shell 2.1.0 / CLI 1.1.1 | Current as a local meta. |
 | `cliphist` | 0.7.0 | 0.7.0 | Current. https://github.com/sentriz/cliphist/releases/tag/v0.7.0 |
 
@@ -176,12 +176,12 @@ package vendored from GURU.
 
 | Package | Newest local | Upstream/current | Status and official source |
 |---|---:|---:|---|
-| `dev-python/curl-cffi` | 0.14.0 | 0.15.0 | Update. https://pypi.org/project/curl-cffi/0.15.0/ |
+| `dev-python/curl-cffi` | 0.15.0 | 0.15.0 | Current after Issue 17. https://pypi.org/project/curl-cffi/0.15.0/ |
 | `dev-util/claude-code` | stable 2.1.204; testing 2.1.211 | stable 2.1.204; latest 2.1.211 | Both verified channels packaged using Gentoo stable/testing keywords. https://downloads.claude.ai/claude-code-releases/stable |
 | `dev-util/coder-bin` | 2.32.5 | 2.34.6 | Update. https://github.com/coder/coder/releases/tag/v2.34.6 |
 | `dev-util/ghidra-bin` | 12.1 | 12.1.2 | Update. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
-| `dev-util/opencode-bin` | 1.17.3 | 1.18.1 | Update. https://github.com/anomalyco/opencode/releases/tag/v1.18.1 |
-| `gui-apps/caelestia-shell` | pinned `4a7773c`, actually 2026-06-30 | `aa836f2`, 2026-07-12 | Snapshot update; local PV date 20260706 is inaccurate. https://github.com/caelestia-dots/shell/commit/aa836f2a29bf48b403c57af4bec224aed0412878 |
+| `dev-util/opencode-bin` | 1.18.2 | 1.18.2 at resolution | Current after Issue 8. https://github.com/anomalyco/opencode/releases/tag/v1.18.2 |
+| `gui-apps/caelestia-shell` | snapshot 20260716 / `dbb6d6c` | same HEAD at resolution | Current after Issue 14. https://github.com/caelestia-dots/shell/commit/dbb6d6c029021145422255dee6cd7ba607be3a20 |
 | `gui-apps/hyprmon` | 0.0.15 | 0.0.17 | Update. https://github.com/erans/hyprmon/releases/tag/v0.0.17 |
 | `gui-apps/hyprsunset` | 0.3.3 | 0.4.0 | Update. https://github.com/hyprwm/hyprsunset/releases/tag/v0.4.0 |
 | `kde-plasma/breeze-plus` | 6.26.0 | 6.28.0 | Update. https://github.com/mjkim0727/breeze-plus/releases/tag/6.28.0 |
@@ -190,12 +190,12 @@ Current at audit time:
 
 - `dev-embedded/rkdeveloptool` snapshot `304f073`
 - `dev-lang/bun-bin` 1.3.14
-- `dev-python/materialyoucolor` 3.0.2 plus live 9999
-- `dev-tex/microtex` pinned `0e3707f` (packaging is broken; see Issue 2)
+- `dev-python/materialyoucolor` 3.0.3 plus live 9999
+- `dev-tex/microtex` 1.0-r2 pinned to `0e3707f`, fixed in Issue 2
 - `gui-apps/fuzzel` 1.14.1
 - `gui-apps/hyprdynamicmonitors` 1.4.0
 - `gui-apps/nwg-displays` 0.4.3
-- `gui-apps/quickshell` 0.3.0
+- `gui-apps/quickshell` 0.3.0 plus pinned snapshot 0.3.0_p20260710
 - `gui-apps/wlogout` 1.2.2-r1
 - `gui-apps/wtype` 0.4
 - `gui-libs/xdg-desktop-portal-hyprland` 1.3.12
@@ -207,12 +207,12 @@ Current at audit time:
 | `material-symbols-variable` | snapshot 20260529 / `fef175fe` | `819d786`, 2026-07-10 | Update. https://github.com/google/material-design-icons/commit/819d78680a849ceef4c78f863d8753e3160b7c89 |
 | `twemoji` | 17.0.2 | 17.0.3 | Update. https://github.com/jdecked/twemoji/releases/tag/v17.0.3 |
 | `ipu6-camera-hal` | `20250923_ov02e` | `20260629_1` track available | Update/revalidate hardware track. https://github.com/intel/ipu6-camera-hal/tags |
-| `gst-plugins-icamerasrc` | 20251226 | `20260629_1` | Update. https://github.com/intel/icamerasrc/tags |
+| `gst-plugins-icamerasrc` | `20260629_1` | `20260629_1` | Current after Issue 6. https://github.com/intel/icamerasrc/tags |
 | `ipu6-drivers` | 20260327 | `20260629_1` | Update. https://github.com/intel/ipu6-drivers/tags |
 | `gpu-screen-recorder` | 5.13.6 plus live 9999 | 5.15.0 | Update versioned ebuild. https://git.dec05eba.com/gpu-screen-recorder/refs/ |
-| `makemkv` | 1.18.3 | 1.18.4 | Update. https://www.makemkv.com/download/ |
+| `makemkv` | 1.18.4 | 1.18.4 | Current after Issue 7. https://www.makemkv.com/download/ |
 | `video-compare` | 20260502 | 20260708 | Update. https://github.com/pixop/video-compare/tags |
-| `wechat-bin` | 4.1.1 label | current artifact 4.1.1.8 | Update and make URL immutable. https://linux.weixin.qq.com/ |
+| `wechat-bin` | 4.1.1.8 | 4.1.1.8 at resolution | Current with immutable artifact after Issue 4. https://linux.weixin.qq.com/ |
 | `clash-party-bin` | 1.9.5 | 2.0.0 | Update. https://github.com/mihomo-party-org/clash-party/releases/tag/v2.0.0 |
 | `hipsparselt` | 7.2.0 | ROCm 7.2.4 | Update. https://github.com/ROCm/rocm-libraries/releases/tag/rocm-7.2.4 |
 | `sci-ml/ollama` | 0.23.2 | 0.32.0 | Update. https://github.com/ollama/ollama/releases/tag/v0.32.0 |
@@ -1020,6 +1020,10 @@ Resolution:
 
 Affected: 7.1.0 and 7.2.0.
 
+Status: deferred for future work on 2026-07-17 at the maintainer's request.
+The ROCm package set needs broader repair and is intentionally outside the
+current continuation queue.
+
 - Inherits deprecated `llvm-r1`; migrate to `llvm-r2` with testing.
 - Update source to ROCm 7.2.4.
 
@@ -1145,19 +1149,41 @@ overlay.
 
 ### Issue 25 — miscellaneous metadata and policy cleanup
 
-- Missing `metadata.xml` entirely for:
-  - `dev-python/curl-cffi`
-  - `dev-tex/microtex`
-  - `gui-apps/quickshell`
-  - `kde-plasma/breeze-plus`
-- Many packages lack inferred remote IDs; see pkgcheck summary below.
-- `media-libs/ipu6-camera-hal` has seven undocumented local USE flags.
-- `media-video/v4l2-relayd` has undocumented `ipu6` USE.
-- `net-misc/curl-impersonate` has undocumented `clients` USE.
-- `app-admin/talosctl-bin` description says “is an tool”.
-- Several ebuilds have empty global assignments, variable ordering, trailing
-  blank lines, long lines, or description punctuation warnings. Address these
-  opportunistically after functional issues.
+Status: fixed on 2026-07-17 as a metadata and non-functional policy cleanup.
+Version updates, keyword/dependency changes, and redundant-version pruning were
+deliberately kept out of this issue.
+
+- A fresh scan of this checkout found that MicroTeX and Quickshell metadata had
+  already been added by Issues 2 and 9. Added the 16 metadata files that were
+  actually absent, covering every remaining package directory. Added 14
+  upstream remote IDs across 13 packages; the two Ollama account objects and
+  proprietary DisplayLink package correctly have no independent forge ID.
+- Documented all nine overlay-local USE flags: the seven IPU6 Camera HAL build
+  options, v4l2-relayd's IPU6 integration, and curl-impersonate's optional
+  browser-specific clients.
+- Corrected all seven Talosctl descriptions and shortened their repeated source
+  URI definitions without changing resolved URLs. Added the standard Gentoo
+  copyright/license boilerplate to all 19 ebuilds that lacked it, including
+  Talosctl, the IPU6 stack, and video-compare. Talosctl remains queued
+  separately for a version update.
+- Cleared the repository's safe style findings across 43 ebuilds: empty
+  assignments, variable ordering, trailing blank lines, leading-space
+  indentation, terminal description punctuation, excessive line lengths,
+  inconsistent tar syntax, and completion-eclass usage. The changes are
+  non-functional and require no package revision bumps.
+- Removed the redundant short FIDO group long description. All newly added XML
+  validates, every changed ebuild passes shell syntax validation, and targeted
+  pkgcheck reports no remaining missing metadata/remote IDs, undocumented USE
+  flags, unsafe whitespace, ordering, line-length, empty-assignment,
+  description, inherit, or tar-syntax result.
+- The v4l2-relayd `BetterCompressionUri` suggestion is intentionally retained:
+  switching GitLab archive formats changes the fetched artifact and belongs in
+  a separately tested package update. `images`, `illogical-impulse`, and the
+  `nekochigura-dependencies` submodule are intentional repository support
+  directories, accounting for the single `UnknownCategoryDirs` result.
+- The first scan accidentally resolved the configured stale checkout at
+  `/home/czl/projects/nekochigura`. All authoritative verification was rerun
+  against `/home/czl/nekochigura` by absolute path with an isolated cache.
 
 ## Automated pkgcheck summary
 
@@ -1165,33 +1191,16 @@ Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 107 | RedundantVersion |
-| 44 | EmptyGlobalAssignment |
-| 43 | VariableOrderWrong |
-| 38 | NonsolvableDepsInStable |
-| 36 | NonsolvableDepsInDev |
-| 23 | ExcessiveLineLength |
-| 21 | BadHomepage |
-| 20 | MissingRemoteId |
-| 17 | UnknownUseFlags |
-| 16 | DeprecatedInsinto |
-| 12 | TrailingEmptyLine |
-| 10 | NonexistentDeps |
-| 10 | BadDescription |
-| 9 | UnknownRestrict |
+| 65 | RedundantVersion |
 | 8 | PythonCompatUpdate |
-| 7 | DuplicateFiles |
-| 6 | UnusedInherits |
-| 5 | WhitespaceFound |
-| 4 | MissingPackageRevision |
-| 4 | DeprecatedDep |
-| 3 | VisibleVcsPkg |
-| 3 | PotentialStable |
+| 6 | NonsolvableDepsInStable |
+| 6 | NonsolvableDepsInDev |
+| 5 | PotentialStable |
 | 3 | MatchingChksums |
-| 2 | RedundantLongDescription |
-| 2 | EPyTestPluginsSuggestion |
 | 2 | DeprecatedEclass |
-| 1 each | UnquotedVariable, UnknownManifest, UnknownLicense, UnknownCategoryDirs, NonConsistentTarUsage, MissingManifest, BetterCompressionUri |
+| 1 | UnknownCategoryDirs |
+| 1 | RequiredUseDefaults |
+| 1 | BetterCompressionUri |
 
 Most of the 107 redundant versions are fully shadowed older point releases.
 Prune them per package after the newest replacement builds successfully, unless
@@ -1228,7 +1237,8 @@ not substitute for a build test:
 
 ## Safe continuation point
 
-1. Commit and push the completed Passless fix, clean its temporary build data,
-   and confirm that only unrelated user work remains dirty.
-2. Present the Issue 4 (WeChat) proposal and wait for permission.
-3. Continue strictly one issue at a time.
+1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
+2. Present the next upstream package update as a separate proposal and wait for
+   permission.
+3. Continue strictly one issue at a time, including signed publication and
+   cleanup before advancing.

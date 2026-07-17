@@ -120,4 +120,3 @@ pkg_postinst() {
 		elog "    -o \"appsrc name=appsrc caps=video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! videoconvert ! v4l2sink device=/dev/video0\""
 	fi
 }
-

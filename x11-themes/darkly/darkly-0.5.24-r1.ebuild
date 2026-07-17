@@ -11,6 +11,8 @@ DESCRIPTION="Fork of Lightly - A modern style for Qt applications"
 HOMEPAGE="https://github.com/Bali10050/Darkly"
 SRC_URI="https://github.com/Bali10050/darkly/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
+S="${WORKDIR}/Darkly-${PV}"
+
 LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64 ~x86"
@@ -36,8 +38,6 @@ BDEPEND="
 	dev-vcs/git
 "
 
-S="${WORKDIR}/Darkly-${PV}"
-
 src_configure() {
 	local mycmakeargs=(
 		-DBUILD_TESTING=OFF
@@ -51,4 +51,3 @@ src_install() {
 	cmake_src_install
 	rm -rf "${ED}/usr/$(get_libdir)/cmake" || die
 }
-
