@@ -178,7 +178,7 @@ package vendored from GURU.
 |---|---:|---:|---|
 | `dev-python/curl-cffi` | 0.15.0 | 0.15.0 | Current after Issue 17. https://pypi.org/project/curl-cffi/0.15.0/ |
 | `dev-util/claude-code` | stable 2.1.204; testing 2.1.211 | stable 2.1.204; latest 2.1.211 | Both verified channels packaged using Gentoo stable/testing keywords. https://downloads.claude.ai/claude-code-releases/stable |
-| `dev-util/coder-bin` | 2.32.5 | 2.34.6 | Update. https://github.com/coder/coder/releases/tag/v2.34.6 |
+| `dev-util/coder-bin` | stable 2.34.6; testing 2.35.2 | stable 2.34.6; mainline 2.35.2 | Both verified channels current after Issue 30. https://github.com/coder/coder/releases/tag/v2.34.6 and https://github.com/coder/coder/releases/tag/v2.35.2 |
 | `dev-util/ghidra-bin` | 12.1 | 12.1.2 | Update. https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.2_build |
 | `dev-util/opencode-bin` | 1.18.2 | 1.18.2 at resolution | Current after Issue 8. https://github.com/anomalyco/opencode/releases/tag/v1.18.2 |
 | `gui-apps/caelestia-shell` | snapshot 20260716 / `dbb6d6c` | same HEAD at resolution | Current after Issue 14. https://github.com/caelestia-dots/shell/commit/dbb6d6c029021145422255dee6cd7ba607be3a20 |
@@ -1382,13 +1382,80 @@ Status: fixed and verified on 2026-07-17 with
   62 `RedundantVersion` results; the earlier ledger value of 57 was corrected
   below and is unrelated to this single-version package.
 
+### Issue 30 — Coder stable/mainline channels and binary license
+
+Status: fixed and verified on 2026-07-17 with stable `coder-bin-2.34.6` and
+testing `coder-bin-2.35.2`.
+
+- Coder's official policy keeps the N-1 release line as stable and fields the
+  newest line as mainline for a month before promotion. GitHub marks 2.34.6 as
+  the current stable/ESR release and 2.35.2 as mainline. The overlay now keeps
+  both: 2.34.6 uses `KEYWORDS="amd64 arm64"`, while 2.35.2 uses
+  `KEYWORDS="~amd64 ~arm64"`. This follows the same durable upstream-channel
+  versus Gentoo-keyword policy already used for Claude Code. Coder's release
+  schedule table still names the preceding 2.34.5/2.35.1 patches, but the
+  newer immutable release records and channel-labelled notes establish the
+  current versions; this is an upstream documentation lag.
+- Both GitHub release records are non-prerelease, immutable objects published
+  on 2026-07-14. The four verified Linux archives are:
+
+  | Channel/architecture | Bytes | Upstream SHA-256 |
+  |---|---:|---|
+  | 2.34.6 amd64 | 182,802,349 | `091acfd4356ab2f02bcaf561928841e9aecc630a28bc9678658d4ae47632df09` |
+  | 2.34.6 arm64 | 177,605,643 | `d16b0f9393404e1d85669ec620aa90d2a0c10b1977c11c95e11b2d6b9bb0917d` |
+  | 2.35.2 amd64 | 188,518,634 | `907017ffefae1af67bd6533b6c9ddd6b975e39ea9ef9340deba3dc72231b209c` |
+  | 2.35.2 arm64 | 182,834,303 | `12e4fbd607321cb2464a0625c021e8cfdcb109fe73d3c42c70cd86d7702796b5` |
+
+  Locally reproduced SHA-256 values match both the signed upstream checksum
+  lists and GitHub's release-asset digest metadata. Portage independently
+  recorded BLAKE2B and SHA-512 hashes in the regenerated Manifest.
+- Verified both detached checksum signatures outside the sandbox in an
+  isolated GnuPG home using the `release.key` committed at each immutable tag.
+  The two tagged keys are byte-identical, with SHA-256
+  `df7de486a7d3a674ab58bb66e8522388022249dc6a7a7725b65256c86b577213`.
+  Both signatures are cryptographically valid under Coder's RSA4096 release
+  key `21C96B1CB950718874F64DBD6A5A671B5E40A3B9`, UID
+  `Coder Release Signing Key <security@coder.com>`. GnuPG's `unknown` trust
+  label is expected for the deliberately isolated keyring and is distinct
+  from signature validity. Independent release verification also found both
+  immutable-release and tagged-workflow SLSA attestations for every archive.
+  The annotated git tags themselves are unsigned, although their target
+  commits have valid GitHub signatures. Because upstream permits attestation
+  generation to fail without failing its workflow, future updates must keep
+  verifying each release rather than assuming an attestation exists.
+- Fixed a pre-existing license defect discovered while auditing the update.
+  Official release binaries are built from
+  `github.com/coder/coder/v2/enterprise/cmd/coder`, and every archive contains
+  both AGPLv3 and `LICENSE.enterprise` terms. Added its substantively verbatim,
+  trailing-whitespace-normalized text as overlay license `Coder-Enterprise`,
+  declared `LICENSE="AGPL-3 Coder-Enterprise"`, and installed the upstream
+  README and Enterprise terms as package documentation. The license expressly
+  permits copying and distribution subject to its conditions, so no
+  `mirror`/`bindist` restriction is required; `RESTRICT="strip"` remains.
+- All four payloads are already-stripped, CGO-disabled, statically linked Go
+  executables with no interpreter, dynamic dependencies, RPATH, text
+  relocation, or executable stack. They need no `RDEPEND`. The amd64 binaries
+  use baseline `GOAMD64=v1`, and arm64 uses `GOARM64=v8.0`; no host-specific
+  CPU selection occurs. `QA_PREBUILT="usr/bin/coder"` remains correct.
+- Clean stable and mainline unpack/prepare/install cycles preserve the exact
+  amd64 binary payload as root-owned 0755 and install the two compressed docs.
+  Unprivileged network-isolated `coder version` runs succeed natively on amd64
+  and through QEMU user mode for arm64 for both channels, reporting the exact
+  tagged commits and confirming each is the full server-capable build. No
+  server, login, database, user profile, or network connection was used.
+- Removed the shadowed 2.30.3, 2.30.4, 2.31.11, and 2.32.5 ebuilds and their
+  eight Manifest objects; upstream explicitly marks the 2.30, 2.31, and 2.32
+  lines unsupported. Coder was neither installed nor running on the laptop,
+  so no live package or service was changed. Targeted pkgcheck is clean; the
+  full-tree redundant-version total falls from 62 to 59.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 62 | RedundantVersion |
+| 59 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 6 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -1405,7 +1472,7 @@ Prune them per package after the newest replacement builds successfully, unless
 there is an intentional rollback/security/channel reason to retain them.
 
 Notable redundant groups include older 1Password, Azure CLI, Passless,
-SongRec, Bun, Coder, Ghidra, OpenCode,
+SongRec, Bun, Ghidra, OpenCode,
 Fuzzel, Hyprmon, Hyprsunset, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
