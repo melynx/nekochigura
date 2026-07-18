@@ -5,20 +5,18 @@ EAPI=8
 
 DESCRIPTION="Split-screen video comparison tool using FFmpeg and SDL2"
 HOMEPAGE="https://github.com/pixop/video-compare"
+SRC_URI="https://github.com/pixop/${PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
 
-MY_PN="video-compare"
-SRC_URI="https://github.com/pixop/${MY_PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${P}"
 
-S="${WORKDIR}/${MY_PN}-${PV}"
-
-LICENSE="GPL-2"
+LICENSE="GPL-2+ MIT OFL-1.1 public-domain"
 SLOT="0"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	media-video/ffmpeg:0=
 	media-libs/libsdl2:=
 	media-libs/sdl2-ttf:=
+	media-video/ffmpeg:0=
 "
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
