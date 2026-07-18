@@ -1908,8 +1908,8 @@ Status: fixed and verified on 2026-07-18 with
 
 ### Issue 39 — IPU6 driver kernel-support snapshot
 
-Status: fixed and verified locally on 2026-07-18. Signed publication is not yet
-approved.
+Status: fixed, verified, signed, and published on 2026-07-18 in commit
+`19aba9291b400094f718ece574fbf131388207b2`.
 
 - Updated the working ebuild from snapshot `20260327` to Intel's latest
   annotated tag, `20260629_2`, which points to commit
@@ -2001,6 +2001,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 39 is ready for user approval of its signed commit and SSH push.
+2. Issue 39 is complete. Present the next package issue as a separate proposal
+   and wait for permission.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
