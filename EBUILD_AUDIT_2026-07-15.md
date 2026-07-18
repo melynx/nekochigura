@@ -235,7 +235,7 @@ Current at audit time:
 | `ipu6-camera-bins` | `20260629_2` | `20260629_2` | Current and aligned with the HAL after Issue 37. https://github.com/intel/ipu6-camera-bins/tags |
 | `gst-plugins-icamerasrc` | `20260629_1` | `20260629_1` | Current after Issue 6. https://github.com/intel/icamerasrc/tags |
 | `ipu6-drivers` | `20260629_2` | `20260629_2` | Current after Issue 39. https://github.com/intel/ipu6-drivers/releases/tag/20260629_2 |
-| `gpu-screen-recorder` | 5.13.6 plus live 9999 | 5.15.0 | Update versioned ebuild. https://git.dec05eba.com/gpu-screen-recorder/refs/ |
+| `gpu-screen-recorder` | 5.15.1 plus live 9999 | 5.15.1 | Current after Issue 40. https://git.dec05eba.com/gpu-screen-recorder/refs/ |
 | `makemkv` | 1.18.4 | 1.18.4 | Current after Issue 7. https://www.makemkv.com/download/ |
 | `video-compare` | 20260502 | 20260708 | Update. https://github.com/pixop/video-compare/tags |
 | `wechat-bin` | 4.1.1.8 | 4.1.1.8 at resolution | Current with immutable artifact after Issue 4. https://linux.weixin.qq.com/ |
@@ -1947,13 +1947,57 @@ Status: fixed, verified, signed, and published on 2026-07-18 in commit
   otherwise matches the recorded result classes. The live system remains
   unchanged.
 
+### Issue 40 — GPU Screen Recorder release and packaging repair
+
+Status: fixed, verified, and approved for signed publication on 2026-07-19.
+
+- Updated the versioned ebuild from 5.13.6 to the latest official release,
+  5.15.1, at commit `3bdc117b311b787b85e2ab6af1b3d63fcef00e49`.
+  Regenerated the Manifest from the official snapshot and kept
+  `~amd64 ~arm64`. The live ebuild uses the same packaging. Its local patch
+  also applies to current upstream HEAD
+  `0c0b40ef92453e8976177698dcb5456637ff3600` from 2026-07-18.
+- Replaced the incomplete dependency set. Added direct X11, XDamage, D-Bus,
+  PipeWire, native Wayland scanner, Vulkan headers and loader, and
+  libjpeg-turbo declarations. FFmpeg now requires its `vulkan` flag. Split
+  build, linked, and runtime-only packages instead of copying every dependency
+  into `BDEPEND`.
+- Added a default-enabled `pipewire` flag that controls both portal capture
+  and per-application audio. Added a default-off `nvidia-suspend` flag for
+  the global NVIDIA modprobe setting. The laptop has only Intel graphics, but
+  the installed GURU 5.14.1 package currently owns
+  `/usr/lib/modprobe.d/gsr-nvidia.conf`.
+- Found that upstream always compiles `kde_night_light.c`, which uses D-Bus,
+  but links D-Bus only when a PipeWire feature is enabled. Added a small Meson
+  patch that links D-Bus unconditionally. This makes the no-PipeWire build
+  valid.
+- Replaced upstream's image-time `setcap` script with Gentoo's `fcaps`
+  helper. The installed 5.14.1 `gsr-kms-server` has no file capability even
+  though `filecaps` is enabled. The new ebuild disables the upstream script
+  and asks `fcaps.eclass` to set `cap_sys_admin` during real post-install.
+  The capability is therefore not expected in a temporary staged image.
+- A normal isolated build completed 52 steps with PipeWire, portal capture,
+  per-application audio, and the systemd user service. A minimal isolated build
+  completed 48 steps without those features. A third build confirmed that the
+  NVIDIA modprobe file appears only with `nvidia-suspend`. All images contain
+  the two binaries, plugin header, manual pages, documentation, and helper
+  scripts. The normal image also contains the requested systemd user service.
+- Both staged binaries report version 5.15.1. The images have no broken links
+  or RPATH/RUNPATH entries. Their direct linked libraries match the selected
+  feature sets. Upstream emits non-fatal shadowing and unused-code warnings,
+  but both GCC 16 builds complete. Targeted pkgcheck, metadata XML, Manifest,
+  patch, and whitespace checks pass. The latest full-tree non-network scan
+  reports 48 redundant versions and otherwise matches the recorded result
+  classes. No package, capability, service, or modprobe setting was changed on
+  the live system.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 51 | RedundantVersion |
+| 48 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 10 | NonsolvableDepsInDev |
@@ -2001,7 +2045,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 39 is complete. Present the next package issue as a separate proposal
-   and wait for permission.
+2. Issue 40 is approved for signed publication. After its SSH push and cleanup,
+   present the next package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.

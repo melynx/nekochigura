@@ -1,0 +1,11 @@
+Subject: [PATCH] meson: link D-Bus independently of PipeWire features
+
+kde_night_light.c is always compiled and uses libdbus directly. Keep D-Bus in
+the base dependency list so builds with both PipeWire features disabled work.
+
+--- a/meson.build
++++ b/meson.build
+@@ -76,0 +77 @@
++    dependency('dbus-1'),
+@@ -109 +109,0 @@
+-        dependency('dbus-1'),
