@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit desktop unpacker xdg-utils
+inherit chromium-2 desktop optfeature unpacker xdg
 
 MY_PN="clash-party"
 
@@ -15,20 +15,47 @@ S="${WORKDIR}"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
-RESTRICT="bindist mirror strip"
+RESTRICT="mirror strip"
 
 BDEPEND="$(unpacker_src_uri_depends)"
 
 RDEPEND="
-	dev-libs/nss
+	>=app-accessibility/at-spi2-core-2.46.0:2
 	app-crypt/libsecret
+	dev-libs/expat
+	dev-libs/glib:2
+	dev-libs/nspr
+	dev-libs/nss
+	media-libs/alsa-lib
+	media-libs/mesa[gbm(+)]
+	net-print/cups
+	sys-apps/dbus
+	sys-apps/util-linux
+	sys-auth/polkit
+	virtual/udev
+	x11-libs/cairo
 	x11-libs/gtk+:3
+	x11-libs/libdrm
 	x11-libs/libnotify
+	x11-libs/libX11
+	x11-libs/libxcb
+	x11-libs/libXcomposite
+	x11-libs/libXdamage
+	x11-libs/libXext
+	x11-libs/libXfixes
+	x11-libs/libxkbcommon
+	x11-libs/libXrandr
 	x11-libs/libXScrnSaver
 	x11-libs/libXtst
+	x11-libs/pango
+	x11-misc/xdg-utils
 "
 
 QA_PREBUILT="opt/clash-party/*"
+
+pkg_pretend() {
+	chromium_suid_sandbox_check_kernel_config
+}
 
 src_install() {
 	insinto /opt
@@ -41,6 +68,7 @@ src_install() {
 
 	find "${ED}"/opt/clash-party -name "*.so*" -type f -exec chmod +x {} \; || die
 	find "${ED}"/opt/clash-party/resources/sidecar -type f -exec chmod +x {} \; || die
+	fperms 4755 /opt/clash-party/chrome-sandbox
 
 	dosym ../../opt/clash-party/mihomo-party /usr/bin/clash-party
 
@@ -51,11 +79,6 @@ src_install() {
 }
 
 pkg_postinst() {
-	xdg_desktop_database_update
-	xdg_icon_cache_update
-}
-
-pkg_postrm() {
-	xdg_desktop_database_update
-	xdg_icon_cache_update
+	xdg_pkg_postinst
+	optfeature "system tray integration" dev-libs/libayatana-appindicator
 }

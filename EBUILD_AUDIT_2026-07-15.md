@@ -239,7 +239,7 @@ Current at audit time:
 | `makemkv` | 1.18.4 | 1.18.4 | Current after Issue 7. https://www.makemkv.com/download/ |
 | `video-compare` | 20260708 | 20260708 | Current after Issue 41. https://github.com/pixop/video-compare/tags |
 | `wechat-bin` | 4.1.1.8 | 4.1.1.8 at resolution | Current with immutable artifact after Issue 4. https://linux.weixin.qq.com/ |
-| `clash-party-bin` | 1.9.5 | 2.0.0 | Update. https://github.com/mihomo-party-org/clash-party/releases/tag/v2.0.0 |
+| `clash-party-bin` | 2.0.0 | 2.0.0 | Current after Issue 42. https://github.com/mihomo-party-org/clash-party/releases/tag/v2.0.0 |
 | `hipsparselt` | 7.2.0 | ROCm 7.2.4 | Update. https://github.com/ROCm/rocm-libraries/releases/tag/rocm-7.2.4 |
 | `sci-ml/ollama` | 0.23.2 | 0.32.0 | Update. https://github.com/ollama/ollama/releases/tag/v0.32.0 |
 | `sci-ml/ollama-bin` | 0.30.0 | 0.32.0 | Update. Same source. |
@@ -2023,13 +2023,54 @@ Status: fixed, verified, and approved for signed publication on 2026-07-19.
   otherwise matches the recorded result classes. The live system remains on
   video-compare 20260502; no package was installed or changed.
 
+### Issue 42 — Clash Party binary update and runtime repair
+
+Status: fixed, verified, and approved for signed publication on 2026-07-19.
+
+- Updated `net-proxy/clash-party-bin` from 1.9.5 to the latest official
+  release, 2.0.0, at commit `1caff4cabd83d0e2768ecadf52c85c5dcc0ed9de`.
+  This release adds plugins and custom tray icons, improves large-subscription
+  performance, and fixes several Linux and general defects. Removed the
+  redundant 1.9.2 and 1.9.5 ebuilds. Kept `~amd64`.
+- Downloaded the official amd64 Debian package. Its SHA-256 matches upstream's
+  published `5355b359bdbdfc0cac9e53f114c953a143a85f72a9af74caa3ffbe885f485e4a`.
+  Regenerated the Manifest. Kept `mirror` and `strip` restrictions so the
+  large upstream binary stays outside overlay mirrors and Portage does not
+  alter prebuilt files. Removed `bindist`: the project uses GPL-3 and upstream
+  distributes the same binary with the required Electron and Chromium license
+  notices.
+- Replaced the incomplete runtime list with the libraries used by Electron
+  41.8.0 and by the package's native helper. Added accessibility, GLib, NSPR,
+  graphics, audio, printing, D-Bus, X11, udev, UUID, desktop helper, and Polkit
+  dependencies. The package uses Polkit's `pkexec` prompt when a user requests
+  TUN permission. Ayatana AppIndicator remains an optional tray integration
+  and is now reported through an install-time suggestion.
+- Replaced manual desktop and icon cache hooks with `xdg.eclass`. Added the
+  standard Chromium kernel sandbox check. Restored mode 4755 only on Electron's
+  small `chrome-sandbox` helper. Upstream's Debian script also gives all three
+  large Mihomo engines the set-user-ID bit. The Gentoo ebuild deliberately does
+  not do that automatically. They remain mode 0755, and the application can
+  request permission for the selected core only when the user enables TUN.
+- A clean isolated unpack and staged install completed. The 572 MiB installed
+  tree contains the application, three static Mihomo engines, desktop entry,
+  icon, and command link. All dynamic libraries resolve and no links are
+  broken. Two Electron files use the intended `$ORIGIN` runtime search path to
+  find libraries beside themselves; there is no absolute or writable search
+  path. A ten-second launch with a temporary profile started the application
+  and bundled core successfully, then the timeout stopped them. No process
+  remains and the live profile was untouched.
+- Targeted pkgcheck, dependency solving, metadata XML, Manifest, and whitespace
+  checks pass. The full-tree non-network scan now reports 42 redundant versions
+  and otherwise matches the recorded result classes. The live system remains
+  on Clash Party 1.9.5; no package was installed or changed.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 43 | RedundantVersion |
+| 42 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 10 | NonsolvableDepsInDev |
@@ -2048,7 +2089,7 @@ there is an intentional rollback/security/channel reason to retain them.
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
-curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
+curl-impersonate, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
@@ -2077,7 +2118,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 41 is approved for signed publication. After its SSH push and cleanup,
+2. Issue 42 is approved for signed publication. After its SSH push and cleanup,
    present the next package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
