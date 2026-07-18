@@ -237,7 +237,7 @@ Current at audit time:
 | `ipu6-drivers` | `20260629_2` | `20260629_2` | Current after Issue 39. https://github.com/intel/ipu6-drivers/releases/tag/20260629_2 |
 | `gpu-screen-recorder` | 5.15.1 plus live 9999 | 5.15.1 | Current after Issue 40. https://git.dec05eba.com/gpu-screen-recorder/refs/ |
 | `makemkv` | 1.18.4 | 1.18.4 | Current after Issue 7. https://www.makemkv.com/download/ |
-| `video-compare` | 20260502 | 20260708 | Update. https://github.com/pixop/video-compare/tags |
+| `video-compare` | 20260708 | 20260708 | Current after Issue 41. https://github.com/pixop/video-compare/tags |
 | `wechat-bin` | 4.1.1.8 | 4.1.1.8 at resolution | Current with immutable artifact after Issue 4. https://linux.weixin.qq.com/ |
 | `clash-party-bin` | 1.9.5 | 2.0.0 | Update. https://github.com/mihomo-party-org/clash-party/releases/tag/v2.0.0 |
 | `hipsparselt` | 7.2.0 | ROCm 7.2.4 | Update. https://github.com/ROCm/rocm-libraries/releases/tag/rocm-7.2.4 |
@@ -1991,13 +1991,45 @@ Status: fixed, verified, and approved for signed publication on 2026-07-19.
   classes. No package, capability, service, or modprobe setting was changed on
   the live system.
 
+### Issue 41 — video-compare release and license repair
+
+Status: fixed, verified, and approved for signed publication on 2026-07-19.
+
+- Updated the ebuild from 20260502 to the latest official release, 20260708,
+  at commit `a134dd707fc9d4cb3a2735471559f930b08ec457`. This release adds a
+  configurable UI scale, improves video-duration detection, rejects unlikely
+  duration metadata, and adds a decoder option that can rewrite duration data.
+  Kept the existing `~amd64` keyword.
+- Removed all six older snapshots: 20251213, 20260120, 20260121, 20260214,
+  20260308, and 20260502. Regenerated the Manifest from the official 20260708
+  archive.
+- Corrected `LICENSE` from `GPL-2` to `GPL-2+ MIT OFL-1.1 public-domain`.
+  The project permits GPL version 2 or later. Its bundled `argagg.h` uses MIT,
+  its embedded Source Code Pro font uses SIL Open Font License 1.1, and its
+  bundled stb image writer is public domain.
+- Retained the local Gentoo build patch. It applies cleanly to 20260708. It
+  keeps Portage's compiler and linker flags, uses the selected compiler,
+  avoids stripping during the upstream install step, and uses pkg-config for
+  FFmpeg and SDL libraries.
+- A clean isolated GCC 16 build and staged install completed. The build used
+  `-O2 -pipe -march=x86-64-v3` and the configured linker flags. The staged
+  program reports `20260708-santiago`. All direct libraries resolve. The
+  installed tree contains only the executable and README. It has no broken
+  links or RPATH/RUNPATH entries. Upstream has no non-interactive automated
+  test target, so the staged `--help` and `--version` commands served as smoke
+  tests.
+- Targeted pkgcheck, metadata XML, Manifest, patch, and whitespace checks
+  pass. The full-tree non-network scan now reports 43 redundant versions and
+  otherwise matches the recorded result classes. The live system remains on
+  video-compare 20260502; no package was installed or changed.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 48 | RedundantVersion |
+| 43 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 10 | NonsolvableDepsInDev |
@@ -2015,7 +2047,7 @@ there is an intentional rollback/security/channel reason to retain them.
 
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
-Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji, video-compare,
+Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
 curl-impersonate, Clash Party, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 
@@ -2045,7 +2077,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 40 is approved for signed publication. After its SSH push and cleanup,
+2. Issue 41 is approved for signed publication. After its SSH push and cleanup,
    present the next package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
