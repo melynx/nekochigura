@@ -234,7 +234,7 @@ Current at audit time:
 | `ipu6-camera-hal` | `20260629_2` | `20260629_2` | Current after Issue 37. https://github.com/intel/ipu6-camera-hal/tags |
 | `ipu6-camera-bins` | `20260629_2` | `20260629_2` | Current and aligned with the HAL after Issue 37. https://github.com/intel/ipu6-camera-bins/tags |
 | `gst-plugins-icamerasrc` | `20260629_1` | `20260629_1` | Current after Issue 6. https://github.com/intel/icamerasrc/tags |
-| `ipu6-drivers` | 20260327 | `20260629_1` | Update. https://github.com/intel/ipu6-drivers/tags |
+| `ipu6-drivers` | `20260629_2` | `20260629_2` | Current after Issue 39. https://github.com/intel/ipu6-drivers/releases/tag/20260629_2 |
 | `gpu-screen-recorder` | 5.13.6 plus live 9999 | 5.15.0 | Update versioned ebuild. https://git.dec05eba.com/gpu-screen-recorder/refs/ |
 | `makemkv` | 1.18.4 | 1.18.4 | Current after Issue 7. https://www.makemkv.com/download/ |
 | `video-compare` | 20260502 | 20260708 | Update. https://github.com/pixop/video-compare/tags |
@@ -1906,13 +1906,54 @@ Status: fixed and verified on 2026-07-18 with
   previously installed `gaze-0.2.4_p20260716`; this work did not install the
   new package or restart the live service.
 
+### Issue 39 — IPU6 driver kernel-support snapshot
+
+Status: fixed and verified locally on 2026-07-18. Signed publication is not yet
+approved.
+
+- Updated the working ebuild from snapshot `20260327` to Intel's latest
+  annotated tag, `20260629_2`, which points to commit
+  `c09fa9a6e98b951ea4ab9d4100aa85281a659074`. The upstream change adds nine
+  kernel patch files with 565 lines. It adds or adjusts IMX471, OV05C10,
+  OV08X40, OV8856, Intel DWC PHY, and Dell XPS support. Module source code did
+  not change.
+- Kept `~amd64`. Removed the shadowed `20251104` and `20251226` snapshots.
+  Regenerated the Manifest from the official tag archive.
+- Reordered the non-DKMS preparation test so the default `dkms` path does not
+  ask the kernel helper for a version before checking the USE flag.
+- Fixed the non-DKMS preparation message to use `KV_FULL`. The old local
+  variable existed only inside `pkg_setup`, so the later message printed a
+  blank kernel version.
+- The default `dkms` path verifies, prepares, and stages the complete 2.4 MiB
+  source tree. Its staged `dkms.conf` has the correct package version.
+- A clean direct build with `USE="-dkms -modules-sign"` compiled and staged all
+  11 expected modules for `7.1.3-gentoo-dist`. Every module reports the matching
+  kernel version. GCC 16 warned that the kernel was built with GCC 15, but the
+  build completed. Signing was disabled only in this temporary check so the
+  test would not read the Secure Boot private key. The ebuild's normal signing
+  behavior has not changed. No package or module was installed or loaded.
+- Validation found and fixed an existing upstream defect in the default DKMS
+  module list. It omitted `gc5035`, and `imx471` and `s5k3j1` shared list index
+  8, so the latter replaced the former. The approved local patch adds
+  `gc5035`, gives the two sensors separate indices, and shifts later indices so
+  every kernel branch remains continuous. It also removes the obsolete
+  `CLEAN` setting, which current DKMS ignores with a warning.
+- DKMS accepted the staged package. Direct checks confirmed continuous module
+  arrays for kernels 5.15, 6.6, 6.8, 6.10, and 7.1. Kernel 7.1 selects all 11
+  expected modules. A second clean non-DKMS ebuild run applied both patches,
+  compiled all 11 modules, and staged them successfully.
+- Metadata XML, `git diff --check`, targeted pkgcheck, and the full-tree
+  non-network scan pass. The full scan now reports 51 redundant versions and
+  otherwise matches the recorded result classes. The live system remains
+  unchanged.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 48 | RedundantVersion |
+| 51 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 10 | NonsolvableDepsInDev |
@@ -1960,7 +2001,6 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Present the next upstream package update after Gaze as a separate proposal
-   and wait for permission.
+2. Issue 39 is ready for user approval of its signed commit and SSH push.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.

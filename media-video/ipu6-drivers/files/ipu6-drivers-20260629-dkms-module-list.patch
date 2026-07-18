@@ -1,0 +1,113 @@
+Subject: [PATCH] dkms: include every module with unique array indices
+
+DKMS requires every module array index from zero through the highest index to
+exist. Add the missing gc5035 module, separate the imx471 and s5k3j1 entries,
+and shift the later entries so all kernel-version branches remain contiguous.
+Remove the obsolete CLEAN setting, which current DKMS ignores with a warning.
+
+--- a/dkms.conf
++++ b/dkms.conf
+@@ -5 +4,0 @@
+-CLEAN="make KERNELRELEASE=$kernelver KERNEL_SRC=$kernel_source_dir clean"
+@@ -66,0 +66,4 @@
++BUILT_MODULE_NAME[6]="gc5035"
++BUILT_MODULE_LOCATION[6]="drivers/media/i2c"
++DEST_MODULE_LOCATION[6]="/updates"
++
+@@ -69,3 +72,3 @@
+-    BUILT_MODULE_NAME[6]="ov05c10"
+-    BUILT_MODULE_LOCATION[6]="drivers/media/i2c"
+-    DEST_MODULE_LOCATION[6]="/updates"
++    BUILT_MODULE_NAME[7]="ov05c10"
++    BUILT_MODULE_LOCATION[7]="drivers/media/i2c"
++    DEST_MODULE_LOCATION[7]="/updates"
+@@ -75,3 +78,3 @@
+-    BUILT_MODULE_NAME[6]="ov2740"
+-    BUILT_MODULE_LOCATION[6]="drivers/media/i2c"
+-    DEST_MODULE_LOCATION[6]="/updates"
++    BUILT_MODULE_NAME[7]="ov2740"
++    BUILT_MODULE_LOCATION[7]="drivers/media/i2c"
++    DEST_MODULE_LOCATION[7]="/updates"
+@@ -84,3 +87,3 @@
+-BUILT_MODULE_NAME[7]="intel-ipu6-psys"
+-BUILT_MODULE_LOCATION[7]="drivers/media/pci/intel/ipu6/psys"
+-DEST_MODULE_LOCATION[7]="/updates"
++BUILT_MODULE_NAME[8]="intel-ipu6-psys"
++BUILT_MODULE_LOCATION[8]="drivers/media/pci/intel/ipu6/psys"
++DEST_MODULE_LOCATION[8]="/updates"
+@@ -89,3 +92,3 @@
+-    BUILT_MODULE_NAME[8]="imx471"
+-    BUILT_MODULE_LOCATION[8]="drivers/media/i2c"
+-    DEST_MODULE_LOCATION[8]="/updates"
++    BUILT_MODULE_NAME[9]="imx471"
++    BUILT_MODULE_LOCATION[9]="drivers/media/i2c"
++    DEST_MODULE_LOCATION[9]="/updates"
+@@ -95,3 +98,3 @@
+-    BUILT_MODULE_NAME[8]="s5k3j1"
+-    BUILT_MODULE_LOCATION[8]="drivers/media/i2c"
+-    DEST_MODULE_LOCATION[8]="/updates"
++    BUILT_MODULE_NAME[10]="s5k3j1"
++    BUILT_MODULE_LOCATION[10]="drivers/media/i2c"
++    DEST_MODULE_LOCATION[10]="/updates"
+@@ -101,3 +104,3 @@
+-    BUILT_MODULE_NAME[8]="hi556"
+-    BUILT_MODULE_LOCATION[8]="drivers/media/i2c"
+-    DEST_MODULE_LOCATION[8]="/updates"
++    BUILT_MODULE_NAME[9]="hi556"
++    BUILT_MODULE_LOCATION[9]="drivers/media/i2c"
++    DEST_MODULE_LOCATION[9]="/updates"
+@@ -107,5 +110 @@
+-    BUILT_MODULE_NAME[9]="intel-ipu6"
+-    BUILT_MODULE_LOCATION[9]="drivers/media/pci/intel/ipu6"
+-    DEST_MODULE_LOCATION[9]="/updates"
+-
+-    BUILT_MODULE_NAME[10]="intel-ipu6-isys"
++    BUILT_MODULE_NAME[10]="intel-ipu6"
+@@ -114 +112,0 @@
+-fi
+@@ -116,3 +114,2 @@
+-if version_lt ${KERNEL_VERSION} ${KV_OV01A10}; then
+-    BUILT_MODULE_NAME[11]="ov01a10"
+-    BUILT_MODULE_LOCATION[11]="drivers/media/i2c"
++    BUILT_MODULE_NAME[11]="intel-ipu6-isys"
++    BUILT_MODULE_LOCATION[11]="drivers/media/pci/intel/ipu6"
+@@ -122,2 +119,3 @@
+-if version_lt ${KERNEL_VERSION} ${KV_IVSC}; then
+-    BUILT_MODULE_NAME[12]="ljca"
++if version_lt ${KERNEL_VERSION} ${KV_OV01A10}; then
++    BUILT_MODULE_NAME[12]="ov01a10"
++    BUILT_MODULE_LOCATION[12]="drivers/media/i2c"
+@@ -124,0 +123 @@
++fi
+@@ -126 +125,2 @@
+-    BUILT_MODULE_NAME[13]="spi-ljca"
++if version_lt ${KERNEL_VERSION} ${KV_IVSC}; then
++    BUILT_MODULE_NAME[13]="ljca"
+@@ -129 +129 @@
+-    BUILT_MODULE_NAME[14]="gpio-ljca"
++    BUILT_MODULE_NAME[14]="spi-ljca"
+@@ -132 +132 @@
+-    BUILT_MODULE_NAME[15]="i2c-ljca"
++    BUILT_MODULE_NAME[15]="gpio-ljca"
+@@ -135 +135 @@
+-    BUILT_MODULE_NAME[16]="mei-vsc"
++    BUILT_MODULE_NAME[16]="i2c-ljca"
+@@ -138 +138 @@
+-    BUILT_MODULE_NAME[17]="intel_vsc"
++    BUILT_MODULE_NAME[17]="mei-vsc"
+@@ -141 +141 @@
+-    BUILT_MODULE_NAME[18]="mei_csi"
++    BUILT_MODULE_NAME[18]="intel_vsc"
+@@ -144 +144 @@
+-    BUILT_MODULE_NAME[19]="mei_ace"
++    BUILT_MODULE_NAME[19]="mei_csi"
+@@ -147 +147 @@
+-    BUILT_MODULE_NAME[20]="mei_pse"
++    BUILT_MODULE_NAME[20]="mei_ace"
+@@ -150 +150 @@
+-    BUILT_MODULE_NAME[21]="mei_ace_debug"
++    BUILT_MODULE_NAME[21]="mei_pse"
+@@ -151,0 +152,3 @@
++
++    BUILT_MODULE_NAME[22]="mei_ace_debug"
++    DEST_MODULE_LOCATION[22]="/updates"
