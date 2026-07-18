@@ -3,14 +3,16 @@
 
 EAPI=8
 
-inherit fcaps git-r3 meson
+inherit fcaps meson
 
 DESCRIPTION="A screen recorder that has minimal impact on system performance"
 HOMEPAGE="https://git.dec05eba.com/gpu-screen-recorder/about"
-EGIT_REPO_URI="https://repo.dec05eba.com/gpu-screen-recorder"
+SRC_URI="https://dec05eba.com/snapshot/${PN}.git.${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}"
 
 LICENSE="GPL-3"
 SLOT="0"
+KEYWORDS="~amd64 ~arm64"
 IUSE="nvidia-suspend +pipewire systemd"
 
 COMMON_DEPEND="
