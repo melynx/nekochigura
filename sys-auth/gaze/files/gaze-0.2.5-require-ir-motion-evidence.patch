@@ -17,9 +17,7 @@ the IR path.
          motion_ratio: 0.0,
          pairs: 0,
      };
-@@ -274,16 +274,16 @@ mod tests {
-     }
- 
+@@ -276,14 +276,14 @@ mod tests {
      #[test]
 -    fn one_frame_cannot_judge_motion_so_it_passes() {
 +    fn one_frame_cannot_supply_motion_evidence() {
@@ -40,14 +38,6 @@ the IR path.
      }
 --- a/gaze/src/daemon.rs
 +++ b/gaze/src/daemon.rs
-@@ -1732,9 +1732,9 @@ impl GazeDaemon {
-                                 if liveness_enabled {
-                                     if let Some(eyes) = eyes_from_kpss(&data.kpss) {
-                                         landmark_seq.push(eyes);
-                                     }
-                                     let motion = crate::liveness::eye_motion_is_live(&landmark_seq, None);
+@@ -1780 +1780 @@ impl AuthDaemon {
 -                                    liveness_passed = !crate::liveness::confirmed_static(&motion);
 +                                    liveness_passed = motion.live;
- 
-                                     tracing::debug!(
-                                         "Liveness checked (IR): motion={:?}, overall={}",
