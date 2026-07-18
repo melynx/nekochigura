@@ -38,7 +38,7 @@ CRATES="
 	bitfield-macros@0.19.4
 	bitfield@0.19.4
 	bitflags@1.3.2
-	bitflags@2.13.0
+	bitflags@2.13.1
 	block-buffer@0.10.4
 	block-buffer@0.12.1
 	blocking@1.6.2
@@ -55,12 +55,12 @@ CRATES="
 	cc@1.2.67
 	cfg-expr@0.20.8
 	cfg-if@1.0.4
-	cfg_aliases@0.2.1
+	cfg_aliases@0.2.2
 	cipher@0.5.2
 	clang-sys@1.8.1
 	clang@2.0.0
-	clap@4.6.1
-	clap_builder@4.6.0
+	clap@4.6.2
+	clap_builder@4.6.2
 	clap_derive@4.6.1
 	clap_lex@1.1.0
 	cmov@0.5.4
@@ -212,7 +212,7 @@ CRATES="
 	lzma-rust2@0.16.5
 	mac_address@1.1.8
 	matchers@0.2.0
-	matrixmultiply@0.3.10
+	matrixmultiply@0.3.11
 	mbox@0.7.1
 	memchr@2.8.3
 	memmem@0.1.1
@@ -303,9 +303,9 @@ CRATES="
 	rayon-core@1.13.0
 	rayon@1.12.0
 	redox_syscall@0.5.18
-	regex-automata@0.4.15
+	regex-automata@0.4.16
 	regex-syntax@0.8.11
-	regex@1.13.0
+	regex@1.13.1
 	ring@0.17.14
 	rustc_version@0.4.1
 	rustix@1.1.4
@@ -350,7 +350,7 @@ CRATES="
 	strum_macros@0.28.0
 	subtle@2.6.1
 	syn@1.0.109
-	syn@2.0.118
+	syn@2.0.119
 	system-deps@7.0.8
 	target-lexicon@0.12.16
 	target-lexicon@0.13.5
@@ -367,7 +367,7 @@ CRATES="
 	time-core@0.1.9
 	time@0.3.53
 	tokio-macros@2.7.0
-	tokio@1.52.3
+	tokio@1.53.0
 	toml@1.1.3+spec-1.1.0
 	toml_datetime@1.1.1+spec-1.1.0
 	toml_edit@0.25.13+spec-1.1.0
@@ -394,7 +394,7 @@ CRATES="
 	ureq@3.3.0
 	utf8-zero@0.8.1
 	utf8parse@0.2.2
-	uuid@1.23.5
+	uuid@1.24.0
 	valuable@0.1.1
 	vcpkg@0.2.15
 	version-compare@0.2.1
@@ -459,14 +459,19 @@ CRATES="
 	zvariant_utils@3.5.0
 "
 
+RUST_MIN_VER="1.96.0"
+
 inherit cargo desktop pam systemd xdg
+
+GAZE_COMMIT="4aee4cb3d1533ea475ca5542cc2a91c68154e278"
 
 DESCRIPTION="On-device facial authentication daemon, clients, GUI, and PAM module"
 HOMEPAGE="https://gaze.gundulabs.com https://github.com/GunduLabs/gaze"
 SRC_URI="
-	https://github.com/GunduLabs/gaze/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
+	https://github.com/GunduLabs/gaze/archive/${GAZE_COMMIT}.tar.gz -> ${P}.tar.gz
 	${CARGO_CRATE_URIS}
 "
+S="${WORKDIR}/gaze-${GAZE_COMMIT}"
 
 LICENSE="MIT"
 # Dependent crate licenses
@@ -504,9 +509,9 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.2.4-require-ir-motion-evidence.patch"
-	"${FILESDIR}/${PN}-0.2.4-contain-pam-panics.patch"
-	"${FILESDIR}/${PN}-0.2.4-report-frame-processing-errors.patch"
+	"${FILESDIR}/${PN}-0.2.5-require-ir-motion-evidence.patch"
+	"${FILESDIR}/${PN}-0.2.5-contain-pam-panics.patch"
+	"${FILESDIR}/${PN}-0.2.5-report-frame-processing-errors.patch"
 )
 
 _gaze_ort_env() {
@@ -580,6 +585,16 @@ src_install() {
 
 pkg_postinst() {
 	xdg_pkg_postinst
+
+	if [[ -n ${REPLACING_VERSIONS} && ${ROOT} == / ]] && systemd_is_booted; then
+		ebegin "Reloading systemd manager configuration"
+		systemctl daemon-reload
+		eend $? || ewarn "Failed to reload systemd manager configuration"
+
+		ebegin "Restarting gazed after upgrade"
+		systemctl try-restart gazed.service
+		eend $? || ewarn "Failed to restart gazed; run 'systemctl restart gazed.service' manually"
+	fi
 
 	elog "Gaze is installed but has not been enabled or added to a global PAM stack."
 	elog "Review /etc/gaze/config.toml, then start gazed manually for evaluation."

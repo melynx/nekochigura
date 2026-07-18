@@ -25,8 +25,6 @@ These were already present before the audit and are not audit edits:
 - `app-misc/caelestia-cli/files/caelestia-cli-non-arch-version.patch`
 - `gui-apps/caelestia-shell/caelestia-shell-2.1.0_p20260706-r3.ebuild`
 - `gui-apps/quickshell/quickshell-0.3.0.ebuild`
-- `sys-auth/gaze/Manifest`
-- `sys-auth/gaze/gaze-0.2.4_p20260716.ebuild`
 
 The Caelestia Shell and Quickshell `DISTRIBUTOR` values identify the package's
 actual distribution/build channel, not the operating system or upstream
@@ -37,29 +35,23 @@ version-reporting helper; it does not alter licensing or runtime behavior.
 
 `git diff --check` was clean at audit time.
 
-## Pending Gaze snapshot moved from the stale checkout
+## Gaze snapshot moved from the stale checkout
 
 On 2026-07-18, the only unfinished work in the stale
 `/home/czl/projects/nekochigura` checkout was copied here unchanged before that
-checkout was removed. Keep these files as pre-existing maintainer work until
-they are reviewed as their own issue:
+checkout was removed. They were then reviewed and completed as Issue 38:
 
-- `sys-auth/gaze/gaze-0.2.4_p20260716.ebuild`, an untracked testing snapshot
+- `sys-auth/gaze/gaze-0.2.4_p20260716.ebuild` was an untracked testing snapshot
   pinned to `melynx/gaze` commit
   `6236a62361399dcdf990ca6e468da80cf0e8c185`;
-- `sys-auth/gaze/Manifest`, which adds that snapshot archive and the eight
+- `sys-auth/gaze/Manifest` added that snapshot archive and the eight
   replacement crate versions required by its lockfile.
 
-The snapshot adds a Rust 1.96 minimum, uses the existing three local security
-patches, and reloads systemd plus tries to restart `gazed` after an upgrade.
-The official GunduLabs 0.2.4 release ebuild remains alongside it, so its older
-crate records must remain in the shared Manifest. Before committing the
-snapshot, recheck the fork provenance and delta, the service-restart policy,
-the crate/license list, a clean build and tests, and the installed PAM/service
-payload. At transfer time, shell syntax, metadata XML, and `git diff --check`
-passed. Targeted pkgcheck reports that the snapshot makes the official 0.2.4
-release redundant; decide whether both rollback and snapshot versions should
-remain before finalizing it.
+The transferred snapshot added a Rust 1.96 minimum, used the existing three
+local security patches, and reloaded systemd plus tried to restart `gazed`
+after installation. Issue 38 replaced it with an official-upstream snapshot,
+removed the older release, narrowed the restart to real upgrades, and completed
+the required build and package checks.
 
 The stale checkout also had local commit `ed614ce`, but every file from that
 commit already matched this repository exactly. It was not copied or replayed.
@@ -1877,13 +1869,50 @@ Status: fixed and verified on 2026-07-18 with the matched HAL and bins
   snapshot shadows its release ebuild; Issue 37 adds one dev-profile
   nonsolvable dependency report and one required-use default report for musl.
 
+### Issue 38 — Gaze official-upstream snapshot and fork cleanup
+
+Status: fixed and verified on 2026-07-18 with
+`gaze-0.2.5_p20260718`, testing-only on amd64.
+
+- Replaced both the official 0.2.4 release ebuild and the unfinished fork
+  snapshot with one snapshot from official GunduLabs `main`, pinned to commit
+  `4aee4cb3d1533ea475ca5542cc2a91c68154e278`. This includes the merged
+  configurable enrollment face-size work, its input-limit fix, and later
+  upstream fixes. The former `melynx/gaze` feature branch is no longer needed.
+- Fast-forwarded the `melynx/gaze` fork's `main` branch to the same official
+  upstream commit over SSH. Deleted the merged
+  `feat/configurable-enrollment-face-size` branch from the fork. Remote
+  verification shows only `main` for those checked refs.
+- Kept all 453 Rust dependencies as individual `CRATES`. No Rust vendor archive
+  is hosted. Regenerated the Manifest for the official commit archive and exact
+  current lock file, including `cfg_aliases-0.2.2` and `tokio-1.53.0`.
+- Rebased the three local safety patches. They require affirmative measured eye
+  motion for IR-only liveness, stop a Rust panic from crossing the PAM C entry
+  point, and log frame-processing failures that upstream otherwise treats as a
+  simple no-face result. All patches apply with zero fuzz.
+- Kept the Rust 1.96 minimum and `~amd64`. The post-install action now reloads
+  systemd and uses `try-restart` only during a real upgrade. It restarts an
+  already running `gazed` service but does not start a stopped service on a
+  fresh install.
+- An isolated Portage run verified all source files, prepared the patches,
+  completed the optimized build, ran every selected workspace test, and built
+  a 46.6 MiB install image. Test results were 81 passed and two ignored for the
+  daemon, 20 passed for the CLI, 62 passed for core, six passed in doc tests,
+  and no failures. PAM, PAM core, and GUI test targets also completed. The
+  image contains the daemon, CLI, GUI, PAM module, service, D-Bus policy,
+  Polkit policy, configuration, desktop metadata, icon, and optional Hyprlock
+  PAM file. It has no broken links or RPATH/RUNPATH entries.
+- Targeted pkgcheck and `git diff --check` pass. The laptop still runs the
+  previously installed `gaze-0.2.4_p20260716`; this work did not install the
+  new package or restart the live service.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 49 | RedundantVersion |
+| 48 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
 | 10 | NonsolvableDepsInDev |
@@ -1931,7 +1960,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Present the next upstream package update as a separate proposal and wait for
-   permission.
+2. Present the next upstream package update after Gaze as a separate proposal
+   and wait for permission.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
