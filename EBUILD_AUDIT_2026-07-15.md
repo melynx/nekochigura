@@ -25,6 +25,8 @@ These were already present before the audit and are not audit edits:
 - `app-misc/caelestia-cli/files/caelestia-cli-non-arch-version.patch`
 - `gui-apps/caelestia-shell/caelestia-shell-2.1.0_p20260706-r3.ebuild`
 - `gui-apps/quickshell/quickshell-0.3.0.ebuild`
+- `sys-auth/gaze/Manifest`
+- `sys-auth/gaze/gaze-0.2.4_p20260716.ebuild`
 
 The Caelestia Shell and Quickshell `DISTRIBUTOR` values identify the package's
 actual distribution/build channel, not the operating system or upstream
@@ -34,6 +36,33 @@ renaming either ebuild. In Caelestia Shell this value is only embedded in the
 version-reporting helper; it does not alter licensing or runtime behavior.
 
 `git diff --check` was clean at audit time.
+
+## Pending Gaze snapshot moved from the stale checkout
+
+On 2026-07-18, the only unfinished work in the stale
+`/home/czl/projects/nekochigura` checkout was copied here unchanged before that
+checkout was removed. Keep these files as pre-existing maintainer work until
+they are reviewed as their own issue:
+
+- `sys-auth/gaze/gaze-0.2.4_p20260716.ebuild`, an untracked testing snapshot
+  pinned to `melynx/gaze` commit
+  `6236a62361399dcdf990ca6e468da80cf0e8c185`;
+- `sys-auth/gaze/Manifest`, which adds that snapshot archive and the eight
+  replacement crate versions required by its lockfile.
+
+The snapshot adds a Rust 1.96 minimum, uses the existing three local security
+patches, and reloads systemd plus tries to restart `gazed` after an upgrade.
+The official GunduLabs 0.2.4 release ebuild remains alongside it, so its older
+crate records must remain in the shared Manifest. Before committing the
+snapshot, recheck the fork provenance and delta, the service-restart policy,
+the crate/license list, a clean build and tests, and the installed PAM/service
+payload. At transfer time, shell syntax, metadata XML, and `git diff --check`
+passed. Targeted pkgcheck reports that the snapshot makes the official 0.2.4
+release redundant; decide whether both rollback and snapshot versions should
+remain before finalizing it.
+
+The stale checkout also had local commit `ed614ce`, but every file from that
+commit already matched this repository exactly. It was not copied or replayed.
 
 ## Work completed after the audit
 
