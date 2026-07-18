@@ -8,7 +8,7 @@ inherit linux-mod-r1
 DESCRIPTION="Intel IPU6 kernel drivers for MIPI cameras"
 HOMEPAGE="https://github.com/intel/ipu6-drivers"
 
-MY_PV=20251226_1140_191_PTL_PV_IoT
+MY_PV=20260629_2
 DKMS_VER="${PV}"
 
 SRC_URI="https://github.com/intel/ipu6-drivers/archive/${MY_PV}.tar.gz -> ${P}.tar.gz"
@@ -40,6 +40,10 @@ BDEPEND="
 # These drivers work on Intel platforms with IPU6
 # Tiger Lake, Alder Lake, Raptor Lake, and Meteor Lake
 RESTRICT="test"
+
+PATCHES=(
+	"${FILESDIR}/${PN}-20260629-dkms-module-list.patch"
+)
 
 MODULES=(
 	intel-ipu6-psys
@@ -97,12 +101,12 @@ src_prepare() {
 	# Apply patches for out-of-tree builds
 
 	# For kernel >= 6.10, apply PSYS patch for out-of-tree builds
-	if kernel_is ge 6 10 0 && ! use dkms; then
-		einfo "Applying IPU6 PSYS patch for out-of-tree build on kernel ${kver}"
+	if ! use dkms && kernel_is ge 6 10 0; then
+		einfo "Applying IPU6 PSYS patch for out-of-tree build on kernel ${KV_FULL}"
 		if [[ -f "${S}/patches/0001-v6.10-IPU6-headers-used-by-PSYS.patch" ]]; then
 			eapply "${S}/patches/0001-v6.10-IPU6-headers-used-by-PSYS.patch"
 		else
-			die "Required PSYS patch not found for kernel ${kver}"
+			die "Required PSYS patch not found for kernel ${KV_FULL}"
 		fi
 	fi
 
@@ -163,15 +167,11 @@ src_install() {
 	else
 		# Manual module installation
 		linux-mod-r1_src_install
-
-	#	# Install modules to updates directory like DKMS does
-	#	emake INSTALL_MOD_DIR=updates INSTALL_MOD_PATH="${ED}" modules_install \
-	#		KERNEL_SRC="${KV_DIR}" KERNELRELEASE="${KV_FULL}"
 	fi
 
 	# Install documentation
 	einstalldocs
-	dodoc README.md
+	dodoc README.md SECURITY.md
 }
 
 pkg_postinst() {
