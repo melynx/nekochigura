@@ -239,7 +239,8 @@ Current at audit time:
 |---|---:|---:|---|
 | `material-symbols-variable` | snapshot 20260717 / `abd7f5c0` | same variable-font HEAD at resolution | Current after Issue 35. https://github.com/google/material-design-icons/commit/abd7f5c0e179c83f068c770650bd14ebac5d5a09 |
 | `twemoji` | 17.0.3 | 17.0.3 | Current after Issue 36. https://github.com/jdecked/twemoji/releases/tag/v17.0.3 and https://github.com/JoeBlakeB/ttf-twemoji/releases/tag/17.0.3 |
-| `ipu6-camera-hal` | `20250923_ov02e` | `20260629_1` track available | Update/revalidate hardware track. https://github.com/intel/ipu6-camera-hal/tags |
+| `ipu6-camera-hal` | `20260629_2` | `20260629_2` | Current after Issue 37. https://github.com/intel/ipu6-camera-hal/tags |
+| `ipu6-camera-bins` | `20260629_2` | `20260629_2` | Current and aligned with the HAL after Issue 37. https://github.com/intel/ipu6-camera-bins/tags |
 | `gst-plugins-icamerasrc` | `20260629_1` | `20260629_1` | Current after Issue 6. https://github.com/intel/icamerasrc/tags |
 | `ipu6-drivers` | 20260327 | `20260629_1` | Update. https://github.com/intel/ipu6-drivers/tags |
 | `gpu-screen-recorder` | 5.13.6 plus live 9999 | 5.15.0 | Update versioned ebuild. https://git.dec05eba.com/gpu-screen-recorder/refs/ |
@@ -1821,21 +1822,76 @@ arm64, and x86.
   and 17.0.2 ebuilds and distfile records reduces the authoritative full-tree
   scan to 48 redundant versions; all other report counts are unchanged.
 
+### Issue 37 — Aligned Intel IPU6 HAL and bins snapshot
+
+Status: fixed and verified on 2026-07-18 with the matched HAL and bins
+`20260629_2` tags, both kept testing-only on amd64.
+
+- Updated both packages from the special `20250923_ov02e` tag to Intel's
+  current consolidated `20260629_2` tag. The HAL tag peels to commit
+  `9899efa70921906ee6dd23c9f83aff343968f164`. Its complete change from the
+  old commit is limited to corrected 1288x800 OV01A1S configuration in two
+  files. All three OV02E files remain byte-identical. The bins tags both peel
+  to commit `30e87664829782811a765b0ca9eea3a878a7ff29`; their trees and archive
+  payloads are identical after removing the tag-derived top directory.
+- Kept `~amd64` because these are hardware-specific snapshots. The HAL now
+  requires the bins package with the same snapshot date. The bins are limited
+  to glibc systems and declare the actual minimum glibc and GCC runtimes found
+  in their symbol tables, plus their direct Expat and zlib library needs.
+- Corrected all nine upstream pkg-config files from `/usr/lib` to Gentoo's
+  selected library directory. Expanded the prebuilt-file declaration to cover
+  all 57 shared and six static libraries. Removed an empty package-local copy
+  of the Intel license; Gentoo reads the complete 1,849-byte license from the
+  overlay's top-level `licenses` directory, and it matches upstream exactly.
+- Removed invalid RUNPATH entries from 15 proprietary libraries with
+  `patchelf`: 12 contained Intel's dead internal build path ending in an empty
+  element, which makes the loader search the current working directory, and
+  three contained `/usr/lib` instead of Gentoo's selected library directory.
+  This changes the installed binary bytes despite Intel's license allowing
+  binary use and redistribution only without modification. The maintainer
+  explicitly chose removal because the trailing empty path is unsafe. The
+  original archive remains unchanged and the package remains `strip`,
+  `mirror`, and `bindist` restricted. A clean bins install now has no RPATH or
+  RUNPATH and emits no related Portage security notice.
+- Removed unused GStreamer dependencies from the HAL. Removed the broken live
+  tuning switch because it needs an unavailable ChromeOS header. Fixed the PG
+  Lite pipeline on because Intel's matching bins do not ship the libraries
+  needed by the other pipeline. Tightened the remaining flags so plugin and
+  adaptor mode are paired, while non-plugin mode allows exactly one IPU
+  target. Deleted the dead commented removal phase.
+- Added a small build patch that raises the declared CMake floor to 3.10 and
+  stops upstream from turning every warning into a fatal error. This fixes the
+  build with GCC 16 while retaining `-Wall`. A clean isolated Portage build
+  against the staged bins completed all 313 default HAL build steps and
+  installed the adaptor, all three plugins, headers, pkg-config metadata, and
+  configuration for all targets. HAL files have no RPATH or RUNPATH. The
+  current `icamerasrc-20260629_1` also builds and links against this staged
+  result with no RPATH or missing library.
+- The staged OV02E files match upstream exactly, and all HAL dependencies
+  resolve when the staged bins are supplied. The laptop uses `uvcvideo`, has no
+  active IPU6 device or module, and had neither package installed, so no live
+  package or camera state changed. Ebuild syntax, metadata XML, exact patch
+  application with zero fuzz, Manifest integrity, and `git diff --check` pass.
+  Targeted pkgcheck reports only the expected glibc-only profile notices. The
+  full-tree scan has 49 redundant versions because the preserved pending Gaze
+  snapshot shadows its release ebuild; Issue 37 adds one dev-profile
+  nonsolvable dependency report and one required-use default report for musl.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 48 | RedundantVersion |
+| 49 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 9 | NonsolvableDepsInStable |
-| 9 | NonsolvableDepsInDev |
+| 10 | NonsolvableDepsInDev |
 | 6 | PotentialStable |
 | 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
-| 3 | RequiredUseDefaults |
+| 4 | RequiredUseDefaults |
 | 1 | BetterCompressionUri |
 
 Most of the originally reported 107 redundant versions are fully shadowed

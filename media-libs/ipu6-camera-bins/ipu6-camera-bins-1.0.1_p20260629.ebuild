@@ -6,7 +6,7 @@ EAPI=8
 DESCRIPTION="Binary libraries for Intel IPU6 camera HAL"
 HOMEPAGE="https://github.com/intel/ipu6-camera-bins"
 
-MY_PV=20250923_ov02e
+MY_PV=20260629_2
 
 SRC_URI="https://github.com/intel/ipu6-camera-bins/archive/refs/tags/${MY_PV}.tar.gz
 	-> ${P}.tar.gz"
@@ -15,23 +15,34 @@ S="${WORKDIR}/${PN}-${MY_PV}"
 LICENSE="intel-ipu6-camera-bins"
 SLOT="0"
 KEYWORDS="~amd64"
+REQUIRED_USE="elibc_glibc"
 
 RESTRICT="strip mirror bindist"
 
-BDEPEND="app-admin/chrpath"
+BDEPEND="dev-util/patchelf"
+RDEPEND="
+	dev-libs/expat
+	>=sys-devel/gcc-13.2:*
+	>=sys-libs/glibc-2.38
+	virtual/zlib:0/1
+"
 
-QA_PREBUILT="usr/lib*/lib*.so*"
+QA_PREBUILT="
+	usr/lib*/lib*.so*
+	usr/lib*/*.a
+"
 
 src_prepare() {
 	default
 
-	# Strip RUNPATH/RPATH (e.g. /usr/lib) from prebuilt blobs
+	# Upstream pkg-config files hardcode /usr/lib.
+	sed -i -e "s|^libdir=.*|libdir=\${exec_prefix}/$(get_libdir)|" \
+		lib/pkgconfig/*.pc || die
+
+	# Remove unsafe or invalid upstream library search paths.
 	local f
-	for f in lib/*.so.* ; do
-		# chrpath -l exits non-zero if there's no tag, so guard it
-		if chrpath -l "${f}" &>/dev/null ; then
-			chrpath -d "${f}" || die "chrpath -d failed for ${f}"
-		fi
+	for f in lib/*.so.*; do
+		patchelf --remove-rpath "${f}" || die
 	done
 }
 
@@ -67,7 +78,7 @@ pkg_postinst() {
 	elog "Tiger Lake, Alder Lake, Raptor Lake, and Meteor Lake platforms."
 	elog ""
 	elog "Installation paths:"
-	elog "  Libraries: /usr/lib64/"
+	elog "  Libraries: /usr/$(get_libdir)/"
 	elog "  Headers: /usr/include/"
 	elog ""
 	elog "Supported IPU versions: IPU6, IPU6EP, IPU6EPMTL"
@@ -75,5 +86,5 @@ pkg_postinst() {
 	elog "Note: Firmware files are not included in this package."
 	elog "IPU6 firmware is available in sys-kernel/linux-firmware."
 	elog ""
-	elog "This package a requirement for media-libs/ipu6-camera-hal to function properly."
+	elog "This package is required by media-libs/ipu6-camera-hal."
 }
