@@ -389,20 +389,30 @@ CRATES="
 	zune-jpeg@0.5.12
 "
 
+RUST_MIN_VER="1.88.0"
+
 inherit cargo
 
-DESCRIPTION="A material you color generation tool with templates"
+DESCRIPTION="Material You and Base16 color generation tool with templates"
 HOMEPAGE="https://github.com/InioX/matugen"
 SRC_URI="
 	https://github.com/InioX/${PN}/archive/v${PV}.tar.gz -> ${P}.gh.tar.gz
 	${CARGO_CRATE_URIS}
 "
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 # Dependent crate licenses
 LICENSE+="
-	Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD-2 BSD ISC MIT MPL-2.0
-	Unicode-DFS-2016 Unlicense ZLIB
+	0BSD Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD BSD-2 Boost-1.0
+	CC0-1.0 ISC LGPL-2.1+ MIT MPL-2.0 UoI-NCSA Unicode-DFS-2016
+	Unlicense ZLIB openssl SSLeay
 "
 SLOT="0"
 KEYWORDS="~amd64"
+
+PATCHES=( "${FILESDIR}/${P}-compiler-warnings.patch" )
+
+src_install() {
+	cargo_src_install
+	einstalldocs
+}
