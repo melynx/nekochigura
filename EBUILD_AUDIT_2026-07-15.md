@@ -2064,18 +2064,80 @@ Status: fixed, verified, and approved for signed publication on 2026-07-19.
   and otherwise matches the recorded result classes. The live system remains
   on Clash Party 1.9.5; no package was installed or changed.
 
+### Issue 43 — Ollama source update and packaging repair
+
+Status: fixed, verified, and approved for a signed commit on 2026-07-19. Push
+still needs separate approval.
+
+- Updated the source-built `sci-ml/ollama` from 0.23.2 to the latest official
+  stable release, 0.32.1. Removed all seven older source ebuilds: 0.14.2,
+  0.14.3_rc3, 0.15.5, 0.16.1, 0.17.5, 0.18.2, and 0.23.2. Kept stable
+  `amd64`. The separate `sci-ml/ollama-bin` package was not changed.
+- Added the official 0.32.1 Go dependency archive and the exact llama.cpp
+  `b9888` source archive. The build supplies both from `DISTDIR`, so CMake does
+  not fetch source from the network. Regenerated the Manifest. Updated the Go
+  build dependency to 1.26, which matches upstream's `go.mod` requirement.
+- Reworked the ebuild for Ollama's current CMake superbuild. It now builds the
+  Go client, the runtime-selected set of CPU runners, and optional CUDA, ROCm,
+  and Vulkan runners. It passes the package version explicitly and uses
+  `lib64/ollama` on this system. CUDA selects the version 12 or 13 backend from
+  the installed toolkit. Dependency solving selected the available CUDA
+  12.9.2 toolkit and the CUDA 12 backend.
+- Replaced the obsolete GNU install-directory patch with one downstream build
+  policy patch. It lets Portage control stripping. It stops the CUDA and ROCm
+  builds from copying toolchain libraries and ROCm data into the package. It
+  clears Portage's temporary `DESTDIR` during nested installs, which prevents a
+  second 324 MiB copy under a fake `/tmp` path. It also gives every copied CPU
+  runner the safe `$ORIGIN` runtime search path instead of recording the
+  temporary build directory.
+- Corrected the license set to `Apache-2.0 BSD BSD-2 ISC MIT` for Ollama and
+  its statically linked Go modules and embedded code. Re-enabled upstream's Go
+  tests. The normal integration tests need explicit build tags and external
+  services, so the ordinary package test does not run them.
+- Updated `acct-user/ollama` from revision 3 to 4. CUDA, ROCm, or Vulkan now
+  adds the service account to both `render` and `video`, and declares the two
+  account-group dependencies. The Ollama ebuild passes matching USE flags to
+  the account package.
+- Installed the previously unused OpenRC configuration file. Both service
+  systems now use `/var/lib/ollama` as the home and working directory. Fixed
+  the systemd unit's invalid literal `PATH=$PATH`. Added safe systemd limits,
+  an OpenRC network dependency, a private file-creation mask, clear network
+  exposure comments, and mode 0750 for `/var/log/ollama`.
+- A clean GCC 16 CPU build compiled every runtime-selected CPU runner. The full
+  Go test suite passed. A separate clean Vulkan build found the system Vulkan
+  loader and shader tools, generated all shaders, and built the Vulkan runner.
+  The staged client reports version 0.32.1. All staged runtime paths are
+  `$ORIGIN`; none contains a build path. The Vulkan runner links to the system
+  `libvulkan.so.1`, and the image contains no copied toolchain libraries or
+  fake `/tmp` tree.
+- The isolated install checks stopped only when `fowners` looked for the live
+  `ollama` account. This laptop does not have that account because the source
+  package is not installed. A normal emerge installs `acct-user/ollama-4`
+  first. No live account was created and no package or service was changed.
+- The full package dependency solver passes for CPU, Vulkan, and CUDA. ROCm
+  remains untested and deferred. Ollama needs the upstream-supported ROCm 7.2
+  series, while Gentoo still keywords the required HIP, hipBLAS, and rocBLAS
+  7.2 packages as unstable. This produces the recorded optional-ROCm
+  `NonsolvableDeps` scan findings on stable profiles. Fixing the wider ROCm
+  package set remains out of scope.
+- Syntax, patch, Manifest, metadata, whitespace, and targeted quality checks
+  pass apart from that known ROCm keyword limit. Upstream llama.cpp emits a
+  harmless GCC 16 warning about combining two enum types. Its unused MLX path
+  also asks for an old CMake compatibility level. Neither warning affects the
+  Linux CPU or Vulkan output. The full-tree non-network scan now reports 39
+  redundant versions and the result counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 42 | RedundantVersion |
+| 39 | RedundantVersion |
 | 6 | PythonCompatUpdate |
-| 9 | NonsolvableDepsInStable |
-| 10 | NonsolvableDepsInDev |
+| 5 | NonsolvableDepsInStable |
+| 6 | NonsolvableDepsInDev |
 | 6 | PotentialStable |
-| 3 | MatchingChksums |
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
 | 4 | RequiredUseDefaults |
@@ -2118,7 +2180,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 42 is approved for signed publication. After its SSH push and cleanup,
-   present the next package issue as a separate proposal.
+2. Issue 43 is approved for a signed commit. Do not push it until the user gives
+   separate push approval.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.

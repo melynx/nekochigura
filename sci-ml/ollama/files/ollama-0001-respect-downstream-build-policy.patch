@@ -1,0 +1,120 @@
+From: Chua Zheng Leong <melynx@gmail.com>
+Date: Sun, 19 Jul 2026 00:00:00 +0800
+Subject: [PATCH] respect downstream build policy
+
+Let the package manager strip the Go binary. Clear Portage's temporary
+DESTDIR for nested installs so they only populate the superbuild payload.
+Do not copy toolchain runtime libraries or ROCm data into the installed image.
+Gentoo installs and updates those files through their own packages.
+
+--- a/cmake/local.cmake
++++ b/cmake/local.cmake
+@@ -432,7 +432,8 @@
+         BUILD_COMMAND ${OLLAMA_NATIVE_BUILD_TOOL_COMMAND}
+             ${OLLAMA_NATIVE_CONFIG_ARG}
+             ${OLLAMA_NATIVE_BUILD_TARGET_ARG} ${ARG_TARGETS}
+-        INSTALL_COMMAND ${CMAKE_COMMAND} --install <BINARY_DIR>
++        INSTALL_COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
++            ${CMAKE_COMMAND} --install <BINARY_DIR>
+             ${OLLAMA_NATIVE_CONFIG_ARG}
+             --component llama-server
+         DEPENDS ollama-llama-cpp-source
+@@ -510,10 +511,12 @@
+             ${OLLAMA_NATIVE_CONFIG_ARG}
+             ${OLLAMA_NATIVE_BUILD_TARGET_ARG} mlx
+             ${OLLAMA_NATIVE_BUILD_TARGET_ARG} mlxc
+-        INSTALL_COMMAND ${CMAKE_COMMAND} --install <BINARY_DIR>
++        INSTALL_COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
++            ${CMAKE_COMMAND} --install <BINARY_DIR>
+             ${OLLAMA_NATIVE_CONFIG_ARG}
+             --component MLX
+-            COMMAND ${CMAKE_COMMAND} --install <BINARY_DIR>
++            COMMAND ${CMAKE_COMMAND} -E env --unset=DESTDIR
++            ${CMAKE_COMMAND} --install <BINARY_DIR>
+             ${OLLAMA_NATIVE_CONFIG_ARG}
+             --component MLX_VENDOR
+         DEPENDS ollama-mlx-sources
+@@ -570,7 +573,7 @@
+     get_filename_component(OLLAMA_GO_OUTPUT_DIR "${OLLAMA_GO_OUTPUT}" DIRECTORY)
+ 
+     set(OLLAMA_GO_LDFLAGS
+-        "-s -w -X=github.com/ollama/ollama/version.Version=${OLLAMA_VERSION} -X=github.com/ollama/ollama/server.mode=release")
++        "-X=github.com/ollama/ollama/version.Version=${OLLAMA_VERSION} -X=github.com/ollama/ollama/server.mode=release")
+     if(GO_EXECUTABLE)
+         add_custom_target(ollama-go ALL
+             COMMAND ${CMAKE_COMMAND} -E make_directory "${OLLAMA_GO_OUTPUT_DIR}"
+--- a/llama/server/CMakeLists.txt
++++ b/llama/server/CMakeLists.txt
+@@ -23,6 +23,7 @@ if(APPLE)
+ elseif(NOT WIN32)
+     set(CMAKE_INSTALL_RPATH "$ORIGIN")
+     set(CMAKE_BUILD_RPATH "$ORIGIN")
++    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+ endif()
+ 
+ if(GGML_VULKAN AND DEFINED ENV{VULKAN_SDK})
+@@ -434,16 +434,9 @@
+ 
+     ollama_install_windows_runtime_dlls("${_base_dest}/${OLLAMA_RUNNER_DIR}")
+ 
+-    # Bundle GPU runtime libraries (cublas, cudart, rocblas, etc.)
+-    # These are needed at runtime by the GPU backend .so
+     if(GGML_CUDA AND CUDAToolkit_FOUND)
+-        # Find the actual ggml-cuda target to get its runtime dependencies
+         if(TARGET ggml-cuda)
+             install(TARGETS ggml-cuda
+-                RUNTIME_DEPENDENCIES
+-                    DIRECTORIES ${CUDAToolkit_BIN_DIR} ${CUDAToolkit_BIN_DIR}/x64 ${CUDAToolkit_LIBRARY_DIR}
+-                    PRE_INCLUDE_REGEXES cublas cublasLt cudart
+-                    PRE_EXCLUDE_REGEXES ".*"
+                 RUNTIME DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
+                 LIBRARY DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
+             )
+@@ -452,47 +445,9 @@
+     if(GGML_HIP)
+         if(TARGET ggml-hip)
+             install(TARGETS ggml-hip
+-                RUNTIME_DEPENDENCY_SET rocm_deps
+                 RUNTIME DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
+                 LIBRARY DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
+             )
+-            install(RUNTIME_DEPENDENCY_SET rocm_deps
+-                DIRECTORIES ${HIP_BIN_INSTALL_DIR} ${HIP_LIB_INSTALL_DIR}
+-                PRE_INCLUDE_REGEXES hipblas rocblas amdhip64 rocsolver amd_comgr hsa-runtime64 rocsparse tinfo rocprofiler-register roctx64 rocroller drm drm_amdgpu numa elf
+-                PRE_EXCLUDE_REGEXES ".*"
+-                POST_EXCLUDE_REGEXES "system32"
+-                RUNTIME DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
+-                LIBRARY DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
+-            )
+-            if(WIN32)
+-                # HIP delay-loads COMGR on Windows, so CMake's runtime
+-                # dependency scan can miss the versioned companion DLL.
+-                set(_rocm_companion_dlls)
+-                foreach(_hip_dir IN ITEMS ${HIP_BIN_INSTALL_DIR} ${HIP_LIB_INSTALL_DIR})
+-                    if(EXISTS "${_hip_dir}")
+-                        file(GLOB _hip_comgr_dlls
+-                            LIST_DIRECTORIES false
+-                            "${_hip_dir}/amd_comgr*.dll")
+-                        list(APPEND _rocm_companion_dlls ${_hip_comgr_dlls})
+-                    endif()
+-                endforeach()
+-                if(_rocm_companion_dlls)
+-                    list(REMOVE_DUPLICATES _rocm_companion_dlls)
+-                    install(FILES ${_rocm_companion_dlls}
+-                        DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}"
+-                        COMPONENT llama-server)
+-                else()
+-                    message(FATAL_ERROR "Could not find ROCm COMGR runtime DLLs to bundle")
+-                endif()
+-            endif()
+-            foreach(_hip_dir IN ITEMS ${HIP_BIN_INSTALL_DIR} ${HIP_LIB_INSTALL_DIR})
+-                if(EXISTS ${_hip_dir}/rocblas)
+-                    install(DIRECTORY ${_hip_dir}/rocblas
+-                        DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}"
+-                        COMPONENT llama-server)
+-                    break()
+-                endif()
+-            endforeach()
+         endif()
+     endif()
+     if(GGML_VULKAN)
