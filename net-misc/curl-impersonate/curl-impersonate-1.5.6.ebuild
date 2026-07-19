@@ -1,109 +1,123 @@
-# Copyright 2024 Gentoo Authors
+# Copyright 2024-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit autotools cmake flag-o-matic
+inherit multiprocessing
+
+BORINGSSL_COMMIT="673e61fc215b178a90c0e67858bbf162c8158993"
+CURL_VERSION="8.15.0"
 
 DESCRIPTION="Active curl-impersonate fork with more versions and build targets"
 HOMEPAGE="https://github.com/lexiforest/curl-impersonate"
-BORINGSSL_SHA="673e61fc215b178a90c0e67858bbf162c8158993"
-CURL_VERSION="curl-8_15_0"
-SRC_URI="https://github.com/lexiforest/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
-	https://github.com/google/boringssl/archive/${BORINGSSL_SHA}.tar.gz -> boringssl-${BORINGSSL_SHA}.tar.gz
-	https://github.com/curl/curl/archive/${CURL_VERSION}.tar.gz -> ${CURL_VERSION//_/.}.tar.gz"
+SRC_URI="
+	https://github.com/lexiforest/${PN}/archive/refs/tags/v${PV}.tar.gz
+		-> ${P}.tar.gz
+	https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz
+	https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz
+	https://github.com/google/brotli/archive/refs/tags/v1.2.0.tar.gz
+		-> brotli-1.2.0.tar.gz
+	https://github.com/google/boringssl/archive/${BORINGSSL_COMMIT}.zip
+		-> boringssl-${BORINGSSL_COMMIT}.zip
+	https://github.com/nghttp2/nghttp2/releases/download/v1.63.0/nghttp2-1.63.0.tar.bz2
+	https://github.com/ngtcp2/ngtcp2/releases/download/v1.20.0/ngtcp2-1.20.0.tar.bz2
+	https://github.com/ngtcp2/nghttp3/releases/download/v1.15.0/nghttp3-1.15.0.tar.bz2
+	https://ftp.gnu.org/gnu/libunistring/libunistring-1.1.tar.gz
+	https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz
+	https://github.com/curl/curl/archive/curl-8_15_0.tar.gz
+		-> curl-${CURL_VERSION}.tar.gz
+"
 
-LICENSE="MIT"
-SLOT="0"
-KEYWORDS="~amd64"
+LICENSE="
+	Apache-2.0 BSD curl ISC MIT ZLIB
+	|| ( BSD GPL-2 )
+	|| ( GPL-2+ LGPL-3+ )
+	|| ( FDL-1.2 GPL-3+ )
+	GPL-3+ unicode
+"
+SLOT="0/4"
+KEYWORDS="amd64"
 IUSE="clients"
 
-DEPEND="app-arch/brotli:=
-	dev-libs/nss:=
-	llvm-runtimes/libcxx:=
-	net-libs/nghttp2:=
-	app-arch/zstd
-	net-libs/libpsl
-	virtual/zlib"
-RDEPEND="${DEPEND}"
-BDEPEND="dev-build/ninja
-	dev-build/cmake"
+RDEPEND="app-misc/ca-certificates"
+BDEPEND="
+	app-arch/unzip
+	app-shells/bash
+	dev-build/autoconf
+	dev-build/automake
+	dev-build/cmake
+	dev-build/libtool
+	dev-build/ninja
+	dev-lang/go
+	dev-lang/perl
+	dev-util/gperf
+	virtual/pkgconfig
+"
 
 DOCS=( README.md )
 
-# This package is cURL built with boringssl with a few patches (both in cURL and boringssl). This
-# ebuild skips over curl-impersonate's not so great autotools use and just builds boringssl then
-# cURL with the patches.
+src_unpack() {
+	unpack "${P}.tar.gz"
+}
 
 src_prepare() {
-	mv "${WORKDIR}/boringssl-${BORINGSSL_SHA}" "${S}/" || die
-	pushd "boringssl-${BORINGSSL_SHA}" &>/dev/null || die
-	eapply ../patches/boringssl.patch
-	touch .patched || die
-	cmake_src_prepare
-	popd &>/dev/null || die
-	mv "${WORKDIR}/curl-${CURL_VERSION}" "${S}/${CURL_VERSION}" || die
-	pushd "${CURL_VERSION}" &>/dev/null || die
-	eapply ../patches/curl.patch
-	eautoreconf
-	touch .patched-chrome || die
-	popd &>/dev/null || die
 	default
+
+	local archive
+	for archive in \
+		"zlib-1.3.1.tar.gz" \
+		"zstd-1.5.6.tar.gz" \
+		"brotli-1.2.0.tar.gz" \
+		"boringssl-${BORINGSSL_COMMIT}.zip" \
+		"nghttp2-1.63.0.tar.bz2" \
+		"ngtcp2-1.20.0.tar.bz2" \
+		"nghttp3-1.15.0.tar.bz2" \
+		"libunistring-1.1.tar.gz" \
+		"libidn2-2.3.7.tar.gz"
+	do
+		ln -s "${DISTDIR}/${archive}" "${S}/${archive}" || die
+	done
+	ln -s "${DISTDIR}/curl-${CURL_VERSION}.tar.gz" \
+		"${S}/curl-8_15_0.tar.gz" || die
+
+	# The wrappers use no Bash-only syntax.
+	sed -i '1s|.*|#!/bin/sh|' bin/curl_* || die
+
+	# Pass Gentoo's libdir into the nested curl configure call.
+	sed -i \
+		's|config_flags="--prefix=@prefix@"|config_flags="--prefix=@prefix@ --libdir=@libdir@"|' \
+		Makefile.in || die
 }
 
 src_configure() {
-	pushd "boringssl-${BORINGSSL_SHA}" || die
-	sed -re 's|-Werror||g' -i CMakeLists.txt || die
-	local mycmakeargs=(
-		-DBUILD_SHARED_LIBS=OFF
-		-DCMAKE_POSITION_INDEPENDENT_CODE=ON
-	)
-	cmake_src_configure
-	popd || die
+	econf \
+		--with-ca-bundle="${EPREFIX}/etc/ssl/certs/ca-certificates.crt" \
+		--with-ca-path="${EPREFIX}/etc/ssl/certs"
 }
 
 src_compile() {
-	pushd "boringssl-${BORINGSSL_SHA}" || die
-	cmake_src_compile
-	popd || die
-	mkdir "boringssl-${BORINGSSL_SHA}/lib" || die
-	cp "boringssl-${BORINGSSL_SHA}_build"/*.a "boringssl-${BORINGSSL_SHA}/lib" || die
-	pushd "${CURL_VERSION}" || die
-	# This configure has to be here to see the libraries just built
-	append-cxxflags -stdlib=libstdc++
-	append-ldflags -lstdc++
-	econf \
-		"--with-brotli=${EPREFIX}/usr/$(get_libdir)" \
-		"--with-ca-bundle=${EPREFIX}/etc/ssl/certs/ca-certificates.crt" \
-		"--with-nghttp2=${EPREFIX}/usr/$(get_libdir)" \
-		"--with-openssl=${S}/boringssl-${BORINGSSL_SHA}" \
-		"--with-zlib=${EPREFIX}/usr/$(get_libdir)" \
-		"--with-zstd=${EPREFIX}/usr/$(get_libdir)" \
-		--enable-ech \
-		--enable-ipv6 \
-		--disable-static \
-		--enable-websockets \
-		LIBS="-pthread -lbrotlidec -lstdc++" \
-		USE_CURL_SSLKEYLOGFILE=true
-	emake
-	popd || die
+	emake SUBJOBS="$(get_makeopts_jobs)" build
+}
+
+src_test() {
+	emake SUBJOBS="$(get_makeopts_jobs)" checkbuild
 }
 
 src_install() {
-	pushd "${CURL_VERSION}" || die
 	emake DESTDIR="${D}" install
-	if [ -f "${D}/usr/bin/wcurl" ]; then
-		mv "${D}/usr/bin/wcurl" "${D}/usr/bin/w${PN}" || die
+
+	# The normal curl headers and development helpers would collide or point to
+	# headers intentionally owned by net-misc/curl.
+	rm -rf "${ED}/usr/include/curl" || die
+	rm -f \
+		"${ED}/usr/bin/curl-impersonate-config" \
+		"${ED}/usr/$(get_libdir)/pkgconfig/libcurl-impersonate.pc" \
+		"${ED}/usr/$(get_libdir)"/libcurl-impersonate.la \
+		"${ED}/usr/$(get_libdir)"/libcurl-impersonate.a || die
+
+	if ! use clients; then
+		find "${ED}/usr/bin" -type f -name 'curl_*' -delete || die
 	fi
-	rm -fR "${D}/usr/share/man" "${D}/usr/share/aclocal" "${D}/usr/include" \
-		"${D}/usr/$(get_libdir)/lib${PN}.la" || die
-	popd || die
-	if use clients; then
-		local bn i
-		for i in bin/curl_*; do
-			bn=$(basename "$i")
-			newbin "$i" "${bn//_/-}"
-		done
-	fi
+
 	einstalldocs
 }
