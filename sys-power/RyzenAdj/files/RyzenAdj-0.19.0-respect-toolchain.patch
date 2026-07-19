@@ -1,0 +1,30 @@
+Do not force LTO when the user did not request it, and make the public API
+header provide the standard integer and size types that it uses.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -15,14 +15,6 @@ option(PREFER_STATIC_LINKING "Prefer static linking for the ryzenadj executable
+ 
+ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+ 
+-#Enable LTO
+-include(CheckIPOSupported)
+-check_ipo_supported(RESULT supported OUTPUT error)
+-if( supported )
+-    message(STATUS "IPO / LTO enabled")
+-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+-endif()
+-
+ AUX_SOURCE_DIRECTORY(./ SRC_DIR)
+ 
+ if(WIN32)
+--- a/lib/ryzenadj.h
++++ b/lib/ryzenadj.h
+@@ -5,6 +5,8 @@
+ #ifndef RYZENADJ_H
+ #define RYZENADJ_H
++#include <stddef.h>
++#include <stdint.h>
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
