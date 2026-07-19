@@ -1,0 +1,23 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,6 +20,7 @@ set(QT_MIN_VERSION "6.7.0")
+ include(GenerateExportHeader)
+ include(WriteBasicConfigVersionFile)
+ include(FeatureSummary)
++include(CTest)
+
+ find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
+ #find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
+--- a/kstyle/tests/CMakeLists.txt
++++ b/kstyle/tests/CMakeLists.txt
+@@ -10,6 +10,10 @@ else()
+ endif()
+
+ find_package(Qt${QT_MAJOR_VERSION} ${TEST_QT_VERSION} CONFIG REQUIRED COMPONENTS Test Widgets)
++if(NOT TARGET Qt::Test)
++    add_library(Qt::Test ALIAS Qt${QT_MAJOR_VERSION}::Test)
++endif()
++
+
+ # Generate the config data for tests
+ kconfig_add_kcfg_files(test_config_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../darklystyleconfigdata.kcfgc)
