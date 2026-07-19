@@ -11,6 +11,6 @@
 	</upstream>
 	<use>
 		<flag name="png">Enable support for PNG icons</flag>
-		<flag name="svg">enables support for SVG icons</flag>
+		<flag name="svg">Enable support for SVG icons</flag>
 	</use>
 </pkgmetadata>

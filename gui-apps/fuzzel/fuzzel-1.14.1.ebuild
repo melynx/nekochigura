@@ -3,15 +3,19 @@
 
 EAPI=8
 
-inherit meson optfeature
+PYTHON_COMPAT=( python3_{12..15} )
+
+inherit meson python-any-r1 verify-sig
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://codeberg.org/dnkl/fuzzel.git"
 else
-	SRC_URI="https://codeberg.org/dnkl/fuzzel/archive/${PV}.tar.gz -> ${P}.tar.gz"
+	SRC_URI="
+		https://codeberg.org/dnkl/fuzzel/releases/download/${PV}/${P}.tar.gz
+		verify-sig? ( https://codeberg.org/dnkl/fuzzel/releases/download/${PV}/${P}.tar.gz.sig )
+	"
 	KEYWORDS="~amd64"
-	S="${WORKDIR}/${PN}"
 fi
 
 DESCRIPTION="Application launcher for wlroots-based Wayland compositors"
@@ -20,26 +24,33 @@ LICENSE="MIT"
 SLOT="0"
 IUSE="png svg"
 
-DEPEND="
+RDEPEND="
 	dev-libs/wayland
 	<media-libs/fcft-4.0.0
-	>=media-libs/fcft-3.0.0
+	>=media-libs/fcft-3.3.1
 	media-libs/fontconfig
 	x11-libs/libxkbcommon
-	x11-libs/pixman
-	png? ( media-libs/libpng )
+	>=x11-libs/pixman-0.46.0
+	png? ( media-libs/libpng:= )
 	svg? ( media-libs/nanosvg )
 "
-RDEPEND="${DEPEND}"
-BDEPEND="
-	app-text/scdoc
+DEPEND="
+	${RDEPEND}
 	>=dev-libs/tllist-1.0.1
-	>=dev-libs/wayland-protocols-1.32
-	dev-util/wayland-scanner
+	>=dev-libs/wayland-protocols-1.41
 "
+BDEPEND="
+	${PYTHON_DEPS}
+	app-text/scdoc
+	dev-util/wayland-scanner
+	verify-sig? ( sec-keys/openpgp-keys-dnkl )
+"
+
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/dnkl.asc
 
 src_configure() {
 	local emesonargs=(
+		-Denable-cairo=disabled
 		-Dpng-backend=$(usex png libpng none)
 		-Dsvg-backend=$(usex svg nanosvg none)
 		$(meson_feature svg system-nanosvg)
@@ -49,9 +60,6 @@ src_configure() {
 
 src_install() {
 	meson_src_install
-	rm -rf "${ED}/usr/share/doc/fuzzel" || die
-}
-
-pkg_postinst() {
-	optfeature "For rounded corner support" x11-libs/cairo
+	rm -r "${ED}/usr/share/doc/fuzzel" || die
+	einstalldocs
 }
