@@ -1,9 +1,15 @@
 #!/sbin/openrc-run
-# Copyright 1999-2025 Gentoo Authors
-# Distributed under the terms of the GNU General Public License, v2
+# Copyright 1999-2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
 
 supervisor=supervise-daemon
-description="Ollama Service"
+description="Ollama service"
 command="/usr/bin/ollama"
 command_args="serve"
 command_user="ollama:ollama"
+directory="/var/lib/ollama"
+umask=0077
+
+depend() {
+	need net
+}

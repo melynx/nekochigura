@@ -2,12 +2,13 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>nekochigura@example.com</email>
+		<email>melynx@gmail.com</email>
 		<name>Chua Zheng Leong</name>
 	</maintainer>
 	<use>
-		<flag name="cuda">Enable NVIDIA CUDA acceleration support</flag>
-		<flag name="rocm">Enable AMD ROCm acceleration support</flag>
+		<flag name="cuda">Install the bundled NVIDIA CUDA runners and give the service user GPU access</flag>
+		<flag name="rocm">Install the bundled AMD ROCm runners and give the service user GPU access</flag>
+		<flag name="vulkan">Install the bundled Vulkan runner and give the service user GPU access</flag>
 	</use>
 	<upstream>
 		<remote-id type="github">ollama/ollama</remote-id>

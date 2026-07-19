@@ -2127,13 +2127,72 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   Linux CPU or Vulkan output. The full-tree non-network scan now reports 39
   redundant versions and the result counts recorded below.
 
+### Issue 44 — Ollama official binary update and packaging repair
+
+Status: fixed and verified on 2026-07-19; awaiting signed publication.
+
+- Updated `sci-ml/ollama-bin` from 0.30.0 to the latest official stable
+  release, 0.32.1. Removed all eight older binary ebuilds: 0.14.2,
+  0.14.3_rc3, 0.15.5, 0.16.1, 0.17.5, 0.18.2, 0.23.2, and 0.30.0. Kept
+  stable `amd64` and the mutual block with the source-built package.
+- Fixed the ROCm download layout. Upstream's installer always extracts the
+  base Linux archive and then adds the ROCm archive when it detects AMD
+  hardware. The old ebuild incorrectly selected the ROCm add-on instead of
+  the base archive. The new ebuild always installs the base and conditionally
+  overlays ROCm.
+- Made the GPU flags control installed files. `cuda` keeps the bundled CUDA
+  12 and 13 runners, `vulkan` keeps the Vulkan runner and adds the system
+  Vulkan loader, and `rocm` adds the ROCm 7.2 runner archive. Disabled CUDA
+  and Vulkan directories are removed. All three flags pass through to
+  `acct-user/ollama-4` for the required device-group access.
+- Corrected the license expression for the bundled Go code, llama.cpp code,
+  GCC OpenMP library, and optional NVIDIA libraries. CUDA now conditionally
+  adds `NVIDIA-CUDA` and `RESTRICT=bindist`; direct upstream installation
+  remains available. The package remains restricted from Gentoo mirrors and
+  from stripping because it installs upstream binaries.
+- Fixed upstream runtime search paths in every CPU runner. They contained
+  Ollama's private `/build/llama-server-cpu/bin` directory. The ebuild now
+  rewrites each path to `$ORIGIN`, meaning the installed library's own
+  directory. Added the required `patchelf` build dependency.
+- Fixed installed modes. The old `doins` call made `llama-server` and
+  `llama-quantize` non-executable. Both helpers and every shared library now
+  receive the correct executable mode. Expanded `QA_PREBUILT` to cover the
+  client and the entire bundled runner tree.
+- Synchronized the systemd unit, OpenRC script, and OpenRC configuration with
+  the repaired source package. Both service systems use `/var/lib/ollama` as
+  the home and working directory. The invalid literal `PATH=$PATH` is gone.
+  The services have the same safe file mask, systemd restrictions, OpenRC
+  network dependency, logging configuration, and protected log directory as
+  the source package.
+- Replaced the placeholder maintainer address with the overlay maintainer's
+  real address. Updated the USE flag descriptions to state what each flag
+  installs and why it changes the service account.
+- GitHub's release API reports 0.32.1 as released on 2026-07-16. The normal
+  1,435,963,408-byte archive and ROCm 1,047,646,096-byte archive both matched
+  GitHub's published SHA-256 values. Both are recorded in the regenerated
+  Manifest. The ROCm archive was inspected only far enough to confirm that it
+  is an add-on rooted at `lib/ollama/rocm_v7_2`; ROCm execution remains
+  untested and deferred.
+- Separate isolated staging passes covered the default CPU image and the
+  CUDA plus Vulkan image. The staged client reports version 0.32.1. The CPU
+  image excludes CUDA and Vulkan directories. The GPU image contains both
+  CUDA generations and Vulkan. Both helper programs are executable, and all
+  staged runtime paths are local; none contains an upstream build path.
+- The isolated install reached only the final `fowners` call, which cannot
+  resolve the absent live `ollama` user on this laptop. A normal merge installs
+  `acct-user/ollama-4` first. No account, package, or service was installed or
+  changed. Dependency previews pass for CPU, CUDA plus Vulkan, and ROCm.
+- Syntax, Manifest, metadata, whitespace, dependency, and targeted package
+  checks pass. The full non-network overlay scan now reports 29 redundant
+  versions and the counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 39 | RedundantVersion |
+| 29 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2180,7 +2239,8 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 43 is signed, published, and cleaned up. Present the next package
-   issue as a separate proposal.
+2. Issue 43 is signed, published, and cleaned up. Issue 44 is fixed and
+   verified; finish its signed publication and cleanup before presenting the
+   next package issue.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.

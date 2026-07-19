@@ -1,0 +1,23 @@
+# Copyright 1999-2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+# Ollama stores downloaded models below this directory.
+export HOME="/var/lib/ollama"
+
+# Listen on another address. The default only accepts local connections.
+# Exposing Ollama to a network gives that network access to its API.
+# export OLLAMA_HOST="0.0.0.0:11434"
+
+# Add browser origins that may call the Ollama API.
+# export OLLAMA_ORIGINS="https://example.com"
+
+# Store models in another directory.
+# export OLLAMA_MODELS="/var/lib/ollama/models"
+
+# Log to syslog.
+# output_logger="logger -t \"$RC_SVCNAME\" -p daemon.info"
+# error_logger="logger -t \"$RC_SVCNAME\" -p daemon.err"
+
+# Log to a file.
+output_log="/var/log/ollama/ollama.log"
+error_log="/var/log/ollama/ollama.log"
