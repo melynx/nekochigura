@@ -2496,13 +2496,39 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   package, desktop setting, or service was changed. The fresh full non-network
   overlay scan now reports 13 redundant versions and the counts below.
 
+### Issue 53 — adw-gtk3 old-version and dependency cleanup
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`be60b247070246e7c14d1e27edcb64bba4a7c285`.
+
+- Checked the official release page and the signed release tag. Version 6.5
+  remains the latest release. Kept 6.5 as `~amd64 ~arm64`, removed redundant
+  versions 5.6, 5.10, and 6.4, and regenerated the Manifest. This laptop has
+  6.5 installed and actively selects `adw-gtk3-dark`; the cleanup keeps that
+  installed version and theme name unchanged.
+- The 6.5 release asset contains ready-made GTK 3 and GTK 4 theme data, not a
+  program or shared library. Removed the forced GTK 3 and GTK 4 runtime
+  dependencies so users can install either toolkit independently. Marked the
+  data-only package to skip binary stripping and binary checks. Kept the
+  upstream `LGPL-2.1` license declaration and clarified the description.
+- A clean staged install completed without network access. Its 124 CSS, SVG,
+  PNG, and theme-index files match the official release archive byte for byte.
+  They also match the files from the installed 6.5 package. All SVG files
+  parse, all PNG files have valid PNG headers, every installed file has mode
+  0644, and the image contains no links, temporary paths, or unexpected files.
+- Syntax, Manifest, metadata, whitespace, staged-file, archive-comparison, and
+  targeted package checks pass. Upstream ships no tests with the ready-made
+  release asset. No live package or desktop setting was changed. The fresh
+  full non-network overlay scan now reports 10 redundant versions and the
+  counts below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 13 | RedundantVersion |
+| 10 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 7 | NonsolvableDepsInDev |
@@ -2522,7 +2548,7 @@ there is an intentional rollback/security/channel reason to retain them.
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
-adw-gtk3, Catppuccin Neovim,
+Catppuccin Neovim,
 Ollama and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
@@ -2551,7 +2577,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 52 are signed and published. Issue 52 only needs its
+2. Issues 43 through 53 are signed and published. Issue 53 only needs its
    temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
