@@ -2287,13 +2287,64 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   full non-network overlay scan now reports 25 redundant versions and the
   counts recorded below.
 
+### Issue 48 — curl-impersonate stable repair and 2.0 release candidate
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`02de690e09210efa755d7458d76c33691ca4d066`.
+
+- Checked the official lexiforest fork. Version 1.5.6 remains its stable
+  release. Added the newer 2.0.0 release candidate 3 as `~amd64`, kept 1.5.6
+  as the stable `amd64` choice, and removed redundant versions 1.2.5, 1.4.3,
+  1.4.4, and 1.5.1. Both ebuilds use subslot 4 because they provide
+  `libcurl-impersonate.so.4`; this lets Portage rebuild `curl-cffi` if that
+  shared-library interface changes.
+- Replaced the incomplete 1.5.6 build with upstream's full pinned dependency
+  set. The old ebuild omitted HTTP/3, used a newer incompatible system
+  nghttp2, and declared unused NSS and libc++ libraries. Both retained
+  versions now list every source archive in `SRC_URI`, use only local
+  distfiles during the build, and statically include the exact zlib, zstd,
+  Brotli, BoringSSL, nghttp2, ngtcp2, nghttp3, libidn2, and curl revisions
+  selected by upstream. Version 1.5.6 also includes upstream's separate
+  libunistring archive. Runtime dependencies are therefore limited to the CA
+  certificate bundle.
+- Expanded the license expressions to cover the project and all bundled
+  source. Added the complete build-tool dependencies, including unzip, and
+  configured Gentoo's CA bundle and certificate directory. Both builds honor
+  Gentoo's compiler and linker flags and build without network access.
+- Prevented collisions with `net-misc/curl`. Both ebuilds remove standard curl
+  headers, static archives, and development helpers. The 2.0 build also
+  removes private CMake object folders that upstream installs by mistake.
+  Optional browser wrapper scripts use `/bin/sh` and are present only with
+  the `clients` flag.
+- Clean GCC 16 builds passed upstream's `checkbuild` target. Version 1.5.6
+  reports curl 8.15.0 with zstd 1.5.6. Version 2.0.0 release candidate 3
+  reports curl 8.21.0 with zstd 1.5.7. Both report HTTP/2, HTTP/3, ECH, IDN,
+  IPv6, Brotli, and zstd support. Each staged command completed a loopback
+  HTTP request. All wrapper scripts pass shell syntax checks, and one wrapper
+  from each version ran in an installed-style test layout.
+- The final images contain only the main command, shared library, versioned
+  documentation, and optional wrappers. Their executable code depends only
+  on the normal C, C++, and GCC runtime libraries. Neither image contains a
+  bad runtime search path, text relocation, static library, public curl
+  header, or leaked build path.
+- Rebuilt `curl-cffi` 0.15.0 against staged 1.5.6. Its native module depends
+  only on `libcurl-impersonate.so.4` and libc. The same module loaded with
+  both retained versions and completed a real loopback HTTP request through
+  each one, confirming the required shared-library compatibility.
+- No live package was installed. Syntax, Manifest, metadata, whitespace,
+  dependency, staged-link, and targeted package checks pass. The remaining
+  targeted package-check notices are intentional: upstream's build rules pin
+  exact BoringSSL zip inputs, and zstd 1.5.6 only happens to have the same
+  version string as the stable package. The full non-network overlay scan now
+  reports 21 redundant versions and the counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 25 | RedundantVersion |
+| 21 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2302,6 +2353,8 @@ Repository-wide non-network scan counts:
 | 1 | UnknownCategoryDirs |
 | 4 | RequiredUseDefaults |
 | 1 | BetterCompressionUri |
+| 1 | StaticSrcUri |
+| 2 | TarballAvailable |
 
 Most of the originally reported 107 redundant versions are fully shadowed
 older point releases.
@@ -2311,7 +2364,7 @@ there is an intentional rollback/security/channel reason to retain them.
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
-curl-impersonate, RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
+RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
@@ -2340,7 +2393,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 47 are signed, published, and cleaned up. Present the
-   next package issue as a separate proposal.
+2. Issues 43 through 48 are signed and published. Issue 48 only needs its
+   temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
