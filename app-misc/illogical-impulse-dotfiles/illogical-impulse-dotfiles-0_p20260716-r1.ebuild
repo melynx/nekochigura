@@ -3,7 +3,7 @@
 
 EAPI=8
 
-DOTS_COMMIT="9eda50178b81b0cebd469562ca4ccb6163a51ed9"
+DOTS_COMMIT="446504ad427297dcbe5ee4a3d5bda1c458207cd9"
 SHAPES_COMMIT="e31ec4cb4ebf6a46b267f5c42eabf6874916fa16"
 SHAPES_PN="rounded-polygon-qmljs"
 SHAPES_PATH="dots/.config/quickshell/ii/modules/common/widgets/shapes"
@@ -12,7 +12,7 @@ DESCRIPTION="Dotfiles and setup scripts for the illogical-impulse Hyprland deskt
 HOMEPAGE="https://github.com/end-4/dots-hyprland"
 SRC_URI="
 	https://github.com/end-4/dots-hyprland/archive/${DOTS_COMMIT}.tar.gz
-		-> ${P}.gh.tar.gz
+		-> ${PN}-${PV}.gh.tar.gz
 	https://github.com/end-4/${SHAPES_PN}/archive/${SHAPES_COMMIT}.tar.gz
 		-> ${PN}-${SHAPES_PN}-${SHAPES_COMMIT}.gh.tar.gz
 "
@@ -36,6 +36,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-switchwall-ghostty.patch"
 	"${FILESDIR}/${PN}-applycolor-ghostty.patch"
 	"${FILESDIR}/${PN}-ghostty-theme-template.patch"
+	"${FILESDIR}/${PN}-fuzzel-emoji-data.patch"
 )
 
 src_unpack() {
