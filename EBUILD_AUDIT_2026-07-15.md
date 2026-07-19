@@ -2187,13 +2187,56 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   checks pass. The full non-network overlay scan now reports 29 redundant
   versions and the counts recorded below.
 
+### Issue 45 — Fuzzel signed release and dependency repair
+
+Status: fixed and verified on 2026-07-19; awaiting signed publication.
+
+- Checked upstream's official Codeberg tags. Version 1.14.1 remains the
+  latest release. Kept `~amd64` and removed redundant versions 1.13.1 and
+  1.14.0. This laptop already runs the overlay's 1.14.1 package, so the
+  cleanup does not downgrade it.
+- Replaced Codeberg's unsigned automatic source snapshot with the official
+  release archive and its detached signature. The signature is good from
+  Daniel Eklöf's published RSA key
+  `B19964FBBA09664CC81027ED5BBD4992C116573F`. Added `verify-sig` support and
+  the matching `sec-keys/openpgp-keys-dnkl` dependency. Regenerated the
+  Manifest against the signed 511,630-byte release archive; the old automatic
+  archive had different contents and checksums.
+- Corrected the dependency limits to match 1.14.1's Meson build rules:
+  fcft 3.3.1 through the 3.x series, Pixman 0.46.0 or newer, and
+  wayland-protocols 1.41 or newer. Added the libpng slot operator. Moved the
+  header-only tllist and protocol packages to build dependencies while
+  retaining the actual linked libraries as runtime dependencies.
+- Declared Python 3.12 through 3.15 with `python-any-r1`. Upstream runs
+  `srgb.py` to generate C source during every build, so relying on Meson's
+  indirect Python dependency was incomplete.
+- Removed the obsolete Cairo optional-feature message. Upstream 1.14.1
+  explicitly corrects the old claim that rounded corners require Cairo.
+  The ebuild disables Cairo and uses the preferred system NanoSVG backend
+  when `svg` is enabled. Corrected the SVG metadata description.
+- Fixed documentation handling. Upstream installs files into an unversioned
+  path. The ebuild now removes that path and reinstalls the README through
+  Gentoo's versioned documentation helper instead of discarding all upstream
+  documentation.
+- A clean GCC 16 build with `png svg` selected Python 3.14, libpng, and the
+  system NanoSVG libraries. It built without Cairo and staged the binary,
+  manual pages, default configuration, Fish and Zsh completions, and versioned
+  documentation. A second clean build with both flags disabled linked to
+  neither libpng nor NanoSVG and reports
+  `fuzzel version: 1.14.1 -cairo -png -svg -assertions`.
+- Meson completed its test phase but registered no tests because the optional
+  `wtype` test driver is not installed. No live package was rebuilt or
+  installed. Syntax, Manifest, metadata, whitespace, dependency, staged-link,
+  and targeted package checks pass. The full non-network overlay scan now
+  reports 27 redundant versions and the counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 29 | RedundantVersion |
+| 27 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2240,7 +2283,8 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 and 44 are signed, published, and cleaned up. Present the next
-   package issue as a separate proposal.
+2. Issues 43 and 44 are signed, published, and cleaned up. Issue 45 is fixed
+   and verified; finish its signed publication and cleanup before presenting
+   the next package issue.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
