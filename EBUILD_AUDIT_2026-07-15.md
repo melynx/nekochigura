@@ -2460,13 +2460,49 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   one expected glibc-only profile notice for this proprietary binary, as
   reflected in the counts below.
 
+### Issue 52 — Darkly 0.5.38 update and test repair
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`aafa18dfa37e40efadde9c120f04b39e1f70a798`.
+
+- Checked the official Git tag list. Version 0.5.38 is the newest release.
+  Replaced versions 0.5.24-r1, 0.5.31, 0.5.33, 0.5.36, and 0.5.37 with
+  0.5.38, kept the existing testing keywords on amd64, arm64, and x86, and
+  regenerated the Manifest. Darkly is not installed on this laptop.
+- Replaced the copied dependency list with the libraries and build tools that
+  the source uses directly. The ebuild now builds only the supported Qt 6
+  variant and enables KWin decoration support. Kept the installed CMake files:
+  they expose Darkly's style name and KDecoration plug-in ID to valid build
+  consumers. Expanded the license value to cover the GPL-2+ and MIT source
+  files found in the release archive.
+- Enabled CTest at the project root. Upstream also disables Qt's generic
+  target names, while its ECM test helper requires `Qt::Test`; added the
+  missing alias so all three source tests register. The AppStream check and
+  the Dolphin opacity, blur helper, and style configuration tests all pass
+  with the offscreen Qt backend.
+- GCC 16 found that the tab-side value could remain unset for an invalid or
+  future enum value. Added a safe top-side default. A clean rebuild completed
+  with no compiler warnings. The final image contains the Qt style, settings
+  program, KWin decoration and configuration plug-ins, Plasma theme, color
+  scheme, desktop entries, CMake metadata, icon, and versioned documents.
+- JSON, SVG, application desktop files, staged links, ELF stack, relocation,
+  syntax, Manifest, whitespace, dependency, and targeted package checks pass.
+  The temporary build used extracted Gentoo binary packages for KDecoration
+  and FrameworkIntegration because they are not installed on this laptop.
+  This produced temporary `/tmp` search paths and Portage's two matching
+  missing-library notices in the staged copy; all libraries resolve when those
+  extracted images are supplied. A normal Portage build installs the declared
+  dependencies under `/usr` and does not create those temporary paths. No live
+  package, desktop setting, or service was changed. The fresh full non-network
+  overlay scan now reports 13 redundant versions and the counts below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 14 | RedundantVersion |
+| 13 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 7 | NonsolvableDepsInDev |
@@ -2487,7 +2523,7 @@ Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
 adw-gtk3, Catppuccin Neovim,
-Darkly, Ollama, and Ollama-bin versions.
+Ollama and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
 
@@ -2515,7 +2551,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 51 are signed and published. Issue 51 only needs its
+2. Issues 43 through 52 are signed and published. Issue 52 only needs its
    temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
