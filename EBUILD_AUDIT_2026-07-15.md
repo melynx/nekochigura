@@ -2189,7 +2189,8 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
 
 ### Issue 45 — Fuzzel signed release and dependency repair
 
-Status: fixed and verified on 2026-07-19; awaiting signed publication.
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`6cc3e1fed228bbe307da02aabdc21d9a75339aeb`.
 
 - Checked upstream's official Codeberg tags. Version 1.14.1 remains the
   latest release. Kept `~amd64` and removed redundant versions 1.13.1 and
@@ -2283,8 +2284,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 and 44 are signed, published, and cleaned up. Issue 45 is fixed
-   and verified; finish its signed publication and cleanup before presenting
-   the next package issue.
+2. Issues 43 through 45 are signed, published, and cleaned up. Present the
+   next package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
