@@ -2693,13 +2693,58 @@ Status: fixed, verified, signed, and published on 2026-07-20 in commit
   now reports two redundant versions and the updated counts below. No live
   package, font cache, configuration, or service changed.
 
+### Issue 59 — Quickshell stable-channel cleanup
+
+Status: fixed, verified, signed, and published on 2026-07-20 in commit
+`35a11ccb44a87388680755deb7fec75099038d9f`.
+
+- Checked the official `quickshell-mirror/quickshell` repository again. Its
+  HEAD remains `4df562dfb2475a9057f0f33a8db75808efad8670`, exactly matching
+  `0.3.0_p20260710`. The latest release tag remains `v0.3.0`, at commit
+  `59e9c47`. The snapshot is therefore newer than the stable release.
+- Removed `quickshell-0.3.0-r1.ebuild` and its release archive from the
+  Manifest. The overlay now has one Quickshell channel: the current snapshot.
+  This avoids maintaining two ebuilds whose main difference was their source
+  revision.
+- The installed package is already `0.3.0_p20260710`. Caelestia requires that
+  exact snapshot or newer. Illogical Impulse uses an unversioned Quickshell
+  dependency, which also selects the snapshot. The cleanup therefore does not
+  change either custom package's selected build.
+- Kept `~amd64 ~arm64 ~x86`, because this remains a development snapshot. Kept
+  `DISTRIBUTOR="nekochigura"`, because this overlay builds and distributes the
+  package archive to its users.
+- A clean network-sandboxed build and staged install pass with the normal local
+  USE flags. Both local compiler patches apply cleanly. The staged executable
+  reports revision `4df562dfb2475a9057f0f33a8db75808efad8670` and distributor
+  `nekochigura`.
+- A separate build with upstream tests enabled builds all 301 targets. Eight
+  of nine tests pass. The `popupwindow` test cannot verify parent-window
+  coordinates under Qt's headless `offscreen` or `minimal` display backends;
+  both backends report that they do not support the needed window operation.
+  No usable nested Wayland or X server is installed, so this result is recorded
+  as an environment limit rather than a passing test.
+- The compiler reports upstream compatibility warnings: deprecated Qt iterable
+  APIs, newly added PipeWire event fields without explicit initializers, GCC
+  incomplete-type template warnings, and one unknown diagnostic pragma. They
+  do not stop the build. They are not caused by removing the stable ebuild and
+  need a separate source-change review before any patch is added.
+- The staged image has 70 regular files and one valid `/usr/bin/qs` link. Its
+  path list exactly matches the installed package. It has 29 QML module files,
+  no empty file, broken link, world-writable file, unresolved library, text
+  relocation, or executable stack. The desktop file and SVG parse correctly.
+  The executable has only a safe relative runtime library path.
+- Syntax, Manifest, whitespace, staged-tree, executable, library, desktop,
+  SVG, and targeted package checks pass. A fresh default non-network overlay
+  scan also reports no findings. No new distfile was fetched. No live package,
+  configuration, display session, or service changed.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 2 | RedundantVersion |
+| 1 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 7 | NonsolvableDepsInDev |
@@ -2747,6 +2792,6 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 58 are signed and published.
+2. Issues 43 through 59 are signed and published.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
