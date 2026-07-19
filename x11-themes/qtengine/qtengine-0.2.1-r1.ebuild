@@ -13,11 +13,12 @@ LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-# Qt 6.9 and KDE Frameworks 6.20 are upstream's minimum versions. Qt Quick
-# Controls support is optional upstream, but enables the configured style for
-# QML applications and is expected by Caelestia's generated configuration.
+# Qt 6.9 and KDE Frameworks 6.20 are upstream's minimum versions. Qtengine
+# uses Qt6::GuiPrivate, so the slot operator triggers rebuilds for private ABI
+# changes. Qt Quick Controls support enables the configured style in QML apps
+# and is expected by Caelestia's generated configuration.
 COMMON_DEPEND="
-	>=dev-qt/qtbase-6.9:6[dbus,gui,widgets]
+	>=dev-qt/qtbase-6.9:6=[dbus,gui,widgets]
 	>=dev-qt/qtdeclarative-6.9:6
 	>=kde-frameworks/kcolorscheme-6.20
 	>=kde-frameworks/kconfig-6.20
