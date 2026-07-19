@@ -2261,13 +2261,39 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   non-network overlay scan now reports 26 redundant versions and the counts
   recorded below.
 
+### Issue 47 — XDPH redundant release cleanup
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`8ee54ddb32708c9e1c7377dd7b4bc6dc2b28f6d5`.
+
+- Checked the official Hyprland GitHub project. Version 1.3.12 remains the
+  latest xdg-desktop-portal-hyprland release. The retained 1.3.12 ebuild and
+  redundant 1.3.11 ebuild were otherwise identical, so removed 1.3.11 and
+  regenerated the Manifest. This laptop does not have the package installed,
+  and no unmanaged copy exists under `/usr` or `/usr/local`.
+- The dependency preview resolves. Because `dev-libs/inih` and
+  `dev-cpp/sdbus-c++` are not installed here, downloaded their official
+  Gentoo binary packages and unpacked them only under `/tmp` for the build.
+  Neither package was installed or registered with Portage.
+- A clean GCC 16 build completed with the laptop's normal systemd choice. It
+  found the temporary inih and sdbus-c++ files, compiled both programs, found
+  no upstream tests, and staged the portal backend, Qt share picker, D-Bus
+  service, systemd user service, portal description, and versioned README.
+  Staged link checks match the declared direct libraries.
+- Upstream code emits two harmless GCC warnings and one warning about old
+  CMake compatibility in the share picker. They do not affect the build or
+  staged result. No live package was installed. Syntax, Manifest, metadata,
+  whitespace, dependency, staged-link, and targeted package checks pass. The
+  full non-network overlay scan now reports 25 redundant versions and the
+  counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 26 | RedundantVersion |
+| 25 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2314,7 +2340,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 46 are signed, published, and cleaned up. Present the
+2. Issues 43 through 47 are signed, published, and cleaned up. Present the
    next package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
