@@ -2522,13 +2522,45 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   full non-network overlay scan now reports 10 redundant versions and the
   counts below.
 
+### Issue 54 — Catppuccin Neovim runtime and old-version cleanup
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`6fb06475cdd0f570d0b2e47985dd1561b2279b9f`.
+
+- Checked the official release page and signed tag. Version 2.0.0 remains the
+  latest release. Kept 2.0.0 as `~amd64`, removed redundant 1.11.0, and
+  regenerated the Manifest. This package is not installed on the laptop and
+  no Neovim configuration selects it.
+- The old manual install copied only the Vim colorscheme file. Version 2.0.0
+  also ships four Lua flavour schemes and a Lua compatibility scheme, so those
+  files were missing. It also omitted the Neovim help file and its tag index.
+  Replaced the selected copies with the complete upstream `colors`, `lua`, and
+  `doc` trees under a native Neovim start-package directory. This keeps all
+  related files together and avoids writing into Neovim's own runtime tree.
+- Added generation of a private help tag index. Tightened the build and runtime
+  Neovim dependencies to upstream's minimum version 0.8. Added a test flag and
+  isolated headless smoke tests for the renamed `catppuccin-nvim` scheme and
+  the latte, frappe, macchiato, and mocha schemes.
+- A clean build, all five tests, and the staged install pass. The staged package
+  loads from a normal user init file, `:help catppuccin.txt` resolves, and all
+  118 Lua files pass the LuaJIT parser used by Neovim. All 120 upstream runtime
+  files are installed unchanged, alongside the generated tag index and the
+  versioned README. The image contains no links, unsafe modes, temporary paths,
+  or unexpected files.
+- Syntax, Manifest, metadata, whitespace, staged-runtime, help, LuaJIT, and
+  targeted package checks pass. Upstream's larger Plenary suite also requires
+  an unpackaged test framework and files from a separate test branch, so it was
+  not used. No live package or editor configuration was changed. The overlay
+  now has nine redundant versions when the unchanged outstanding groups are
+  included, as reflected below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 10 | RedundantVersion |
+| 9 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 7 | NonsolvableDepsInDev |
@@ -2548,7 +2580,6 @@ there is an intentional rollback/security/channel reason to retain them.
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
-Catppuccin Neovim,
 Ollama and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
@@ -2577,7 +2608,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 53 are signed and published. Issue 53 only needs its
+2. Issues 43 through 54 are signed and published. Issue 54 only needs its
    temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
