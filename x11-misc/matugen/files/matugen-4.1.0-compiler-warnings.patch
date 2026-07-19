@@ -1,0 +1,12 @@
+Remove an unused import and use IndexMap's explicit order-preserving removal.
+
+--- a/src/parser/context.rs
++++ b/src/parser/context.rs
+@@ -115 +115 @@ impl Context {
+-        self.data.remove(key);
++        self.data.shift_remove(key);
+--- a/src/template.rs
++++ b/src/template.rs
+@@ -19 +19 @@ use serde::{Deserialize, Serialize};
+-use std::{collections::HashMap, path::Path, process::Stdio, str};
++use std::{collections::HashMap, path::Path, str};
