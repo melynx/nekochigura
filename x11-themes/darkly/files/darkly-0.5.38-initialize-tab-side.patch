@@ -1,0 +1,11 @@
+--- a/kstyle/darklystyle.cpp
++++ b/kstyle/darklystyle.cpp
+@@ -7250,7 +7250,7 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *paint
+     Corners backgroundCorners;
+
+     // store tab shape
+-    Side side;
++    Side side = SideTop;
+
+     if (StyleConfigData::oldTabbar()) {
+         switch (tabOption->shape) {
