@@ -2129,7 +2129,8 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
 
 ### Issue 44 — Ollama official binary update and packaging repair
 
-Status: fixed and verified on 2026-07-19; awaiting signed publication.
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`5b2dd037354e1c048aac330dbd4af521c4eff9b3`.
 
 - Updated `sci-ml/ollama-bin` from 0.30.0 to the latest official stable
   release, 0.32.1. Removed all eight older binary ebuilds: 0.14.2,
@@ -2239,8 +2240,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 43 is signed, published, and cleaned up. Issue 44 is fixed and
-   verified; finish its signed publication and cleanup before presenting the
-   next package issue.
+2. Issues 43 and 44 are signed, published, and cleaned up. Present the next
+   package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
