@@ -2066,8 +2066,8 @@ Status: fixed, verified, and approved for signed publication on 2026-07-19.
 
 ### Issue 43 — Ollama source update and packaging repair
 
-Status: fixed, verified, and approved for a signed commit on 2026-07-19. Push
-still needs separate approval.
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`df935fa6190514d0f5b903841cabb2c731dc6c99`.
 
 - Updated the source-built `sci-ml/ollama` from 0.23.2 to the latest official
   stable release, 0.32.1. Removed all seven older source ebuilds: 0.14.2,
@@ -2180,7 +2180,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issue 43 is approved for a signed commit. Do not push it until the user gives
-   separate push approval.
+2. Issue 43 is signed, published, and cleaned up. Present the next package
+   issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
