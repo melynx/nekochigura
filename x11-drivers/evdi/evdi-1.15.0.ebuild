@@ -13,39 +13,30 @@ LICENSE="GPL-2 LGPL-2.1+ MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-DEPEND="
-	virtual/linux-sources
-	x11-libs/libdrm
-"
-RDEPEND="x11-libs/libdrm"
+DEPEND+=" x11-libs/libdrm"
+BDEPEND+=" virtual/pkgconfig"
 
 CONFIG_CHECK="~DRM ~DRM_KMS_HELPER"
 
+PATCHES=( "${FILESDIR}/${P}-check-proc-read.patch" )
+
 src_compile() {
-	# Build kernel module
-	cd "${WORKDIR}/${P}/module" || die
-	local modlist=( evdi=misc )
+	local modlist=( evdi=misc:module )
 	local modargs=(
 		KDIR="${KV_OUT_DIR}"
 		KVER="${KV_FULL}"
 	)
 	linux-mod-r1_src_compile
 
-	# Build userspace library
-	cd "${WORKDIR}/${P}/library" || die
-	emake
+	emake -C library
 }
 
 src_install() {
-	# Install kernel module
-	cd "${WORKDIR}/${P}/module" || die
 	linux-mod-r1_src_install
 
-	# Install userspace library
-	cd "${WORKDIR}/${P}/library" || die
-	emake DESTDIR="${ED}" LIBDIR="/usr/$(get_libdir)" install
-
-	# Install documentation
-	cd "${WORKDIR}/${P}" || die
-	dodoc README.md
+	emake -C library \
+		DESTDIR="${ED}" \
+		LIBDIR="/usr/$(get_libdir)" \
+		install
+	doheader library/evdi_lib.h
 }
