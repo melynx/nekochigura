@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit cmake
+inherit cmake flag-o-matic
 
 DESCRIPTION="The power management tool for mobile and desktop Ryzen APUs"
 HOMEPAGE="https://github.com/FlyGoat/RyzenAdj"
@@ -15,9 +15,14 @@ KEYWORDS="~amd64 ~x86"
 
 DEPEND="sys-apps/pciutils"
 RDEPEND="${DEPEND}"
+BDEPEND="virtual/pkgconfig"
+
+PATCHES=( "${FILESDIR}/${P}-respect-toolchain.patch" )
+
+DOCS=( README.md )
 
 src_configure() {
-	CMAKE_BUILD_TYPE="Release"
+	append-cflags -ffile-prefix-map="${WORKDIR}"=.
 	cmake_src_configure
 }
 
@@ -25,6 +30,7 @@ src_install() {
 	dosbin "${BUILD_DIR}"/ryzenadj
 
 	dolib.so "${BUILD_DIR}"/libryzenadj.so
+	doheader lib/ryzenadj.h
 
-	dodoc "${S}"/README.md
+	einstalldocs
 }
