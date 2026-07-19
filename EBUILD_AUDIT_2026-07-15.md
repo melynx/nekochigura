@@ -2625,13 +2625,51 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   non-network overlay scan reports only the already tracked findings and the
   unchanged counts below. No live package, configuration, or service changed.
 
+### Issue 57 — Illogical Impulse snapshot cleanup and emoji-script repair
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`ad37559abc324c60cb78ca331f3fd309f7699c7c`.
+
+- Checked the official `end-4/dots-hyprland` repository again. Its HEAD remains
+  `446504ad427297dcbe5ee4a3d5bda1c458207cd9`, exactly matching the retained
+  2026-07-16 snapshot. Removed the shadowed March, May 14, and May 29 snapshots,
+  their three Manifest entries, and the March-only OS-detection patch. Kept the
+  seven shared local patches and the official rounded-polygon submodule source.
+- Added revision 1 for the retained snapshot. Changed its parent archive name
+  from `${P}` to `${PN}-${PV}` so the revision reuses the existing source file
+  instead of downloading identical source under a second name. The Manifest
+  now contains only that current parent archive and the shared submodule
+  archive.
+- The syntax sweep found a real upstream defect in `fuzzel-emoji.sh`. The file
+  placed raw emoji descriptions after `exit`, but Bash parses the whole file
+  before executing it and failed on that data. Added a patch that places the
+  table inside a quoted here-document, which is a block Bash treats as data,
+  and limits the selector input to explicit start and end markers. The patch
+  applies exactly with no ignored context or whitespace warning.
+- All 63 installed shell files now pass Bash syntax checks. Tests with isolated
+  fake Fuzzel, wtype, and wl-copy commands selected the first and last table
+  entries, typed an emoji, copied an emoji, and exercised the intended fallback
+  from failed typing to clipboard copying. The setup command's isolated help
+  path also passes without network access or user-file changes.
+- A clean network-sandboxed build and staged install pass. Upstream supplies no
+  package test suite. The image contains 1,134 files and four valid links. All
+  78 upstream executable or shell-script modes match the staged image. It has
+  no broken link, world-writable file, Git metadata, rejected patch, or backup
+  residue. Syntax, Manifest, patch, whitespace, staged-tree, mode, setup-tool,
+  functional, and targeted package checks pass.
+- This package is not installed on the laptop. The generic
+  `app-misc/illogical-impulse` package keeps its unversioned dependency, so it
+  will select the retained revision normally. No live package, configuration,
+  or service changed. The fresh full non-network overlay scan now reports three
+  redundant versions and the updated counts below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 6 | RedundantVersion |
+| 3 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 7 | NonsolvableDepsInDev |
@@ -2679,6 +2717,6 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 56 are signed and published.
+2. Issues 43 through 57 are signed and published.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
