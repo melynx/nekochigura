@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+description="DisplayLink userspace driver"
+command="/usr/libexec/displaylink/DisplayLinkManager"
+directory="/usr/libexec/displaylink"
+supervisor="supervise-daemon"
+respawn_delay=5
+
+depend() {
+	need localmount
+	after display-manager
+}
+
+start_pre() {
+	modprobe evdi
+}

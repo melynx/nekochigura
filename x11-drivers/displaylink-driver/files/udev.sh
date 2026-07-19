@@ -23,12 +23,20 @@ get_displaylink_symlink_count()
 
 start_service()
 {
-  systemctl start --no-block displaylink-driver
+  if [ -d /run/systemd/system ]; then
+    systemctl start --no-block displaylink-driver
+  else
+    rc-service displaylink-driver start
+  fi
 }
 
 stop_service()
 {
-  systemctl stop displaylink-driver
+  if [ -d /run/systemd/system ]; then
+    systemctl stop displaylink-driver
+  else
+    rc-service displaylink-driver stop
+  fi
 }
 
 start_displaylink()
