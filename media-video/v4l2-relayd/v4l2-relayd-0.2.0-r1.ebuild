@@ -1,14 +1,14 @@
-# Copyright 2020-2025 Gentoo Authors
+# Copyright 2020-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit autotools systemd
+inherit autotools systemd udev
 
 DESCRIPTION="Stream content from GStreamer video source into v4l2loopback device"
 HOMEPAGE="https://gitlab.com/vicamo/v4l2-relayd"
 MY_P="${PN}-upstream-${PV}"
-SRC_URI="https://gitlab.com/vicamo/${PN}/-/archive/upstream/${PV}/${MY_P}.tar.gz"
+SRC_URI="https://gitlab.com/vicamo/${PN}/-/archive/upstream/${PV}/${MY_P}.tar.bz2"
 S="${WORKDIR}/${MY_P}"
 
 LICENSE="GPL-2"
@@ -63,8 +63,7 @@ src_install() {
 
 		if use ipu6; then
 			# Udev rule: tag IPU6 PSYS device for systemd, trigger v4l2-relayd@ipu6
-			insinto /lib/udev/rules.d
-			doins "${FILESDIR}"/90-ipu6-v4l2-relayd.rules
+			udev_dorules "${FILESDIR}"/90-ipu6-v4l2-relayd.rules
 
 			# Systemd drop-in: bind service to IPU6 PSYS device node
 			insinto /usr/lib/systemd/system/v4l2-relayd@ipu6.service.d
@@ -77,6 +76,8 @@ src_install() {
 }
 
 pkg_postinst() {
+	use ipu6 && udev_reload
+
 	elog "v4l2-relayd requires v4l2loopback kernel module to be loaded."
 	elog "You may need to run:"
 	elog "  modprobe v4l2loopback"
@@ -119,4 +120,8 @@ pkg_postinst() {
 		elog "  v4l2-relayd -i videotestsrc \\"
 		elog "    -o \"appsrc name=appsrc caps=video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! videoconvert ! v4l2sink device=/dev/video0\""
 	fi
+}
+
+pkg_postrm() {
+	use ipu6 && udev_reload
 }
