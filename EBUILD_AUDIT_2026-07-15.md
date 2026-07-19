@@ -2593,6 +2593,38 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   targeted package checks pass. The fresh full non-network overlay scan now
   reports six redundant versions and the counts below.
 
+### Issue 56 — Qtengine private-ABI rebuild tracking
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`2d253ed2077b88e9d9e465496f0e91744aa3fbf6`.
+
+- Checked the official release page and verified release tag. Version 0.2.1
+  remains the latest release, and its tag points to commit `abf8c1d`. Kept the
+  installed 0.2.1 release as `~amd64` and added revision 1 for the dependency
+  correction. The source archive and Manifest did not change.
+- Qtengine is installed and active on this laptop. Hyprland exports
+  `QT_QPA_PLATFORMTHEME=qtengine`, and the Caelestia-managed configuration
+  selects Papirus-Dark, Darkly, and the configured fonts and palette. No Qt 5
+  libraries or applications are installed, so the package remains Qt 6 only.
+  Qt Quick Controls remains required because Caelestia uses the theme in QML
+  applications.
+- Upstream builds against `Qt6::GuiPrivate`. This private interface can change
+  between Qt 6 releases without keeping binary compatibility. Changed the
+  qtbase dependency to `:6=` so Portage rebuilds Qtengine when that private
+  interface changes.
+- A clean network-sandboxed build and staged install pass with GCC 16, Qt
+  6.11.1, and KDE Frameworks 6.28. Upstream ships no tests. An isolated
+  offscreen Qt smoke test loaded only the staged platform and style plug-ins.
+  It reported the `qtengine` style and reproduced the live icon theme, font,
+  palette, and single-click setting without changing the live installation.
+- The staged image contains the common library, platform-theme plug-in, style
+  plug-in, and versioned README. All library links resolve. The files have no
+  unsafe runtime search path, executable stack, text relocation, broken link,
+  or unexpected mode. Syntax, Manifest, whitespace, dependency, targeted
+  package, staged-file, runtime, and ELF checks pass. The fresh full
+  non-network overlay scan reports only the already tracked findings and the
+  unchanged counts below. No live package, configuration, or service changed.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
@@ -2647,7 +2679,6 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 55 are signed and published. Issue 55 only needs its
-   temporary build data and newly fetched distfiles removed.
+2. Issues 43 through 56 are signed and published.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
