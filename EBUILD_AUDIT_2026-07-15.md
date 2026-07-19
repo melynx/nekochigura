@@ -2338,13 +2338,48 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   version string as the stable package. The full non-network overlay scan now
   reports 21 redundant versions and the counts recorded below.
 
+### Issue 49 — RyzenAdj tagged-version cleanup and library repair
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`3153f686cb19620973efa324db75fa284bb8e67c`.
+
+- Checked the official Git tag list. Version 0.19.0 is the newest tag, while
+  GitHub still labels 0.17.0 as the latest formal release. Kept 0.19.0 as
+  `~amd64 ~x86`, removed redundant 0.17.0, and regenerated the Manifest. The
+  testing keywords are appropriate for a tag that upstream has not promoted
+  as its latest formal release. This laptop does not have RyzenAdj installed,
+  and no unmanaged copy exists under `/usr/local`.
+- Added the missing `virtual/pkgconfig` build dependency. Upstream uses
+  pkg-config to locate libpci during configuration. The executable and shared
+  library both link directly only to `libpci.so.3` and libc, matching the
+  retained `sys-apps/pciutils` runtime dependency.
+- Installed upstream's public `ryzenadj.h` beside the existing shared library.
+  Previously the package installed `libryzenadj.so` without the header needed
+  to compile software against it. Patched the header to include the standard
+  integer and size definitions it uses, and confirmed that the installed
+  header compiles by itself.
+- Removed upstream's unconditional link-time optimization. It overrode users
+  who disabled that compiler feature. The build now uses the user's compiler
+  flags as supplied. Added a source-path mapping so assertion messages do not
+  embed the temporary Portage build directory. Kept the established
+  `/usr/sbin/ryzenadj` path to avoid breaking existing scripts.
+- A clean GCC 16 build completed without network access. Upstream defines no
+  tests. The staged `ryzenadj --help` command works without accessing power
+  controls or hardware. The final image contains the command, shared library,
+  public header, and versioned README. It has no bad runtime search path, text
+  relocation, temporary build path, or unexpected file.
+- No live package was installed and no power setting was changed. Syntax,
+  Manifest, metadata, whitespace, dependency, staged-link, public-header, and
+  targeted package checks pass. The standard full non-network overlay scan
+  now reports 20 redundant versions and the counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 21 | RedundantVersion |
+| 20 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2364,7 +2399,7 @@ there is an intentional rollback/security/channel reason to retain them.
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
-RyzenAdj, EVDI, adw-gtk3, Catppuccin Neovim,
+EVDI, adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
@@ -2393,7 +2428,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 48 are signed and published. Issue 48 only needs its
+2. Issues 43 through 49 are signed and published. Issue 49 only needs its
    temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
