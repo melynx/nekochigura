@@ -2417,20 +2417,63 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   and targeted package checks pass. The standard full non-network overlay
   scan now reports 15 redundant versions and the counts recorded below.
 
+### Issue 51 — DisplayLink 6.3 cleanup and OpenRC support
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`ede30d35f730da0143d53578f7a2b92c94636316`.
+
+- Checked Synaptics' official download page and archive. Version 6.3 is the
+  latest Ubuntu release. Kept 6.3 as `~amd64 ~arm64`, removed redundant 6.2,
+  and regenerated the Manifest. This laptop already has 6.3 installed, so the
+  version cleanup does not change its selected release.
+- Reworked archive extraction so it only unpacks the self-extracting installer
+  and never runs its install code. Fixed the arm64 directory name: the 6.3
+  archive uses `aarch64-linux-gnu`, not the old ebuild's nonexistent
+  `aarch64-ubuntu-*` path. Inspected both included executables and confirmed
+  that they match their declared amd64 and AArch64 machine types.
+- Replaced the copied build dependency set with the libraries the proprietary
+  daemon uses directly. Added the missing libuuid provider, kept libusb and
+  glibc, and removed unused libdrm. EVDI remains a runtime dependency. Its
+  staged `libevdi.so.1` matches one of the library names that DisplayLink
+  Manager searches for. The compiler runtime comes from Gentoo's base system,
+  so the invalid, nonexistent `sys-libs/gcc-libs` atom is not needed.
+- Added an OpenRC service and taught the udev helper to use `rc-service` when
+  systemd is not running. The `systemd` flag now selects either the existing
+  systemd unit or the OpenRC script and its matching init-system dependency.
+  Added setup instructions for both choices. Neither service was enabled or
+  started during testing.
+- Expanded `LICENSE` to cover Mbed TLS, Boost, JSON for Modern C++, fontem,
+  spng, miniz, and the bundled EVDI source. The image now includes the
+  proprietary EULA, the full third-party license notice, and upstream release
+  notes. The Synaptics EULA forbids modifying the proprietary executable, so
+  the ebuild leaves its relative runtime library path intact and records the
+  required Portage exception. Removed false exceptions for executable stack,
+  text relocations, and a missing shared-library name.
+- Clean staged builds passed with both systemd and OpenRC. Each image contains
+  the selected service file, udev rule and helper, the daemon, all four
+  firmware files, and versioned documents. The installed daemon is byte-for-
+  byte identical to the archive copy. It has a non-executable stack, no text
+  relocation, and all direct libraries resolve. Syntax, Manifest, whitespace,
+  systemd-unit, dependency, staged-file, staged-link, and targeted package
+  checks pass. No live package or service was changed. The standard full
+  non-network overlay scan now reports 14 redundant versions. It also gains
+  one expected glibc-only profile notice for this proprietary binary, as
+  reflected in the counts below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 15 | RedundantVersion |
+| 14 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
-| 6 | NonsolvableDepsInDev |
+| 7 | NonsolvableDepsInDev |
 | 6 | PotentialStable |
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
-| 4 | RequiredUseDefaults |
+| 5 | RequiredUseDefaults |
 | 1 | BetterCompressionUri |
 | 1 | StaticSrcUri |
 | 2 | TarballAvailable |
@@ -2472,7 +2515,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 50 are signed and published. Issue 50 only needs its
+2. Issues 43 through 51 are signed and published. Issue 51 only needs its
    temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
