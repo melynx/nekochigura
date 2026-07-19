@@ -1,0 +1,29 @@
+Handle allocation and read failures while checking whether Xorg is running.
+
+--- a/library/evdi_procfs.c
++++ b/library/evdi_procfs.c
+@@ -39,9 +39,12 @@ static char *process_name(FILE *pf)
+ {
+ 	int Xorg_name_len = 7;	// 6 + 1 for null terminator
+-	char *name = (char *)malloc(Xorg_name_len * sizeof(char));
++	char *name = (char *)calloc(Xorg_name_len, sizeof(char));
+ 
+-	fscanf(pf, "%*s");
+-	fscanf(pf, "%6s", name); // Xorg process had name (Xorg)
++	if (name == NULL)
++		return NULL;
++
++	if (fscanf(pf, "%*s %6s", name) != 1) // Xorg process had name (Xorg)
++		name[0] = '\0';
+ 
+ 	return name;
+ }
+@@ -62,7 +65,7 @@ static bool is_Xorg(const char *pid)
+ 	if (pf == NULL)
+ 		return false;
+ 	name = process_name(pf);
+-	result = is_name_Xorg(name);
++	result = name != NULL && is_name_Xorg(name);
+ 
+ 	close_folder(pf);
+ 	free(name);
