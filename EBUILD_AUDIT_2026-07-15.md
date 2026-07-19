@@ -2231,13 +2231,43 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   and targeted package checks pass. The full non-network overlay scan now
   reports 27 redundant versions and the counts recorded below.
 
+### Issue 46 — wlogout dependency and stale-file cleanup
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`0f218f83a8c029468a11fc8d70b346a44a668fc1`.
+
+- Checked the official GitHub project. Version 1.2.2 remains the latest
+  release. The project remains active, although it has not published a newer
+  release since 2024. Kept `~amd64` and `~x86`, and removed the redundant
+  1.1.1 ebuild. This laptop does not have wlogout installed.
+- Replaced the copied list of more than 30 indirect libraries with the two
+  libraries that wlogout uses directly: GTK 3 with Wayland support and GTK
+  Layer Shell. Kept scdoc and pkg-config as build-only dependencies.
+- Removed the local patch that disabled compiler warnings as errors. Gentoo's
+  Meson build helper already passes `-Dwerror=false`, so the patch duplicated
+  the build system's normal protection.
+- Removed `RESTRICT="test"`. Upstream defines no tests, and the forced test
+  phase completes normally with `No tests defined`. Also removed four stale
+  USE flag descriptions from metadata because the current ebuild has no USE
+  flags.
+- Regenerated the Manifest after removing the old release. A clean GCC 16
+  build found GTK 3, GTK Layer Shell, and scdoc, then compiled and staged the
+  binary, manuals, configuration, assets, shell completions, and versioned
+  documentation. The staged binary links only to its declared direct runtime
+  libraries and their normal C/GLib support. Launching it without a Wayland
+  display fails as expected for a graphical logout menu.
+- No live package was installed. Syntax, Manifest, metadata, whitespace,
+  dependency, staged-link, and targeted package checks pass. The full
+  non-network overlay scan now reports 26 redundant versions and the counts
+  recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 27 | RedundantVersion |
+| 26 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2284,7 +2314,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 45 are signed, published, and cleaned up. Present the
+2. Issues 43 through 46 are signed, published, and cleaned up. Present the
    next package issue as a separate proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
