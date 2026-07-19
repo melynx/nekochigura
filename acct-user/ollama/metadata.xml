@@ -5,4 +5,9 @@
 		<email>melynx@gmail.com</email>
 		<name>Chua Zheng Leong</name>
 	</maintainer>
+	<use>
+		<flag name="cuda">Add the service user to groups needed for NVIDIA CUDA access</flag>
+		<flag name="rocm">Add the service user to groups needed for AMD ROCm access</flag>
+		<flag name="vulkan">Add the service user to groups needed for Vulkan device access</flag>
+	</use>
 </pkgmetadata>
