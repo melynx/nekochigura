@@ -2554,13 +2554,52 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   now has nine redundant versions when the unchanged outstanding groups are
   included, as reflected below.
 
+### Issue 55 — Matugen 4.1.0 metadata, build, and old-version cleanup
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`b762967b3e02f1f4633645add7699a57d4296f7b`.
+
+- Checked the official release and tag. Version 4.1.0 remains the newest
+  release, and its verified tag points to commit `4112d35`. Kept 4.1.0 as
+  `~amd64`, removed redundant versions 2.4.1, 3.1.0, and 4.0.0, and
+  regenerated the Manifest. Matugen is not installed on this laptop. No
+  installed package depends on it, and the checked user configuration does
+  not refer to it.
+- Compared the ebuild with the release's complete `Cargo.lock`. All 381
+  unique registry packages match exactly, and the lock file has no Git source.
+  Kept the individual `CRATES` downloads under the maintainer's policy of not
+  hosting a large generated crate bundle. Cargo prints its expected preference
+  for such a bundle because this is a large list; this is not a missing source
+  or build failure.
+- Corrected the project license from GPL version 2 only to GPL version 2 or
+  later. Audited every fetched crate manifest and ring's separate license
+  file. Expanded the dependent license list to include the missing 0BSD, BSD
+  3-clause, Boost, CC0, LGPL, NCSA, OpenSSL, and SSLeay terms. Corrected the
+  description to include the supported Base16 output.
+- Declared Rust 1.88 as the minimum required compiler. Added a small source
+  patch that removes an unused import and changes a deprecated `IndexMap`
+  removal call to the explicit order-preserving form. A clean rebuild then
+  completed without compiler warnings. Added installation of the upstream
+  README beside the binary.
+- The clean network-sandboxed build and upstream test pass; the single source
+  test reports one pass and no failures. The staged 4.1.0 binary reports the
+  correct version. Isolated dry-run tests generated valid JSON palettes from
+  both a literal color and upstream's sample image without changing live user
+  files or configuration.
+- The staged binary has a non-executable stack, no runtime search path, text
+  relocation, or unexpected shared library. Its glibc, math, compiler runtime,
+  and loader dependencies all resolve. Syntax, Manifest, patch application,
+  whitespace, crate-lock, license, staged-file, runtime, ELF, library, and
+  targeted package checks pass. The fresh full non-network overlay scan now
+  reports six redundant versions and the counts below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 9 | RedundantVersion |
+| 6 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 7 | NonsolvableDepsInDev |
@@ -2608,7 +2647,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 54 are signed and published. Issue 54 only needs its
-   temporary build data removed before presenting the next package proposal.
+2. Issues 43 through 55 are signed and published. Issue 55 only needs its
+   temporary build data and newly fetched distfiles removed.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
