@@ -2373,13 +2373,57 @@ Status: fixed, verified, signed, and published on 2026-07-19 in commit
   targeted package checks pass. The standard full non-network overlay scan
   now reports 20 redundant versions and the counts recorded below.
 
+### Issue 50 — EVDI tagged-version cleanup and dependency repair
+
+Status: fixed, verified, signed, and published on 2026-07-19 in commit
+`31d978deeb84e45971878751bc0be1bc62c52362`.
+
+- Checked the official Git tag list. Version 1.15.0 is the newest tag, while
+  GitHub still labels 1.14.16 as the latest formal release. Kept 1.15.0 as
+  `~amd64 ~x86`, removed redundant versions 1.14.12 through 1.14.16, and
+  regenerated the Manifest. This laptop already runs the overlay's 1.15.0
+  package, so the cleanup does not change its selected version.
+- Fixed dependency handling around `linux-mod-r1`. The old ebuild replaced the
+  eclass runtime dependencies and thereby dropped the required kmod tools. It
+  also listed libdrm at runtime even though the userspace library uses only
+  its headers and makes DRM ioctls directly. The ebuild now adds libdrm only
+  as a build dependency, preserves all kernel-module dependencies, and adds
+  the missing pkg-config build tool.
+- Reworked the module calls to use the eclass's source-directory support
+  instead of changing the whole phase's working directory. This lets the
+  eclass install the top-level README once and keeps module processing,
+  signing, compression, and initramfs handling in their normal order.
+- Installed the public `evdi_lib.h` header beside `libevdi`. Previously the
+  package installed the shared library without the header needed to compile
+  userspace clients. Added a small source patch that checks allocation and
+  `/proc` read failures during Xorg detection. This removes two GCC 16
+  unchecked-read warnings and prevents a possible null-pointer use.
+- A clean build against the selected 7.1.3-gentoo-dist kernel completed
+  without network access. The module passed the kernel build and symbol
+  checks, was stripped and signed, reports the correct kernel version, and
+  depends on the expected DRM helpers. The only build notice says that the
+  distribution kernel was built with GCC 15 while GCC 16 is now active; this
+  system toolchain state is outside the ebuild and did not prevent a valid
+  module build.
+- The staged library has SONAME `libevdi.so.1`, needs only libc, and has no bad
+  runtime search path or text relocation. The installed DisplayLink Manager
+  explicitly searches for `libevdi.so.1`, so its interface remains compatible.
+  The staged public header compiles by itself. The final image contains the
+  module, dracut rule, versioned library and links, public header, and README.
+- Upstream's KUnit tests require a specially configured test kernel and are
+  not runnable as an ordinary package test. No live package was rebuilt, no
+  module was loaded, and the installed EVDI files were not changed. Syntax,
+  Manifest, metadata, whitespace, dependency, module, staged-link, header,
+  and targeted package checks pass. The standard full non-network overlay
+  scan now reports 15 redundant versions and the counts recorded below.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
 
 | Count | Check |
 |---:|---|
-| 20 | RedundantVersion |
+| 15 | RedundantVersion |
 | 6 | PythonCompatUpdate |
 | 5 | NonsolvableDepsInStable |
 | 6 | NonsolvableDepsInDev |
@@ -2399,7 +2443,7 @@ there is an intentional rollback/security/channel reason to retain them.
 Notable redundant groups include older 1Password, Azure CLI, Passless,
 SongRec, Bun, OpenCode,
 Fuzzel, wlogout, XDPH, Breeze Plus, Twemoji,
-EVDI, adw-gtk3, Catppuccin Neovim,
+adw-gtk3, Catppuccin Neovim,
 Darkly, Ollama, and Ollama-bin versions.
 
 ## Packages with no substantive defect found in their current ebuild
@@ -2428,7 +2472,7 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 49 are signed and published. Issue 49 only needs its
+2. Issues 43 through 50 are signed and published. Issue 50 only needs its
    temporary build data removed before presenting the next package proposal.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
