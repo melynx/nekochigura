@@ -2738,6 +2738,40 @@ Status: fixed, verified, signed, and published on 2026-07-20 in commit
   scan also reports no findings. No new distfile was fetched. No live package,
   configuration, display session, or service changed.
 
+### Issue 60 — v4l2-relayd archive and udev integration
+
+Status: fixed, verified, signed, and published on 2026-07-20 in commit
+`692d24ad195b0c1a96eb6b8dc251a2ad80f89b42`.
+
+- Checked the official `vicamo/v4l2-relayd` GitLab project again. Version 0.2.0
+  remains the latest tag. The tag and current main branch both resolve to
+  `d6ec36aa`, so no newer release or snapshot is needed.
+- Replaced GitLab's gzip archive with its bzip2 archive for the same immutable
+  tag. The source download falls from 19,695 to 18,754 bytes. Regenerated the
+  Manifest and cleared the saved `BetterCompressionUri` finding.
+- The first full-feature build found a real Gentoo QA fault: the IPU6 variant
+  installed a udev hardware rule by hand without using the udev eclass. Added
+  that eclass, installed the rule with `udev_dorules`, and reload the rules
+  after install or removal. Published this installed-behavior fix as revision
+  `0.2.0-r1`, so systems with 0.2.0 receive it during a normal update.
+- Clean network-sandboxed builds, staged installs, and upstream `make check`
+  pass both with `systemd ipu6` enabled and with both flags disabled. Upstream's
+  check target contains no separate test cases, but completes successfully.
+- The full image contains the executable, default and modprobe configuration,
+  two service units, the service generator, modules-load configuration, the
+  IPU6 service drop-in, the udev rule, and documentation. The non-systemd image
+  correctly omits the systemd, generator, modules-load, drop-in, and udev files
+  while retaining the executable and basic configuration.
+- Both service files pass `systemd-analyze verify`. The staged udev rule passes
+  `udevadm verify`. The generator passes Bash syntax validation. The executable
+  help path works, all shared libraries resolve, and its stack is not
+  executable. The final build log has no compiler or Gentoo QA warning. The
+  image has no broken link or world-writable file.
+- Ebuild syntax, Manifest, metadata XML, whitespace, staged-tree, targeted
+  package, service, udev, generator, executable, and library checks pass. This
+  package is not installed on the laptop. No live package, kernel module,
+  hardware rule, configuration, or service changed.
+
 ## Automated pkgcheck summary
 
 Repository-wide non-network scan counts:
@@ -2752,7 +2786,6 @@ Repository-wide non-network scan counts:
 | 2 | DeprecatedEclass |
 | 1 | UnknownCategoryDirs |
 | 5 | RequiredUseDefaults |
-| 1 | BetterCompressionUri |
 | 1 | StaticSrcUri |
 | 2 | TarballAvailable |
 
@@ -2781,7 +2814,7 @@ not substitute for a build test:
 - `gui-libs/xdg-desktop-portal-hyprland`
 - `media-fonts/space-grotesk`, `media-fonts/twemoji`
 - `media-sound/libcava`
-- `media-video/v4l2-relayd` apart from minor metadata/USE cleanup
+- `media-video/v4l2-relayd`
 - `sys-auth/howdy`
 - `sys-power/RyzenAdj`
 - `x11-drivers/evdi`
@@ -2792,6 +2825,6 @@ not substitute for a build test:
 ## Safe continuation point
 
 1. Keep hipSPARSELt and the wider ROCm package set deferred for future work.
-2. Issues 43 through 59 are signed and published.
+2. Issues 43 through 60 are signed and published.
 3. Continue strictly one issue at a time, including signed publication and
    cleanup before advancing.
