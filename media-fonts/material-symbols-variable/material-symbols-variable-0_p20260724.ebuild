@@ -8,7 +8,7 @@ inherit font
 DESCRIPTION="Material Design icons by Google - variable fonts"
 HOMEPAGE="https://github.com/google/material-design-icons"
 
-COMMIT="abd7f5c0e179c83f068c770650bd14ebac5d5a09"
+COMMIT="528cb964c01fb2b09bc3b9208f82b6d8f8c1c1e2"
 BASE_URL="https://raw.githubusercontent.com/google/material-design-icons/${COMMIT}/variablefont"
 
 SRC_URI="

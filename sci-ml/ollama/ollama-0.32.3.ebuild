@@ -3,7 +3,7 @@
 
 EAPI=8
 
-LLAMA_CPP_BUILD="b9888"
+LLAMA_CPP_BUILD="b10091"
 
 inherit cmake go-module multiprocessing systemd
 
@@ -55,10 +55,6 @@ QA_FLAGS_IGNORED=""
 
 src_prepare() {
 	cmake_src_prepare
-	pushd "${WORKDIR}/llama.cpp-${LLAMA_CPP_BUILD}" >/dev/null || die
-	eapply "${S}/llama/compat/001-llama-cpp-hooks.patch"
-	eapply "${S}/llama/compat/models/003-llama-cpp-laguna.patch"
-	popd >/dev/null || die
 }
 
 src_configure() {

@@ -5,7 +5,7 @@ EAPI=8
 
 inherit cmake
 
-# Untagged snapshot ahead of upstream tag v2.1.0. Pin master commit.
+# Commit referenced by the v2.2.0 tag.
 EGIT_COMMIT="dbb6d6c029021145422255dee6cd7ba607be3a20"
 # m3shapes revision pinned in upstream CMakeLists.txt (fetched there via
 # FetchContent git clone, which the Gentoo network sandbox forbids -- ship it
@@ -15,10 +15,10 @@ M3SHAPES_REV="bdc327b29f95394a732baf3c9b19658ba23755b6"
 DESCRIPTION="Caelestia Quickshell desktop shell (Hyprland)"
 HOMEPAGE="https://github.com/caelestia-dots/shell"
 SRC_URI="
-	https://github.com/caelestia-dots/shell/archive/${EGIT_COMMIT}.tar.gz -> ${P}.tar.gz
+	https://github.com/caelestia-dots/shell/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
 	https://github.com/soramanew/m3shapes/archive/${M3SHAPES_REV}.tar.gz -> caelestia-m3shapes-${M3SHAPES_REV}.tar.gz
 "
-S="${WORKDIR}/shell-${EGIT_COMMIT}"
+S="${WORKDIR}/shell-${PV}"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -89,9 +89,9 @@ src_configure() {
 		# usr/lib/qt6/qml makes Quickshell fail with
 		# `module "Caelestia.Config" is not installed`.
 		-DINSTALL_QMLDIR=usr/lib64/qt6/qml
-		# Snapshot tarball has no .git, so upstream's git describe/rev-parse
+		# Release tarball has no .git, so upstream's git describe/rev-parse
 		# fatal-errors -- supply version metadata explicitly.
-		-DVERSION="2.1.0"
+		-DVERSION="${PV}"
 		-DGIT_REVISION="${EGIT_COMMIT}"
 		-DDISTRIBUTOR="nekochigura"
 		# Use the pre-fetched m3shapes source instead of a network git clone.

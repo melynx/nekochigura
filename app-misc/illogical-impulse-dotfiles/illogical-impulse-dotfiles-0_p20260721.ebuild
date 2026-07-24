@@ -3,7 +3,7 @@
 
 EAPI=8
 
-DOTS_COMMIT="446504ad427297dcbe5ee4a3d5bda1c458207cd9"
+DOTS_COMMIT="7e61a6a56ac92b767dcba65b3fc380f40fddc823"
 SHAPES_COMMIT="e31ec4cb4ebf6a46b267f5c42eabf6874916fa16"
 SHAPES_PN="rounded-polygon-qmljs"
 SHAPES_PATH="dots/.config/quickshell/ii/modules/common/widgets/shapes"

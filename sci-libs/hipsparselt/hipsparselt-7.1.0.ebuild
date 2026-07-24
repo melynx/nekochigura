@@ -8,7 +8,7 @@ PYTHON_COMPAT=( python3_{10..14} )
 
 LLVM_COMPAT=( 20 )
 
-inherit cmake flag-o-matic multiprocessing llvm-r1 python-any-r1 rocm
+inherit cmake flag-o-matic multiprocessing llvm-r2 python-any-r1 rocm
 
 DESCRIPTION="ROCm SPARSE marshalling library for sparse linear algebra"
 HOMEPAGE="https://github.com/ROCm/rocm-libraries/tree/develop/projects/hipsparselt"
@@ -74,6 +74,7 @@ python_check_deps() {
 
 pkg_setup() {
 	QA_FLAGS_IGNORED="usr/$(get_libdir)/hipsparselt/library/.*"
+	llvm-r2_pkg_setup
 	python-any-r1_pkg_setup
 }
 

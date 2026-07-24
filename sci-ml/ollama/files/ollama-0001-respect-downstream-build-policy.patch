@@ -7,9 +7,11 @@ DESTDIR for nested installs so they only populate the superbuild payload.
 Do not copy toolchain runtime libraries or ROCm data into the installed image.
 Gentoo installs and updates those files through their own packages.
 
+diff --git a/cmake/local.cmake b/cmake/local.cmake
+index 67de4e3..42f12b6 100644
 --- a/cmake/local.cmake
 +++ b/cmake/local.cmake
-@@ -432,7 +432,8 @@
+@@ -432,7 +432,8 @@ function(ollama_add_llama_server_build name)
          BUILD_COMMAND ${OLLAMA_NATIVE_BUILD_TOOL_COMMAND}
              ${OLLAMA_NATIVE_CONFIG_ARG}
              ${OLLAMA_NATIVE_BUILD_TARGET_ARG} ${ARG_TARGETS}
@@ -19,7 +21,7 @@ Gentoo installs and updates those files through their own packages.
              ${OLLAMA_NATIVE_CONFIG_ARG}
              --component llama-server
          DEPENDS ollama-llama-cpp-source
-@@ -510,10 +511,12 @@
+@@ -510,10 +511,12 @@ function(ollama_add_mlx_build name)
              ${OLLAMA_NATIVE_CONFIG_ARG}
              ${OLLAMA_NATIVE_BUILD_TARGET_ARG} mlx
              ${OLLAMA_NATIVE_BUILD_TARGET_ARG} mlxc
@@ -34,7 +36,7 @@ Gentoo installs and updates those files through their own packages.
              ${OLLAMA_NATIVE_CONFIG_ARG}
              --component MLX_VENDOR
          DEPENDS ollama-mlx-sources
-@@ -570,7 +573,7 @@
+@@ -570,7 +573,7 @@ if(OLLAMA_HAVE_LLAMA_SERVER)
      get_filename_component(OLLAMA_GO_OUTPUT_DIR "${OLLAMA_GO_OUTPUT}" DIRECTORY)
  
      set(OLLAMA_GO_LDFLAGS
@@ -43,6 +45,8 @@ Gentoo installs and updates those files through their own packages.
      if(GO_EXECUTABLE)
          add_custom_target(ollama-go ALL
              COMMAND ${CMAKE_COMMAND} -E make_directory "${OLLAMA_GO_OUTPUT_DIR}"
+diff --git a/llama/server/CMakeLists.txt b/llama/server/CMakeLists.txt
+index bec100d..037c145 100644
 --- a/llama/server/CMakeLists.txt
 +++ b/llama/server/CMakeLists.txt
 @@ -23,6 +23,7 @@ if(APPLE)
@@ -53,24 +57,38 @@ Gentoo installs and updates those files through their own packages.
  endif()
  
  if(GGML_VULKAN AND DEFINED ENV{VULKAN_SDK})
-@@ -434,16 +434,9 @@
+@@ -434,30 +435,9 @@ if(OLLAMA_RUNNER_DIR)
  
      ollama_install_windows_runtime_dlls("${_base_dest}/${OLLAMA_RUNNER_DIR}")
  
 -    # Bundle GPU runtime libraries (cublas, cudart, rocblas, etc.)
 -    # These are needed at runtime by the GPU backend .so
      if(GGML_CUDA AND CUDAToolkit_FOUND)
+-        if(DEFINED OLLAMA_WINDOWS_RUNTIME_ARCH)
+-            string(TOLOWER "${OLLAMA_WINDOWS_RUNTIME_ARCH}" _cuda_redist_arch)
+-            if(_cuda_redist_arch MATCHES "^(x64|amd64|x86_64)$")
+-                set(_cuda_redist_arch "x64")
+-            elseif(_cuda_redist_arch MATCHES "^(arm64|aarch64)$")
+-                set(_cuda_redist_arch "arm64")
+-            endif()
+-        elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(ARM64|arm64|aarch64)$")
+-            set(_cuda_redist_arch "arm64")
+-        else()
+-            set(_cuda_redist_arch "x64")
+-        endif()
+-        set(_cuda_redist_dir "${CUDAToolkit_BIN_DIR}/${_cuda_redist_arch}")
+-
 -        # Find the actual ggml-cuda target to get its runtime dependencies
          if(TARGET ggml-cuda)
              install(TARGETS ggml-cuda
 -                RUNTIME_DEPENDENCIES
--                    DIRECTORIES ${CUDAToolkit_BIN_DIR} ${CUDAToolkit_BIN_DIR}/x64 ${CUDAToolkit_LIBRARY_DIR}
+-                    DIRECTORIES ${_cuda_redist_dir} ${CUDAToolkit_BIN_DIR} ${CUDAToolkit_LIBRARY_DIR}
 -                    PRE_INCLUDE_REGEXES cublas cublasLt cudart
 -                    PRE_EXCLUDE_REGEXES ".*"
                  RUNTIME DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
                  LIBRARY DESTINATION "${_base_dest}/${OLLAMA_RUNNER_DIR}" COMPONENT llama-server
              )
-@@ -452,47 +445,9 @@
+@@ -466,47 +446,9 @@ if(OLLAMA_RUNNER_DIR)
      if(GGML_HIP)
          if(TARGET ggml-hip)
              install(TARGETS ggml-hip

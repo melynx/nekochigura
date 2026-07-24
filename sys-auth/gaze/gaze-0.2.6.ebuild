@@ -52,7 +52,7 @@ CRATES="
 	cairo-rs@0.22.0
 	cairo-sys-rs@0.22.0
 	castaway@0.2.4
-	cc@1.2.67
+	cc@1.3.0
 	cfg-expr@0.20.8
 	cfg-if@1.0.4
 	cfg_aliases@0.2.2
@@ -61,6 +61,7 @@ CRATES="
 	clang@2.0.0
 	clap@4.6.2
 	clap_builder@4.6.2
+	clap_complete@4.6.7
 	clap_derive@4.6.1
 	clap_lex@1.1.0
 	cmov@0.5.4
@@ -125,16 +126,16 @@ CRATES="
 	foldhash@0.2.0
 	foreign-types-shared@0.1.1
 	foreign-types@0.3.2
-	futures-channel@0.3.32
-	futures-core@0.3.32
-	futures-executor@0.3.32
-	futures-io@0.3.32
+	futures-channel@0.3.33
+	futures-core@0.3.33
+	futures-executor@0.3.33
+	futures-io@0.3.33
 	futures-lite@2.6.1
-	futures-macro@0.3.32
-	futures-sink@0.3.32
-	futures-task@0.3.32
-	futures-util@0.3.32
-	futures@0.3.32
+	futures-macro@0.3.33
+	futures-sink@0.3.33
+	futures-task@0.3.33
+	futures-util@0.3.33
+	futures@0.3.33
 	gdk-pixbuf-sys@0.22.0
 	gdk-pixbuf@0.22.0
 	gdk4-sys@0.11.4
@@ -187,6 +188,7 @@ CRATES="
 	indoc@2.0.7
 	inout@0.2.2
 	instability@0.3.12
+	is_executable@1.0.6
 	is_terminal_polyfill@1.70.2
 	itertools@0.14.0
 	itertools@0.15.0
@@ -194,7 +196,7 @@ CRATES="
 	jobserver@0.1.35
 	js-sys@0.3.103
 	kasuari@0.4.12
-	kstring@2.0.3
+	kstring@2.0.4
 	lab@0.11.0
 	lazy_static@1.5.0
 	libadwaita-sys@0.9.2
@@ -278,9 +280,9 @@ CRATES="
 	piper@0.2.5
 	pkg-config@0.3.33
 	polling@3.11.0
-	polyval@0.7.2
+	polyval@0.7.3
 	portable-atomic-util@0.2.7
-	portable-atomic@1.13.1
+	portable-atomic@1.14.0
 	powerfmt@0.2.0
 	ppmd-rust@1.4.0
 	proc-macro-crate@3.5.0
@@ -366,7 +368,7 @@ CRATES="
 	thread_local@1.1.10
 	time-core@0.1.9
 	time@0.3.53
-	tokio-macros@2.7.0
+	tokio-macros@2.7.1
 	tokio@1.53.0
 	toml@1.1.3+spec-1.1.0
 	toml_datetime@1.1.1+spec-1.1.0
@@ -406,8 +408,8 @@ CRATES="
 	wasm-bindgen-macro@0.2.126
 	wasm-bindgen-shared@0.2.126
 	wasm-bindgen@0.2.126
-	webpki-root-certs@1.0.8
-	webpki-roots@1.0.8
+	webpki-root-certs@1.0.9
+	webpki-roots@1.0.9
 	wezterm-bidi@0.2.3
 	wezterm-blob-leases@0.1.1
 	wezterm-color-types@0.3.0
@@ -442,9 +444,9 @@ CRATES="
 	windows_x86_64_msvc@0.52.6
 	winnow@1.0.4
 	wit-bindgen@0.57.1
-	zbus@5.17.0
-	zbus_macros@5.17.0
-	zbus_names@4.3.3
+	zbus@5.18.0
+	zbus_macros@5.18.0
+	zbus_names@4.3.4
 	zbus_polkit@5.0.0
 	zeroize@1.9.0
 	zeroize_derive@1.5.0
@@ -454,8 +456,8 @@ CRATES="
 	zstd-safe@7.2.4
 	zstd-sys@2.0.16+zstd.1.5.7
 	zstd@0.13.3
-	zvariant@5.13.0
-	zvariant_derive@5.13.0
+	zvariant@5.13.1
+	zvariant_derive@5.13.1
 	zvariant_utils@3.5.0
 "
 
@@ -463,15 +465,13 @@ RUST_MIN_VER="1.96.0"
 
 inherit cargo desktop pam systemd xdg
 
-GAZE_COMMIT="4aee4cb3d1533ea475ca5542cc2a91c68154e278"
-
 DESCRIPTION="On-device facial authentication daemon, clients, GUI, and PAM module"
 HOMEPAGE="https://gaze.gundulabs.com https://github.com/GunduLabs/gaze"
 SRC_URI="
-	https://github.com/GunduLabs/gaze/archive/${GAZE_COMMIT}.tar.gz -> ${P}.tar.gz
+	https://github.com/GunduLabs/gaze/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
 	${CARGO_CRATE_URIS}
 "
-S="${WORKDIR}/gaze-${GAZE_COMMIT}"
+S="${WORKDIR}/${P}"
 
 LICENSE="MIT"
 # Dependent crate licenses
@@ -509,9 +509,9 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.2.5-require-ir-motion-evidence.patch"
-	"${FILESDIR}/${PN}-0.2.5-contain-pam-panics.patch"
-	"${FILESDIR}/${PN}-0.2.5-report-frame-processing-errors.patch"
+	"${FILESDIR}/${PN}-0.2.6-require-ir-motion-evidence.patch"
+	"${FILESDIR}/${PN}-0.2.6-contain-pam-panics.patch"
+	"${FILESDIR}/${PN}-0.2.6-report-frame-processing-errors.patch"
 )
 
 _gaze_ort_env() {

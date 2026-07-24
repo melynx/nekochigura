@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	>=gui-apps/caelestia-shell-2.1.0
+	>=gui-apps/caelestia-shell-2.2.0
 	app-misc/caelestia-cli
 	x11-themes/qtengine
 	x11-themes/sweet-cursors

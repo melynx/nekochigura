@@ -9,12 +9,12 @@ inherit kernel-build toolchain-funcs verify-sig
 
 BASE_P=linux-${PV%.*}
 PATCH_PV=${PV%_p*}
-PATCHSET=linux-gentoo-patches-${PV}
+PATCHSET=linux-gentoo-patches-7.1.3
 # https://koji.fedoraproject.org/koji/packageinfo?packageID=8
 # forked to git.gentoo.org:fork/fedora/kernel
-CONFIG_VER=7.1.1-gentoo
+CONFIG_VER=7.1.4-gentoo
 GENTOO_CONFIG_P=gentoo-kernel-config-g19
-SHA256SUM_DATE=20260704
+SHA256SUM_DATE=20260718
 # Debian kconfig commit from:
 # https://salsa.debian.org/kernel-team/linux/-/tree/debian/latest/debian/
 DEBIAN_COMMIT=19e11bd2f2609851c0ce81f3bd307eb9008521dd
@@ -60,7 +60,7 @@ QA_FLAGS_IGNORED="
 "
 
 PATCHES=(
-	"${FILESDIR}/${PN}-7.1.3-xe-dpt-stolen-memory.patch"
+	"${FILESDIR}/${PN}-7.1.4-xe-dpt-stolen-memory.patch"
 )
 
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/kernel.org.asc

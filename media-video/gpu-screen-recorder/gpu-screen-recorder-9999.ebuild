@@ -44,7 +44,7 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}/${PN}-5.15.1-dbus-without-pipewire.patch"
+	"${FILESDIR}/${PN}-5.15.2-dbus-without-pipewire.patch"
 )
 
 FILECAPS=(

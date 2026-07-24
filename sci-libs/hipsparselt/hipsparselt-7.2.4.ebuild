@@ -6,9 +6,9 @@ EAPI=8
 ROCM_SKIP_GLOBALS=1
 PYTHON_COMPAT=( python3_{10..14} )
 
-LLVM_COMPAT=( 20 )
+LLVM_COMPAT=( 22 )
 
-inherit cmake flag-o-matic multiprocessing llvm-r1 python-any-r1 rocm
+inherit cmake flag-o-matic multiprocessing llvm-r2 python-any-r1 rocm
 
 DESCRIPTION="ROCm SPARSE marshalling library for sparse linear algebra"
 HOMEPAGE="https://github.com/ROCm/rocm-libraries/tree/develop/projects/hipsparselt"
@@ -59,11 +59,6 @@ BDEPEND="
 	)
 "
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-7.1.0-no-git.patch
-	"${FILESDIR}"/${PN}-7.1.0-fix-libdir.patch
-)
-
 python_check_deps() {
 	python_has_version "dev-python/msgpack[${PYTHON_USEDEP}]" &&
 	python_has_version "dev-python/pyyaml[${PYTHON_USEDEP}]" &&
@@ -74,6 +69,7 @@ python_check_deps() {
 
 pkg_setup() {
 	QA_FLAGS_IGNORED="usr/$(get_libdir)/hipsparselt/library/.*"
+	llvm-r2_pkg_setup
 	python-any-r1_pkg_setup
 }
 
@@ -114,10 +110,6 @@ src_prepare() {
 
 	pushd "${WORKDIR}/rocm-libraries-rocm-${PV}/projects/hipblaslt" || die
 	eapply "${FILESDIR}"/hipsparselt-7.1.0-rocisa-nanobind.patch
-	popd || die
-
-	pushd "${WORKDIR}/rocm-libraries-rocm-${PV}/shared/origami" || die
-	eapply "${FILESDIR}"/origami-7.1.0-fix-project.patch
 	popd || die
 
 	cmake_src_prepare
