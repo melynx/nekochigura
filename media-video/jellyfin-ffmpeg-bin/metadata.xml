@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription lang="en">
+		Jellyfin's FFmpeg build, installed alongside media-video/ffmpeg rather than
+		replacing it. Carries Jellyfin's patch series, notably the tonemap_cuda
+		filter that performs Dolby Vision RPU reshaping in CUDA kernels. That filter
+		is not part of upstream FFmpeg, and Jellyfin only ever emits it on the NVIDIA
+		path, so Dolby Vision Profile 5 cannot be tone mapped on NVIDIA hardware
+		without this build.
+
+		The portable upstream binaries are statically linked against everything
+		except glibc and are installed under /usr/lib/jellyfin-ffmpeg, outside PATH,
+		so they cannot shadow or conflict with the system FFmpeg.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">jellyfin/jellyfin-ffmpeg</remote-id>
+		<bugs-to>https://github.com/jellyfin/jellyfin-ffmpeg/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
