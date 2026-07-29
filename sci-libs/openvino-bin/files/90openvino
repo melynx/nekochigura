@@ -1,0 +1,2 @@
+LDPATH="/opt/openvino/latest/runtime/lib/intel64:/opt/openvino/latest/runtime/3rdparty/tbb/lib"
+OPENVINO_DIR="/opt/openvino/latest/runtime/cmake"

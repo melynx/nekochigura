@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Prebuilt OpenVINO C and C++ runtime, development headers, CMake
+		configuration, and Intel CPU, GPU, and NPU plugins. The Intel GPU
+		plugin uses the Intel Compute Runtime OpenCL implementation.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">openvinotoolkit/openvino</remote-id>
+	</upstream>
+</pkgmetadata>
