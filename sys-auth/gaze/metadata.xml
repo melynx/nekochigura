@@ -8,6 +8,7 @@
   <use>
     <flag name="gui">Install the GTK4/libadwaita configuration and enrollment application</flag>
     <flag name="hyprlock">Install the opt-in sequential PAM service for Hyprlock</flag>
+    <flag name="openvino">Enable OpenVINO inference on Intel CPU, GPU, and NPU devices</flag>
   </use>
   <longdescription lang="en">
     Gaze provides an on-device face-recognition daemon, command-line and graphical
