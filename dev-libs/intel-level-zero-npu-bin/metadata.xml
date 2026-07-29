@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Prebuilt Intel Level Zero user-mode driver for Intel NPU hardware.
+		The oneAPI Level Zero loader opens this driver to communicate with
+		the in-kernel intel_vpu driver through /dev/accel devices.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">intel/linux-npu-driver</remote-id>
+	</upstream>
+</pkgmetadata>
