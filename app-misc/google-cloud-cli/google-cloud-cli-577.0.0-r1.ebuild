@@ -39,6 +39,10 @@ src_prepare() {
 	# Keep complete runtime boundaries: gcloud has a real "firebase test"
 	# command under these otherwise test-like paths, and gslib is one
 	# self-checksummed unit with an installed "test" command of its own.
+	# Never prune "docs" here: botocore/docs and boto3/docs are importable
+	# runtime subpackages, not documentation. botocore.handlers imports
+	# botocore.docs.utils at module scope, so dropping them breaks every
+	# gcloud storage command with "No module named 'botocore.docs'".
 	find . \
 		\( \
 			-path "./lib/googlecloudsdk" -o \
@@ -48,9 +52,12 @@ src_prepare() {
 		-type d \( \
 			-name "test" -o \
 			-name "tests" -o \
-			-name "docs" -o \
 			-name "examples" \
 		\) -prune -exec rm -rf {} + || die
+	local pkg
+	for pkg in botocore boto3; do
+		[[ -f "lib/third_party/${pkg}/docs/__init__.py" ]] || die "${pkg}.docs is missing"
+	done
 	rm -rf \
 		lib/third_party/lark/__pyinstaller \
 		platform/gsutil/third_party/charset_normalizer/data || die
