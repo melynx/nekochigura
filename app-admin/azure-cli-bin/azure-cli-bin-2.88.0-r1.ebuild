@@ -77,7 +77,10 @@ src_install() {
 	# Restore executable permissions on shared libraries
 	find "${ED}/opt/az/lib" -name "*.so*" -type f -exec chmod +x {} + || die
 
-	# Install wrapper script as /usr/bin/az
+	# Install wrapper script as /usr/bin/az. It execs the version-agnostic
+	# python3 symlink, so a missing one would ship a broken /usr/bin/az.
+	[[ -L "${ED}/opt/az/bin/python3" ]] ||
+		die "Bundled interpreter symlink /opt/az/bin/python3 is missing"
 	newbin "${FILESDIR}/az-wrapper.sh" az
 
 	# Install bash completion
