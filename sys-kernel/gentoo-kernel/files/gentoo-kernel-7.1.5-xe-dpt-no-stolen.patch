@@ -29,6 +29,12 @@ and a pin_params struct; v7.1.5 takes const struct intel_framebuffer *fb
 and a plain alignment argument.  The transformation is identical --- the
 IS_DGFX/stolen pair and the error fallback collapse into one allocation
 from the default memory region.
+
+Applies unchanged to v7.1.8, so the 7.1.8-r1 ebuild reuses this file
+rather than duplicating it under a new name.  Checked 2026-08-10 against
+the v7.1.8 tag of the stable tree: the IS_DGFX/stolen pair is still there
+verbatim (so the fix has reached no 7.1.x point release), and the hunk
+applies at its original offsets with no fuzz.
 ---
 --- a/drivers/gpu/drm/xe/display/xe_fb_pin.c
 +++ b/drivers/gpu/drm/xe/display/xe_fb_pin.c
