@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Official ChatGPT desktop app for Linux by OpenAI, in preview since
+		August 2026. Bundles Chat and the Codex coding agent in an Electron
+		runtime, repackaged from the upstream apt repository's deb. Registers
+		the x-scheme-handler/codex URL scheme for browser handoff.
+	</longdescription>
+</pkgmetadata>
