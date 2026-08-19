@@ -78,6 +78,17 @@ PATCHES=(
 	# QPointer, QStringList) that upstream relied on transitively; Qt 6.11
 	# dropped those transitive includes so the plugin fails to build without them.
 	"${FILESDIR}/${PN}-qt6.11-includes.patch"
+
+	# The Keep Awake idle inhibitor hangs off a PanelWindow built once inline
+	# in a Singleton. A monitor hotplug destroys it and nothing rebuilds it, so
+	# the toggle silently stops inhibiting while still reporting itself active.
+	"${FILESDIR}/${PN}-rebuild-idle-inhibitor-window.patch"
+
+	# Raise the notification's sender when its default action is invoked.
+	# Windows carrying a focus_on_activate=false rule cannot raise themselves
+	# (Wayland cannot distinguish an app's self-activation from a user click),
+	# and the daemon is the only party that knows the click happened.
+	"${FILESDIR}/${PN}-focus-sender-on-notification-action.patch"
 )
 
 src_configure() {

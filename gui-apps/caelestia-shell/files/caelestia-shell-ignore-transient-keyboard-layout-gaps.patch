@@ -1,12 +1,8 @@
-From 67812e3c6e6433b255c86813c6a5f99a63b67524 Mon Sep 17 00:00:00 2001
+From b952f02bc0880361aa923602a8aa926275338a88 Mon Sep 17 00:00:00 2001
 From: Chua Zheng Leong <melynx@gmail.com>
 Date: Mon, 13 Jul 2026 15:07:15 +0800
 Subject: [PATCH] fix: ignore transient keyboard layout gaps
 
-Caelestia can temporarily observe no main keyboard while reconciling a
-Hyprland device snapshot. Do not report that absence as an Unknown layout.
-Retain the last valid layout so a returning keyboard only produces a toast
-when its layout actually differs.
 ---
  services/Hypr.qml | 23 ++++++++++++++++++++---
  1 file changed, 20 insertions(+), 3 deletions(-)
@@ -54,5 +50,5 @@ index d890f098..232db1c8 100644
  
      Connections {
 -- 
-2.50.1
+2.55.0
 

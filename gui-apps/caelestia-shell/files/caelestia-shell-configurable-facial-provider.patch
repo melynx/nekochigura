@@ -1,4 +1,4 @@
-From 5f152dc9aa0eb05cea95d99243e95cbbcef98cef Mon Sep 17 00:00:00 2001
+From 1b85b731f16351fb50facc0fcedc3a37f9d52da5 Mon Sep 17 00:00:00 2001
 From: Chua Zheng Leong <melynx@gmail.com>
 Date: Thu, 16 Jul 2026 13:36:41 +0800
 Subject: [PATCH] feat(lock): support configurable facial auth providers
@@ -15,7 +15,7 @@ Subject: [PATCH] feat(lock): support configurable facial auth providers
  create mode 100644 assets/pam.d/gaze
 
 diff --git a/README.md b/README.md
-index 5e676169..44f36496 100644
+index 61d58f3e..3610f661 100644
 --- a/README.md
 +++ b/README.md
 @@ -240,7 +240,8 @@ For example, to disable the bar on DP-1:
@@ -46,7 +46,7 @@ index 5e676169..44f36496 100644
  ### Example configuration
  
  > [!NOTE]
-@@ -676,9 +688,9 @@ For example, to disable the bar on DP-1:
+@@ -697,9 +709,9 @@ For example, to disable the bar on DP-1:
          "recolourLogo": true,
          "enableFprint": true,
          "maxFprintTries": 3,
@@ -295,7 +295,7 @@ index b89c9a46..71c34bf5 100644
  
          return "";
 diff --git a/plugin/src/Caelestia/Config/lockconfig.hpp b/plugin/src/Caelestia/Config/lockconfig.hpp
-index fe03f77a..5786bba0 100644
+index 85653975..8ab8ec5d 100644
 --- a/plugin/src/Caelestia/Config/lockconfig.hpp
 +++ b/plugin/src/Caelestia/Config/lockconfig.hpp
 @@ -2,6 +2,8 @@
@@ -307,7 +307,7 @@ index fe03f77a..5786bba0 100644
  namespace caelestia::config {
  
  class LockConfig : public ConfigObject {
-@@ -12,9 +14,9 @@ class LockConfig : public ConfigObject {
+@@ -13,9 +15,9 @@ class LockConfig : public ConfigObject {
      CONFIG_PROPERTY(bool, recolourLogo, true)
      CONFIG_GLOBAL_PROPERTY(bool, enableFprint, true)
      CONFIG_GLOBAL_PROPERTY(int, maxFprintTries, 3)
