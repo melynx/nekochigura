@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Symlinks tree-sitter parsers into /usr/share/nvim/site/parser so Neovim can
+		load them. Exists because app-editors/neovim only symlinks the six parsers it
+		DEPENDs on and omits markdown_inline, which upstream Neovim bundles: the
+		block and inline markdown grammars come from a single tree-sitter-markdown
+		tarball that Gentoo split into two packages. Without the inline parser no
+		in-buffer markdown renderer works, and the failure is quiet because the
+		markdown_inline queries ship in the runtime tree regardless.
+
+		This package should be retired once app-editors/neovim links the parser
+		itself. Keep it to that omission plus html; it is not a general parser
+		distribution.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">neovim/neovim</remote-id>
+	</upstream>
+</pkgmetadata>
