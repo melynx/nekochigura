@@ -1,0 +1,53 @@
+From: Chua Zheng Leong <melynx@gmail.com>
+Date: Sun, 23 Aug 2026 14:40:00 +0800
+Subject: [PATCH] desktop/layer: recheck idle inhibitors on layer map and unmap
+
+CInputManager::newIdleInhibitor() evaluates a layer-surface inhibitor's
+visibility exactly once, when the zwp_idle_inhibitor_v1 arrives. A client
+that creates the inhibitor for a freshly created layer window sends it
+before the surface's first buffer commit, so aliveAndVisible() is false
+and the compositor records "not inhibiting". The only other callers of
+recheckIdleInhibitorStatus() are toplevel map/unmap in Window.cpp; a
+layer surface mapping later never triggers a re-evaluation, so the
+inhibitor stays dead until some unrelated toplevel opens or closes.
+
+Quickshell's IdleInhibitor hits this on every output hotplug: its window
+is rebuilt, the inhibitor is re-created before the new surface maps, and
+the idle timeouts fire with the toggle still reporting active.
+
+Re-evaluate on layer map and on both unmap paths.
+---
+ src/desktop/view/LayerSurface.cpp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/src/desktop/view/LayerSurface.cpp
++++ b/src/desktop/view/LayerSurface.cpp
+@@ -170,6 +170,10 @@
+ 
+     m_layerSurface->m_surface->map();
+ 
++    // an idle inhibitor created for this surface before it mapped was scored
++    // as not visible; re-evaluate now that it is
++    g_pInputManager->recheckIdleInhibitorStatus();
++
+     // fix if it changed its mon
+     const auto PMONITOR = m_monitor.lock();
+ 
+@@ -236,6 +240,8 @@
+         if (m_layerSurface && m_layerSurface->m_surface)
+             m_layerSurface->m_surface->unmap();
+ 
++        g_pInputManager->recheckIdleInhibitorStatus();
++
+         return;
+     }
+ 
+@@ -258,6 +264,8 @@
+     if (m_layerSurface && m_layerSurface->m_surface)
+         m_layerSurface->m_surface->unmap();
+ 
++    g_pInputManager->recheckIdleInhibitorStatus();
++
+     const auto PMONITOR = m_monitor.lock();
+ 
+     const bool WASLASTFOCUS = g_pSeatManager->m_state.keyboardFocus == m_wlSurface->resource() || g_pSeatManager->m_state.pointerFocus == m_wlSurface->resource();

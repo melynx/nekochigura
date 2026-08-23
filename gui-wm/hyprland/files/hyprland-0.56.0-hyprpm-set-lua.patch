@@ -1,0 +1,63 @@
+diff --git a/hyprpm/src/core/PluginManager.cpp b/hyprpm/src/core/PluginManager.cpp
+index 6621a49f..3d260e82 100644
+--- a/hyprpm/src/core/PluginManager.cpp
++++ b/hyprpm/src/core/PluginManager.cpp
+@@ -559,10 +572,42 @@ bool CPluginManager::updateHeaders(bool force) {
+     if (m_bVerbose)
+         progress.printMessageAbove(verboseString("setting PREFIX for cmake to {}", DataState::getHeadersPath()));
+ 
++#if defined(HYPRPM_GENTOO_LUA_PCFILE)
++    const auto wrapperDir =
++        DataState::getHeadersPath() + "/gentoo-lua/pkgconfig";
++
++    auto wrapper_cmd = "mkdir -p " + wrapperDir;
++
++    if (m_bVerbose)
++        std::println("\n{} will run as sudo.", wrapper_cmd);
++
++    ret = NSys::root::runAsSuperuserUnsafe(wrapper_cmd);
++
++    if (m_bVerbose)
++        std::println("\n{}", ret);
++
++    const std::string target = HYPRPM_GENTOO_LUA_PCFILE;
++
++    wrapper_cmd = std::format("ln -svf {} {}/lua.pc", target, wrapperDir);
++
++    if (m_bVerbose)
++        std::println("\n{} will run as sudo.", wrapper_cmd);
++
++    ret = NSys::root::runAsSuperuserUnsafe(wrapper_cmd);
++
++    if (m_bVerbose)
++        std::println("\n{}", ret);
++
++    const auto CONFIGURE_CMD =
++        nixDevelopIfNeeded(std::format("cd {} && PKG_CONFIG_PATH=\"{}:$PKG_CONFIG_PATH\" cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:STRING=\"{}\" -S . -B ./build", WORKINGDIR, wrapperDir,
++                                       DataState::getHeadersPath()),
++                           HLVER);
++#else
+     const auto CONFIGURE_CMD =
+         nixDevelopIfNeeded(std::format("cd {} && cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:STRING=\"{}\" -S . -B ./build", WORKINGDIR,
+                                        DataState::getHeadersPath()),
+                            HLVER);
++#endif
+ 
+     if (!CONFIGURE_CMD) {
+         std::println(stderr, "\n{}", failureString("Could not configure hyprland: {}", CONFIGURE_CMD.error()));
+@@ -1036,7 +1092,15 @@ bool CPluginManager::hasDeps() {
+ }
+ 
+ const std::string& CPluginManager::getPkgConfigPath() {
++#if defined(HYPRPM_GENTOO_LUA_PCFILE)
++    static const auto str = std::format(
++        "{}/gentoo-lua/pkgconfig:{}/share/pkgconfig:$PKG_CONFIG_PATH",
++        DataState::getHeadersPath(),
++        DataState::getHeadersPath()
++    );
++#else
+     static const auto str = std::format("{}/share/pkgconfig:$PKG_CONFIG_PATH", DataState::getHeadersPath());
++#endif
+     return str;
+ }
+ 

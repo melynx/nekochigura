@@ -1,0 +1,31 @@
+commit 6d592f18a04582264d5a1a6744a47bdf6abe2b9f (HEAD -> main)
+Author: Anthony Ruhier <aruhier@mailbox.org>
+Date:   Sat Jul 4 13:16:00 2026 +0200
+
+    Fixes compatibility with GCC < 16
+---
+ src/helpers/MiscFunctions.cpp | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/helpers/MiscFunctions.cpp b/src/helpers/MiscFunctions.cpp
+index d01962a4..22c6fd0c 100644
+--- a/src/helpers/MiscFunctions.cpp
++++ b/src/helpers/MiscFunctions.cpp
+@@ -832,7 +832,16 @@ bool truthy(const std::string& str) {
+     });
+
+     return [&](auto&&... prefixes) -> bool {
+-        return (... || std::ranges::starts_with(str_view, prefixes));
++        auto starts_with = [](auto&& range, std::string_view prefix) {
++            auto it = std::ranges::begin(range);
++            auto end = std::ranges::end(range);
++            for (char c : prefix) {
++                if (it == end || *it != c) return false;
++                ++it;
++            }
++            return true;
++        };
++        return (... || starts_with(str_view, prefixes));
+     }("true"sv, "yes"sv, "on"sv);
+     // clang-format on
+ }
