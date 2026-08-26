@@ -35,6 +35,12 @@ rather than duplicating it under a new name.  Checked 2026-08-10 against
 the v7.1.8 tag of the stable tree: the IS_DGFX/stolen pair is still there
 verbatim (so the fix has reached no 7.1.x point release), and the hunk
 applies at its original offsets with no fuzz.
+
+Also applies unchanged to v7.1.10, so 7.1.10-r1 reuses it too.  Checked
+2026-08-26: the 7.1.9 changelog has no drm/xe commits, and the cumulative
+kernel.org patches for 7.1.8 and 7.1.10 carry byte-identical hunks for
+xe_fb_pin.c, so the file at v7.1.10 equals the v7.1.8 state verified
+above.
 ---
 --- a/drivers/gpu/drm/xe/display/xe_fb_pin.c
 +++ b/drivers/gpu/drm/xe/display/xe_fb_pin.c
