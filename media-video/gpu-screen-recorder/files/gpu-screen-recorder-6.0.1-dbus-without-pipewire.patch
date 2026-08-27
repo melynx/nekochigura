@@ -1,0 +1,28 @@
+Subject: [PATCH] meson: link D-Bus independently of PipeWire features
+
+kde_night_light.c is always compiled and uses libdbus directly. Keep D-Bus in
+the base dependency list so builds with both PipeWire features disabled work.
+
+Rebased onto 6.0.1: the 5.15.2 hunk failed only on an adjacent context line,
+because the C++-to-C rewrite changed the add_project_arguments language from
+['c', 'cpp'] to 'c'. The structure is otherwise unchanged -- src/kde_night_light.c
+is still in the unconditional source list and still includes dbus/dbus.h, and
+dbus-1 is still declared only inside the pipewire block.
+--- a/meson.build
++++ b/meson.build
+@@ -105,6 +105,7 @@
+     dependency('libdrm'),
+     dependency('wayland-egl'),
+     dependency('wayland-client'),
++    dependency('dbus-1'),
+ ]
+ 
+ if build_machine.system() == 'linux'
+@@ -137,7 +138,6 @@
+     dep += [
+         dependency('libpipewire-0.3'),
+         dependency('libspa-0.2'),
+-        dependency('dbus-1'),
+     ]
+     add_project_arguments('-DGSR_DBUS', language : 'c')
+ endif
