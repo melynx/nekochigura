@@ -13,7 +13,12 @@ SRC_URI="https://storage.openvinotoolkit.org/repositories/openvino/packages/${PV
 S="${WORKDIR}/${MY_ARCHIVE}"
 
 LICENSE="Apache-2.0 intel-openvino"
-SLOT="0"
+# The SONAME tracks the version with the century and the dots dropped
+# (2026.3.1 -> libopenvino.so.2631), so every bump is an ABI break for anything
+# linking it. Carry that in the subslot or the `:=` in dependents never fires and
+# they keep a dangling NEEDED on the previous SONAME. Derived, not written out,
+# so a future bump cannot forget it.
+SLOT="0/${PV:2:2}$(ver_cut 2)$(ver_cut 3)"
 KEYWORDS="~amd64"
 REQUIRED_USE="elibc_glibc"
 
