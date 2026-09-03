@@ -1,0 +1,44 @@
+--- video-compare/makefile
++++ video-compare-patch/makefile
+@@ -1,4 +1,8 @@
+-CXXFLAGS = -g3 -Ofast -std=c++14 -D__STDC_CONSTANT_MACROS \
++CXX ?= g++
++
++# Keep user/Portage flags, add project defaults.
++CXXFLAGS ?=
++CXXFLAGS += -std=c++14 -D__STDC_CONSTANT_MACROS \
+ 		   -Wall -Wextra -Wno-deprecated -Wno-deprecated-declarations \
+ 		   -Wdisabled-optimization -Wctor-dtor-privacy \
+ 		   -Woverloaded-virtual -Wno-unused -Wno-missing-field-initializers
+@@ -11,7 +15,7 @@
+   SDL2_PATH = SDL2-devel-$(SDL2_VERSION)-mingw/SDL2-$(SDL2_VERSION)/x86_64-w64-mingw32
+   SDL2_TTF_PATH = SDL2_ttf-devel-$(SDL2_TTF_VERSION)-mingw/SDL2_ttf-$(SDL2_TTF_VERSION)/x86_64-w64-mingw32
+ 
+-  CXX = x86_64-w64-mingw32-g++
++  CXX ?= x86_64-w64-mingw32-g++
+   CXXFLAGS += -I$(FFMPEG_PATH)/include/ \
+               -I$(SDL2_PATH)/include/ \
+               -I$(SDL2_PATH)/include/SDL2/ \
+@@ -20,7 +24,6 @@
+             -L$(SDL2_PATH)/lib/ \
+             -L$(SDL2_TTF_PATH)/lib/
+ else
+-  CXX = g++
+   LDLIBS = -pthread
+ endif
+ 
+@@ -60,7 +63,7 @@
+ all: $(target)
+ 
+ $(target): $(obj)
+-	$(CXX) -o $@ $^ $(LDLIBS)
++	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+ 
+ -include $(dep)
+ 
+@@ -84,4 +87,4 @@
+ 	$(RM) $(obj) $(target) $(dep) $(test_frame_metadata_bin)
+ 
+ install: $(target)
+-	install -s video-compare $(BINDIR)
++	install video-compare $(BINDIR)
