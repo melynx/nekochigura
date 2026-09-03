@@ -1,0 +1,57 @@
+diff -ruN a/plugin/src/Caelestia/Images/iutils.hpp b/plugin/src/Caelestia/Images/iutils.hpp
+--- a/plugin/src/Caelestia/Images/iutils.hpp	2026-08-29 12:36:52.000000000 +0800
++++ b/plugin/src/Caelestia/Images/iutils.hpp	2026-09-03 17:20:41.403166179 +0800
+@@ -2,6 +2,7 @@
+ 
+ #include <qobject.h>
+ #include <qqmlintegration.h>
++#include <qqmlengine.h>
+ #include <qurl.h>
+ 
+ namespace caelestia::images {
+diff -ruN a/plugin/src/Caelestia/Services/lyriccandidate.hpp b/plugin/src/Caelestia/Services/lyriccandidate.hpp
+--- a/plugin/src/Caelestia/Services/lyriccandidate.hpp	2026-08-29 12:36:52.000000000 +0800
++++ b/plugin/src/Caelestia/Services/lyriccandidate.hpp	2026-09-03 17:20:41.403360342 +0800
+@@ -2,6 +2,7 @@
+ 
+ #include <qobject.h>
+ #include <qqmlintegration.h>
++#include <qstring.h>
+ 
+ #include "../Config/enums.hpp"
+ 
+diff -ruN a/plugin/src/Caelestia/Services/lyrics.hpp b/plugin/src/Caelestia/Services/lyrics.hpp
+--- a/plugin/src/Caelestia/Services/lyrics.hpp	2026-08-29 12:36:52.000000000 +0800
++++ b/plugin/src/Caelestia/Services/lyrics.hpp	2026-09-03 17:20:41.405406606 +0800
+@@ -7,6 +7,7 @@
+ #include <qnetworkaccessmanager.h>
+ #include <qnetworkreply.h>
+ #include <qtimer.h>
++#include <qpointer.h>
+ 
+ namespace caelestia::services {
+ 
+diff -ruN a/plugin/src/Caelestia/Services/storage.hpp b/plugin/src/Caelestia/Services/storage.hpp
+--- a/plugin/src/Caelestia/Services/storage.hpp	2026-08-29 12:36:52.000000000 +0800
++++ b/plugin/src/Caelestia/Services/storage.hpp	2026-09-03 17:20:41.405649508 +0800
+@@ -7,6 +7,8 @@
+ #include <qqmlintegration.h>
+ #include <qqmllist.h>
+ #include <qvariant.h>
++#include <qpointer.h>
++#include <qstringlist.h>
+ 
+ namespace caelestia::services {
+ 
+diff -ruN a/plugin/src/Caelestia/Services/usagefmt.hpp b/plugin/src/Caelestia/Services/usagefmt.hpp
+--- a/plugin/src/Caelestia/Services/usagefmt.hpp	2026-08-29 12:36:52.000000000 +0800
++++ b/plugin/src/Caelestia/Services/usagefmt.hpp	2026-09-03 17:20:41.405736777 +0800
+@@ -1,6 +1,8 @@
+ #pragma once
+ 
+ #include <qqmlintegration.h>
++#include <qobject.h>
++#include <qstring.h>
+ 
+ namespace caelestia::services::usagefmt {
+ 
