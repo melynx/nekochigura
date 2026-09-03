@@ -23,7 +23,13 @@ DEPEND="
 	>=dev-qt/qtbase-6.8:6[gui]
 	>=dev-qt/qtdeclarative-6.8:6
 "
-RDEPEND="${DEPEND}"
+# caelestia-shell built this module in-tree up to 2.3.0 and installs the same
+# four files under /usr/lib64/qt6/qml/M3Shapes, so the old one has to be gone
+# before this package lands.
+RDEPEND="
+	${DEPEND}
+	!<gui-apps/caelestia-shell-2.4.0
+"
 BDEPEND="
 	>=dev-qt/qtshadertools-6.8:6
 "
