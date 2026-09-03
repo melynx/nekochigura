@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>czl@iiyume.org</email>
+    <name>czl</name>
+  </maintainer>
+  <longdescription lang="en">
+    m3shapes is a Qt/QML port of the androidx graphics-shapes library: rounded
+    polygons, shape morphing, and the Material 3 shape set, exposed as the
+    M3Shapes QML module. caelestia-shell built it in-tree until 2.4.0, which
+    dropped the vendored copy and now expects the module installed system-wide.
+  </longdescription>
+  <upstream>
+    <remote-id type="github">soramanew/m3shapes</remote-id>
+  </upstream>
+</pkgmetadata>
