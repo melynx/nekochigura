@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<use>
+		<flag name="disable-mitigations">Disable Spectre and similar CPU mitigations for a faster compiler at the cost of security</flag>
+		<flag name="l0">Build the oneAPI Level Zero driver</flag>
+		<flag name="vaapi">Enable VA-API interoperability</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">intel/compute-runtime</remote-id>
+	</upstream>
+</pkgmetadata>

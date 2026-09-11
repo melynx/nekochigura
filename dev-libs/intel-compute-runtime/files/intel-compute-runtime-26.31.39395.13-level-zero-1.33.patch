@@ -1,0 +1,69 @@
+diff -ruN a/level_zero/include/level_zero/driver_experimental/mcl_ext/CMakeLists.txt b/level_zero/include/level_zero/driver_experimental/mcl_ext/CMakeLists.txt
+--- a/level_zero/include/level_zero/driver_experimental/mcl_ext/CMakeLists.txt	2026-09-12 01:46:30.132146974 +0800
++++ b/level_zero/include/level_zero/driver_experimental/mcl_ext/CMakeLists.txt	2026-09-12 01:46:30.133828853 +0800
+@@ -7,7 +7,6 @@
+ target_sources(${L0_STATIC_LIB_NAME}
+                PRIVATE
+                ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
+-               ${CMAKE_CURRENT_SOURCE_DIR}/ze_mutable_command_list_exp.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/zex_mutable_cmdlist_control_flow_ext.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/zex_mutable_cmdlist_dispatch_ext.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/zex_mutable_cmdlist_ext.h
+diff -ruN a/level_zero/include/level_zero/driver_experimental/mcl_ext/ze_mutable_command_list_exp.h b/level_zero/include/level_zero/driver_experimental/mcl_ext/ze_mutable_command_list_exp.h
+--- a/level_zero/include/level_zero/driver_experimental/mcl_ext/ze_mutable_command_list_exp.h	2026-09-12 01:46:30.132158584 +0800
++++ b/level_zero/include/level_zero/driver_experimental/mcl_ext/ze_mutable_command_list_exp.h	1970-01-01 07:30:00.000000000 +0730
+@@ -1,43 +0,0 @@
+-/*
+- * Copyright (C) 2025 Intel Corporation
+- *
+- * SPDX-License-Identifier: MIT
+- *
+- */
+-
+-#pragma once
+-
+-#include <level_zero/ze_api.h>
+-
+-typedef ze_result_t(ZE_APICALL *ze_pfnCommandListGetNextCommandIdExpCb_t)(
+-    ze_command_list_handle_t hCommandList,
+-    const ze_mutable_command_id_exp_desc_t *desc,
+-    uint64_t *pCommandId);
+-
+-typedef ze_result_t(ZE_APICALL *ze_pfnCommandListUpdateMutableCommandsExpCb_t)(
+-    ze_command_list_handle_t hCommandList,
+-    const ze_mutable_commands_exp_desc_t *desc);
+-
+-typedef ze_result_t(ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t)(
+-    ze_command_list_handle_t hCommandList,
+-    uint64_t commandId,
+-    ze_event_handle_t hSignalEvent);
+-
+-typedef ze_result_t(ZE_APICALL *ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t)(
+-    ze_command_list_handle_t hCommandList,
+-    uint64_t commandId,
+-    uint32_t numWaitEvents,
+-    ze_event_handle_t *phWaitEvents);
+-
+-typedef ze_result_t(ZE_APICALL *ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t)(
+-    ze_command_list_handle_t hCommandList,
+-    const ze_mutable_command_id_exp_desc_t *desc,
+-    uint32_t numKernels,
+-    ze_kernel_handle_t *phKernels,
+-    uint64_t *pCommandId);
+-
+-typedef ze_result_t(ZE_APICALL *ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t)(
+-    ze_command_list_handle_t hCommandList,
+-    uint32_t numKernels,
+-    uint64_t *pCommandId,
+-    ze_kernel_handle_t *phKernels);
+diff -ruN a/level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_ext.h b/level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_ext.h
+--- a/level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_ext.h	2026-09-12 01:46:30.132165932 +0800
++++ b/level_zero/include/level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_ext.h	2026-09-12 01:46:30.133857069 +0800
+@@ -7,7 +7,6 @@
+ 
+ #pragma once
+ 
+-#include "level_zero/driver_experimental/mcl_ext/ze_mutable_command_list_exp.h"
+ #include "level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_control_flow_ext.h"
+ #include "level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_dispatch_ext.h"
+ #include "level_zero/driver_experimental/mcl_ext/zex_mutable_cmdlist_serialization_ext.h"
