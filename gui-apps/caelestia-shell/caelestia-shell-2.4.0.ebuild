@@ -69,9 +69,12 @@ PATCHES=(
 	# alongside the existing Howdy PAM backend.
 	"${FILESDIR}/${PN}-${PV}-configurable-facial-provider.patch"
 
-	# Add missing Qt includes (QObject, QVariant, QQmlEngine, QString, QTimer,
-	# QPointer, QStringList) that upstream relied on transitively; Qt 6.11
-	# dropped those transitive includes so the plugin fails to build without them.
+	# Add missing Qt includes (QObject, QVariant, QQmlEngine, QJSEngine,
+	# QString, QTimer, QPointer, QStringList, QLoggingCategory, Q_NAMESPACE)
+	# that upstream relied on transitively; Qt 6.11 dropped those transitive
+	# includes so the plugin fails to build without them. The toaster,
+	# settingsfile and Config/enums hunks match what upstream master added
+	# after 2.4.0 and were confirmed against qtbase-6.11.2-r2.
 	"${FILESDIR}/${PN}-${PV}-qt6.11-includes.patch"
 
 	# The Keep Awake idle inhibitor hangs off a PanelWindow built once inline

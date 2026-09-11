@@ -55,3 +55,36 @@ diff -ruN a/plugin/src/Caelestia/Services/usagefmt.hpp b/plugin/src/Caelestia/Se
  
  namespace caelestia::services::usagefmt {
  
+diff -ruN a/plugin/src/Caelestia/Config/enums.hpp b/plugin/src/Caelestia/Config/enums.hpp
+--- a/plugin/src/Caelestia/Config/enums.hpp	2026-09-11 18:45:59.664487036 +0800
++++ b/plugin/src/Caelestia/Config/enums.hpp	2026-09-11 18:45:59.665466552 +0800
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include <qobject.h>
+ #include <qqmlintegration.h>
+ 
+ namespace caelestia::config {
+diff -ruN a/plugin/src/Caelestia/Settings/settingsfile.cpp b/plugin/src/Caelestia/Settings/settingsfile.cpp
+--- a/plugin/src/Caelestia/Settings/settingsfile.cpp	2026-09-11 18:45:59.658232441 +0800
++++ b/plugin/src/Caelestia/Settings/settingsfile.cpp	2026-09-11 18:45:59.659364564 +0800
+@@ -6,6 +6,7 @@
+ #include <qjsonarray.h>
+ #include <qjsondocument.h>
+ #include <qjsonobject.h>
++#include <qloggingcategory.h>
+ #include <qsavefile.h>
+ 
+ namespace caelestia::settings {
+diff -ruN a/plugin/src/Caelestia/toaster.hpp b/plugin/src/Caelestia/toaster.hpp
+--- a/plugin/src/Caelestia/toaster.hpp	2026-09-11 18:45:59.651198031 +0800
++++ b/plugin/src/Caelestia/toaster.hpp	2026-09-11 18:45:59.653223186 +0800
+@@ -1,6 +1,8 @@
+ #pragma once
+ 
++#include <qjsengine.h>
+ #include <qobject.h>
++#include <qqmlengine.h>
+ #include <qqmlintegration.h>
+ #include <qqmllist.h>
+ #include <qset.h>
