@@ -9,8 +9,8 @@ EAPI=8
 # v6 interface that only IGC >= 2.38.2 declares. 2.40.13 is the IGC upstream
 # pairs with compute-runtime 26.31, and its release notes pin the same
 # LLVM 17.0.6 / opencl-clang 17 / SPIRV-LLVM-Translator 17 / vc-intrinsics
-# 0.25.0 set ::gentoo already ships, so this is the 2.37.1 ebuild unchanged
-# apart from KEYWORDS.
+# 0.25.0 set ::gentoo already ships, so this is the 2.37.1 ebuild with ~amd64
+# and one extra patch (see PATCHES).
 
 CMAKE_BUILD_TYPE="Release"
 LLVM_COMPAT=( 17 )
@@ -60,6 +60,13 @@ python_check_deps() {
 PATCHES=(
 	"${FILESDIR}/${PN}-1.0.8365-disable-git.patch"
 	"${FILESDIR}/${PN}-2.30.1-Werror.patch"
+	# TranslateSPIRVToLLVM calls llvm::Module::dump() behind a runtime regkey.
+	# LLVM declares dump() unconditionally but only defines it in builds with
+	# assertions or LLVM_ENABLE_DUMP, which ::gentoo's llvm:17 is not, and IGC
+	# links libigc.so with --no-undefined, so 2.40.13 fails at link time with
+	# "undefined symbol: llvm::Module::dump() const". Use print(errs()), which
+	# is what dump() does and is always available.
+	"${FILESDIR}/${P}-no-llvm-dump.patch"
 )
 
 pkg_setup() {
