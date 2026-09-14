@@ -1,0 +1,39 @@
+From: nekochigura maintainers
+Subject: [PATCH] Contain Rust panics inside the PAM entry point
+
+Never allow a Rust panic to cross the C PAM ABI. Convert it into a closed
+authentication failure instead.
+
+Rebased onto v0.3.2: upstream folded pam-gaze-core into pam-gaze and now
+parses the module's argv into an options struct before calling
+do_authenticate(). Both steps run inside the catch_unwind closure, so a panic
+in option parsing is contained as well. Upstream still has no panic
+containment of its own at this entry point.
+diff --git a/pam-gaze/src/lib.rs b/pam-gaze/src/lib.rs
+index 72b4097..1d8f33c 100644
+--- a/pam-gaze/src/lib.rs
++++ b/pam-gaze/src/lib.rs
+@@ -8,6 +8,7 @@ pub mod core;
+ pub use core::*;
+ 
+ use std::os::raw::{c_char, c_int};
++use std::panic::{AssertUnwindSafe, catch_unwind};
+ 
+ #[unsafe(no_mangle)]
+ pub unsafe extern "C" fn pam_sm_authenticate(
+@@ -16,8 +17,13 @@ pub unsafe extern "C" fn pam_sm_authenticate(
+     argc: c_int,
+     argv: *const *const c_char,
+ ) -> c_int {
+-    let options = unsafe { parse_raw_pam_options(argc, argv) };
+-    unsafe { do_authenticate(pamh, flags, options) }
++    match catch_unwind(AssertUnwindSafe(|| unsafe {
++        let options = parse_raw_pam_options(argc, argv);
++        do_authenticate(pamh, flags, options)
++    })) {
++        Ok(code) => code,
++        Err(_) => PAM_AUTH_ERR,
++    }
+ }
+ 
+ pam_success_stubs!();

@@ -1,0 +1,126 @@
+From: nekochigura maintainers
+Subject: [PATCH] Report frame-processing errors instead of swallowing them
+
+Six call sites in the daemon discarded process_frame_sync's error with
+`Err(_) => (CaptureStatus::NoFace, None)`, so a decode/inference failure was
+indistinguishable from "no face was in view". Log the error first, labelled by
+capture path, and keep the identical return value -- this is diagnostics only,
+no behaviour change.
+
+The detector likewise reported only that nothing cleared the confidence
+threshold; also record the best score it did see, so a marginal miss can be
+told apart from an empty frame.
+
+Rebased onto v0.3.2: the detector moved from gaze-core to the new gaze-vision
+crate, and the six daemon sites shifted by 113-214 lines. Same edits, new
+paths and offsets.
+diff --git a/gaze-vision/src/detect.rs b/gaze-vision/src/detect.rs
+index 5e9cdfd..c0aa16c 100644
+--- a/gaze-vision/src/detect.rs
++++ b/gaze-vision/src/detect.rs
+@@ -176,6 +176,7 @@ impl FaceDetector {
+         let mut candidate_boxes = Vec::new();
+         let mut candidate_scores = Vec::new();
+         let mut candidate_kps = Vec::new();
++        let mut max_score = 0.0f32;
+ 
+         for (i, stride) in strides.iter().enumerate() {
+             let grid_w = w / stride;
+@@ -218,6 +219,7 @@ impl FaceDetector {
+                         let point_idx = (y * grid_w + x) * num_anchors + a;
+ 
+                         let score = score_data[point_idx];
++                        max_score = max_score.max(score);
+                         if score >= self.conf_threshold {
+                             // Anchor-free FCOS encoding, so the four values are distances from
+                             // the anchor point to each edge in stride units, not corner offsets.
+@@ -255,6 +257,13 @@ impl FaceDetector {
+         std::mem::drop(outputs);
+ 
+         if candidate_boxes.is_empty() {
++            tracing::debug!(
++                frame_width = img.cols(),
++                frame_height = img.rows(),
++                max_score,
++                threshold = self.conf_threshold,
++                "No face candidates passed the detector threshold"
++            );
+             return Err(DetectError::NoFacesDetected);
+         }
+ 
+diff --git a/gaze/src/daemon.rs b/gaze/src/daemon.rs
+index 93fb752..b5a1394 100644
+--- a/gaze/src/daemon.rs
++++ b/gaze/src/daemon.rs
+@@ -2903,7 +2903,10 @@ impl AuthDaemon {
+                                     let mut recognizer = recognizer_rgb_arc.blocking_lock();
+                                     match process_frame_sync(&mut checker, &mut recognizer, &frame, false) {
+                                         Ok(res) => res,
+-                                        Err(_) => (CaptureStatus::NoFace, None),
++                                        Err(err) => {
++                                            tracing::debug!(error = %err, "RGB enrollment frame processing failed");
++                                            (CaptureStatus::NoFace, None)
++                                        }
+                                     }
+                                 };
+ 
+@@ -2983,7 +2986,10 @@ impl AuthDaemon {
+                             let mut recognizer = recognizer_rgb_arc.blocking_lock();
+                             match process_frame_sync(&mut checker, &mut recognizer, &frame, false) {
+                                 Ok(res) => res,
+-                                Err(_) => (CaptureStatus::NoFace, None),
++                                Err(err) => {
++                                    tracing::debug!(error = %err, "RGB enrollment frame processing failed");
++                                    (CaptureStatus::NoFace, None)
++                                }
+                             }
+                         };
+ 
+@@ -3110,7 +3116,10 @@ impl AuthDaemon {
+                                     let mut recognizer = recognizer_ir_arc.blocking_lock();
+                                     match process_frame_sync(&mut checker, &mut recognizer, &frame, false) {
+                                         Ok(res) => res,
+-                                        Err(_) => (CaptureStatus::NoFace, None),
++                                        Err(err) => {
++                                            tracing::debug!(error = %err, "IR enrollment frame processing failed");
++                                            (CaptureStatus::NoFace, None)
++                                        }
+                                     }
+                                 };
+ 
+@@ -3190,7 +3199,10 @@ impl AuthDaemon {
+                             let mut recognizer = recognizer_ir_arc.blocking_lock();
+                             match process_frame_sync(&mut checker, &mut recognizer, &frame, false) {
+                                 Ok(res) => res,
+-                                Err(_) => (CaptureStatus::NoFace, None),
++                                Err(err) => {
++                                    tracing::debug!(error = %err, "IR enrollment frame processing failed");
++                                    (CaptureStatus::NoFace, None)
++                                }
+                             }
+                         };
+ 
+@@ -4061,7 +4073,10 @@ impl AuthDaemon {
+                             let mut recognizer = recognizer_rgb_arc.blocking_lock();
+                             match process_frame_sync(&mut checker, &mut recognizer, &frame, liveness_enabled) {
+                                 Ok(res) => res,
+-                                Err(_) => (CaptureStatus::NoFace, None),
++                                Err(err) => {
++                                    tracing::debug!(error = %err, "RGB verification frame processing failed");
++                                    (CaptureStatus::NoFace, None)
++                                }
+                             }
+                         };
+                         tracing::debug!("Processed RGB frame: status={:?}, embedding_extracted={}", status, embed_opt.is_some());
+@@ -4261,7 +4276,10 @@ impl AuthDaemon {
+                             let mut recognizer = recognizer_ir_arc.blocking_lock();
+                             match process_frame_sync(&mut checker, &mut recognizer, &frame, false) {
+                                 Ok(res) => res,
+-                                Err(_) => (CaptureStatus::NoFace, None),
++                                Err(err) => {
++                                    tracing::debug!(error = %err, "IR verification frame processing failed");
++                                    (CaptureStatus::NoFace, None)
++                                }
+                             }
+                         };
+                         tracing::debug!("Processed IR frame: status={:?}, embedding_extracted={}", status, embed_opt.is_some());
