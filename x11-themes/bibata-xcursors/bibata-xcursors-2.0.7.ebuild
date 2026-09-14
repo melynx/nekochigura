@@ -13,7 +13,10 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND="x11-libs/libXcursor"
+# The same cursor files shipped as x11-misc/bibata-modern-classic before the
+# rename; without the blocker the two collide on every machine that had it.
+RDEPEND="x11-libs/libXcursor
+	!x11-misc/bibata-modern-classic"
 
 src_install() {
 	insinto /usr/share/icons
