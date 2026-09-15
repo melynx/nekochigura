@@ -22,7 +22,12 @@ SRC_URI="
 S="${WORKDIR}/${PN}-${PV}"
 
 LICENSE="MIT"
-SLOT="0"
+# libonnxruntime.so.1 keeps its SONAME across releases but is linked with
+# tools/ci_build/gen_def.py's version script, which tags every exported symbol
+# with VERS_${PV}. A consumer built against 1.27.1 then fails to load 1.30.0
+# with "version `VERS_1.27.1' not found" even though the SONAME resolves.
+# Carry the version in the subslot so `:=` dependents (sys-auth/gaze) rebuild.
+SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="openvino python test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
