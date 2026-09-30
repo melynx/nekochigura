@@ -76,6 +76,7 @@ DEPEND="
 	${RDEPEND}
 	${LUA_DEPS}
 	>=dev-cpp/glaze-7.0.0:=
+	<dev-cpp/glaze-8.0.0
 	>=dev-libs/hyprland-protocols-0.6.4
 	>=dev-libs/wayland-protocols-1.49
 "
