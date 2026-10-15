@@ -79,6 +79,13 @@ PATCHES=(
 	# (Wayland cannot distinguish an app's self-activation from a user click),
 	# and the daemon is the only party that knows the click happened.
 	"${FILESDIR}/${PN}-focus-sender-on-notification-action.patch"
+
+	# Upstream 80c40a14b1 (#2109), after 2.5.0. The drawers widen their input
+	# mask by the drag threshold on empty workspaces, judging emptiness from
+	# the workspace's cached IPC object. When that goes stale the margin stays
+	# up over a populated workspace and eats clicks along the screen edges --
+	# a top-edge Chrome tab strip stops responding. Use the live toplevels.
+	"${FILESDIR}/${PN}-live-toplevels-drag-mask.patch"
 )
 
 src_configure() {

@@ -1,0 +1,23 @@
+From 80c40a14b1dc71c6f4d107fe47c143da36117ca8 Mon Sep 17 00:00:00 2001
+From: Artem <67606409+etosheartem@users.noreply.github.com>
+Date: Tue, 6 Oct 2026 03:25:22 +0300
+Subject: [PATCH] fix(drawers): use live toplevels for drag mask padding
+ (#2109)
+
+---
+ modules/drawers/ContentWindow.qml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/drawers/ContentWindow.qml b/modules/drawers/ContentWindow.qml
+index 212682f964..9f82df2ddf 100644
+--- a/modules/drawers/ContentWindow.qml
++++ b/modules/drawers/ContentWindow.qml
+@@ -48,7 +48,7 @@ StyledWindow {
+         if (focusGrab.active || panels.popouts.isDetached)
+             return 0;
+ 
+-        if (monitor?.lastIpcObject.specialWorkspace?.name || monitor?.activeWorkspace?.lastIpcObject.windows > 0)
++        if (monitor?.lastIpcObject.specialWorkspace?.name || monitor?.activeWorkspace?.toplevels.values.length > 0)
+             return 0;
+ 
+         const thresholds = [];
