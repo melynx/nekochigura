@@ -33,7 +33,10 @@ BDEPEND="
 	>=dev-util/bindgen-0.73.2:0
 	llvm-core/clang:18
 	arm64? ( llvm-core/llvm:18[llvm_targets_AArch64] )
-	amd64? ( llvm-core/llvm:18[llvm_targets_X86] )
+	amd64? (
+		llvm-core/llvm:18[llvm_targets_X86]
+		sys-devel/gcc:14
+	)
 	apple? (
 		dev-util/pahole
 		llvm-core/lld:18
@@ -118,6 +121,12 @@ src_configure() {
 
 	# Rust bindings need libclang even when the C compiler is GCC.
 	if ! use apple; then
+		if use amd64; then
+			# GCC 16 enables __counted_by_ptr, which libclang 18 rejects.
+			local -x CC=${CHOST}-gcc-14 CXX=${CHOST}-g++-14
+			local -x BUILD_CC=${CBUILD:-${CHOST}}-gcc-14
+			local -x BUILD_CXX=${CBUILD:-${CHOST}}-g++-14
+		fi
 		kernel-build_src_configure
 		return
 	fi
