@@ -1,0 +1,238 @@
+Subject: [PATCH] wifi: brcmfmac: isolate BCM4378 receive DMA storage
+
+Initialize the PCIe bus chip ID before protocol attachment. For BCM4378,
+use whole, zeroed page allocations separate from skb storage for RX data,
+event and ioctl-response buffers. Map the entire dedicated allocation
+bidirectionally, then unmap before copying back only the original payload.
+Keep TX and other chips on their upstream streaming directions.
+
+Require an active strict DMA IOMMU domain. This avoids granting reads to
+neighboring skb data and avoids freeing pages before deferred invalidation.
+Reject unsupported domains or oversized buffers rather than falling back to
+shared-page bidirectional mappings. Preserve original map length and data
+pointer through metadata pulls and all completion/error/teardown paths.
+
+This is a local compatibility candidate. Firmware's need for these reads
+and operation on the Mac still require hardware verification. It adds
+per-receive page allocation, zeroing and copy overhead.
+
+---
+
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -2940,7 +2940,8 @@
+ 	bus->bus_priv.pcie = pcie_bus_dev;
+ 	bus->ops = &brcmf_pcie_bus_ops;
+ 	bus->proto_type = BRCMF_PROTO_MSGBUF;
+-	bus->chip = devinfo->coreid;
++	bus->chip = devinfo->ci->chip;
++	bus->chiprev = devinfo->ci->chiprev;
+ 	bus->wowl_supported = pci_pme_capable(pdev, PCI_D3hot);
+ 	bus->fwvid = drvdata[id->driver_data].vendor;
+ 	devinfo->fwseed = drvdata[id->driver_data].fw_seed;
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+@@ -12,9 +12,15 @@
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ratelimit.h>
++#include <linux/gfp.h>
++#include <linux/iommu.h>
++#include <linux/iommu-dma.h>
++#include <linux/mm.h>
++#include <linux/sizes.h>
+ 
+ #include <brcmu_utils.h>
+ #include <brcmu_wifi.h>
++#include <brcm_hw_ids.h>
+ 
+ #include "core.h"
+ #include "debug.h"
+@@ -318,6 +324,10 @@
+ struct brcmf_msgbuf_pktid {
+ 	atomic_t  allocated;
+ 	u16 data_offset;
++	u32 mapped_len;
++	u32 data_len;
++	void *data;
++	void *rx_bounce;
+ 	struct sk_buff *skb;
+ 	dma_addr_t physaddr;
+ };
+@@ -326,6 +336,7 @@
+ 	u32 array_size;
+ 	u32 last_allocated_idx;
+ 	enum dma_data_direction direction;
++	size_t rx_dma_granule;
+ 	struct brcmf_msgbuf_pktid *array;
+ };
+ 
+@@ -355,6 +366,46 @@
+ 	return pktids;
+ }
+ 
++/* BCM4378 RX needs device reads, but must not expose skb pages or metadata. */
++static size_t brcmf_msgbuf_rx_dma_granule(struct device *dev)
++{
++#if IS_ENABLED(CONFIG_IOMMU_DMA)
++	struct iommu_domain *domain;
++	size_t granule;
++
++	if (!use_dma_iommu(dev))
++		return 0;
++	domain = iommu_get_domain_for_dev(dev);
++	/* Require immediate revocation before returning receive pages to RAM. */
++	if (!domain || domain->type != IOMMU_DOMAIN_DMA ||
++	    !domain->pgsize_bitmap)
++		return 0;
++
++	granule = 1UL << __ffs(domain->pgsize_bitmap);
++	/* Bound atomic allocations; Apple DART uses 4 KiB or 16 KiB pages. */
++	if (granule > SZ_64K)
++		return 0;
++
++	return max_t(size_t, granule, PAGE_SIZE);
++#else
++	return 0;
++#endif
++}
++
++static void
++brcmf_msgbuf_unmap_pktid(struct device *dev, struct brcmf_msgbuf_pktids *pktids,
++			 struct brcmf_msgbuf_pktid *pktid, bool copy_rx)
++{
++	dma_unmap_single(dev, pktid->physaddr, pktid->mapped_len,
++			 pktids->direction);
++	if (pktid->rx_bounce) {
++		if (copy_rx)
++			memcpy(pktid->data, pktid->rx_bounce, pktid->data_len);
++		free_pages((unsigned long)pktid->rx_bounce,
++			   get_order(pktid->mapped_len));
++		pktid->rx_bounce = NULL;
++	}
++}
+ 
+ static int
+ brcmf_msgbuf_alloc_pktid(struct device *dev,
+@@ -363,20 +414,38 @@
+ 			 dma_addr_t *physaddr, u32 *idx)
+ {
+ 	struct brcmf_msgbuf_pktid *array;
++	void *data, *rx_bounce = NULL;
++	size_t mapped_len;
+ 	u32 count;
+ 
++	if (data_offset >= skb->len)
++		return -EINVAL;
++
+ 	array = pktids->array;
+-
+-	*physaddr = dma_map_single(dev, skb->data + data_offset,
+-				   skb->len - data_offset, pktids->direction);
+-
++	data = skb->data + data_offset;
++	mapped_len = skb->len - data_offset;
++	if (pktids->rx_dma_granule) {
++		if (mapped_len > BRCMF_MSGBUF_MAX_CTL_PKT_SIZE)
++			return -EINVAL;
++		mapped_len = PAGE_SIZE << get_order(max_t(size_t, mapped_len,
++						     pktids->rx_dma_granule));
++		/* Own and clear every byte DART can expose, including padding. */
++		rx_bounce = (void *)__get_free_pages(GFP_ATOMIC | __GFP_ZERO,
++						   get_order(mapped_len));
++		if (!rx_bounce)
++			return -ENOMEM;
++	}
++
++	*physaddr = dma_map_single(dev, rx_bounce ? rx_bounce : data,
++				   mapped_len, pktids->direction);
+ 	if (dma_mapping_error(dev, *physaddr)) {
++		if (rx_bounce)
++			free_pages((unsigned long)rx_bounce, get_order(mapped_len));
+ 		brcmf_err("dma_map_single failed !!\n");
+ 		return -ENOMEM;
+ 	}
+ 
+ 	*idx = pktids->last_allocated_idx;
+-
+ 	count = 0;
+ 	do {
+ 		(*idx)++;
+@@ -389,15 +458,19 @@
+ 	} while (count < pktids->array_size);
+ 
+ 	if (count == pktids->array_size) {
+-		dma_unmap_single(dev, *physaddr, skb->len - data_offset,
+-				 pktids->direction);
++		dma_unmap_single(dev, *physaddr, mapped_len, pktids->direction);
++		if (rx_bounce)
++			free_pages((unsigned long)rx_bounce, get_order(mapped_len));
+ 		return -ENOMEM;
+ 	}
+ 
+ 	array[*idx].data_offset = data_offset;
++	array[*idx].mapped_len = mapped_len;
++	array[*idx].data_len = skb->len - data_offset;
++	array[*idx].data = data;
++	array[*idx].rx_bounce = rx_bounce;
+ 	array[*idx].physaddr = *physaddr;
+ 	array[*idx].skb = skb;
+-
+ 	pktids->last_allocated_idx = *idx;
+ 
+ 	return 0;
+@@ -418,9 +491,7 @@
+ 	}
+ 	if (pktids->array[idx].allocated.counter) {
+ 		pktid = &pktids->array[idx];
+-		dma_unmap_single(dev, pktid->physaddr,
+-				 pktid->skb->len - pktid->data_offset,
+-				 pktids->direction);
++		brcmf_msgbuf_unmap_pktid(dev, pktids, pktid, true);
+ 		skb = pktid->skb;
+ 		pktid->allocated.counter = 0;
+ 		return skb;
+@@ -445,9 +516,7 @@
+ 	do {
+ 		if (array[count].allocated.counter) {
+ 			pktid = &array[count];
+-			dma_unmap_single(dev, pktid->physaddr,
+-					 pktid->skb->len - pktid->data_offset,
+-					 pktids->direction);
++			brcmf_msgbuf_unmap_pktid(dev, pktids, pktid, false);
+ 			brcmu_pkt_buf_free_skb(pktid->skb);
+ 		}
+ 		count++;
+@@ -1758,6 +1827,8 @@
+ 
+ int brcmf_proto_msgbuf_attach(struct brcmf_pub *drvr)
+ {
++	enum dma_data_direction rx_direction = DMA_FROM_DEVICE;
++	size_t rx_dma_granule = 0;
+ 	struct brcmf_bus_msgbuf *if_msgbuf;
+ 	struct brcmf_msgbuf *msgbuf;
+ 	u64 address;
+@@ -1836,10 +1907,22 @@
+ 						     DMA_TO_DEVICE);
+ 	if (!msgbuf->tx_pktids)
+ 		goto fail;
++	/* Keep device reads away from skb fragments and their neighboring data. */
++	if (drvr->bus_if->chip == BRCM_CC_4378_CHIP_ID) {
++		rx_dma_granule = brcmf_msgbuf_rx_dma_granule(drvr->bus_if->dev);
++		if (!rx_dma_granule) {
++			bphy_err(drvr, "BCM4378 RX requires a strict DMA IOMMU domain\n");
++			goto fail;
++		}
++		rx_direction = DMA_BIDIRECTIONAL;
++		brcmf_info("BCM4378: isolated RX DMA, alignment %zu bytes\n",
++			   rx_dma_granule);
++	}
+ 	msgbuf->rx_pktids = brcmf_msgbuf_init_pktids(NR_RX_PKTIDS,
+-						     DMA_FROM_DEVICE);
++						     rx_direction);
+ 	if (!msgbuf->rx_pktids)
+ 		goto fail;
++	msgbuf->rx_pktids->rx_dma_granule = rx_dma_granule;
+ 
+ 	msgbuf->flow = brcmf_flowring_attach(drvr->bus_if->dev,
+ 					     if_msgbuf->max_flowrings);

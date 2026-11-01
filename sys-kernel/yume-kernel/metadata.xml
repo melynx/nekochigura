@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+
+	<use>
+		<flag name="apple">Use the Apple Silicon M1 J293 configuration and its qualified Clang/LLD C toolchain</flag>
+	</use>
+
+	<upstream>
+		<remote-id type="github">melynx/nekochigura</remote-id>
+	</upstream>
+</pkgmetadata>

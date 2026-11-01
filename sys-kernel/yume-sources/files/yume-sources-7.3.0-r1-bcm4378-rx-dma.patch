@@ -1,0 +1,51 @@
+Subject: [PATCH] wifi: brcmfmac: allow BCM4378 to read posted RX buffers
+
+Linux 7.3 initializes the packet-ID DMA direction. Before this change,
+zero-initialized directions mapped RX buffers bidirectionally. The M1
+J293 with BCM4378 firmware 18.20.383.15.7.8.150 now reports a DART
+READ FAULT and then loses firmware-command responses after association
+begins.
+
+Restore read/write RX mappings for BCM4378 only. Keep the upstream DMA
+direction initialization, TX mappings, and all other chips unchanged.
+This is a local compatibility patch, not an upstream-accepted fix.
+
+---
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+@@ -15,6 +15,7 @@
+ 
+ #include <brcmu_utils.h>
+ #include <brcmu_wifi.h>
++#include <brcm_hw_ids.h>
+ 
+ #include "core.h"
+ #include "debug.h"
+@@ -1758,6 +1759,7 @@
+ 
+ int brcmf_proto_msgbuf_attach(struct brcmf_pub *drvr)
+ {
++	enum dma_data_direction rx_direction = DMA_FROM_DEVICE;
+ 	struct brcmf_bus_msgbuf *if_msgbuf;
+ 	struct brcmf_msgbuf *msgbuf;
+ 	u64 address;
+@@ -1836,8 +1838,16 @@
+ 						     DMA_TO_DEVICE);
+ 	if (!msgbuf->tx_pktids)
+ 		goto fail;
++	/*
++	 * BCM4378 firmware may read posted receive buffers. Keep these
++	 * mappings bidirectional, as before DMA-direction initialization.
++	 */
++	if (drvr->bus_if->chip == BRCM_CC_4378_CHIP_ID) {
++		rx_direction = DMA_BIDIRECTIONAL;
++		brcmf_info("BCM4378: using bidirectional RX DMA mappings\n");
++	}
+ 	msgbuf->rx_pktids = brcmf_msgbuf_init_pktids(NR_RX_PKTIDS,
+-						     DMA_FROM_DEVICE);
++						     rx_direction);
+ 	if (!msgbuf->rx_pktids)
+ 		goto fail;
+ 

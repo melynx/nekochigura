@@ -1,0 +1,81 @@
+{
+  "project": "Yume Kernel",
+  "kernel_release": "7.3.0-yume-r2",
+  "upstream": {
+    "version": "7.3",
+    "commit": "c03c1a14507dfaf8b856c2608f9ac216021fc222",
+    "archive": "inputs/linux-7.3.tar.xz",
+    "sha256": "87363c24f10e06321eb362765521094e94471f6bff8bce2d6b3e40f39f004953",
+    "matches_kernel_org_sha256": true,
+    "release_signature_checked": false
+  },
+  "aurora_donor": {
+    "repository": "https://github.com/omacom/linux-aurora",
+    "commit": "1b4997bbab620051e01fb807c6561a483c0f06f6",
+    "archive_sha256": "554aacee942f8a21fd101c0cdb6991d3acb333dc7c6b407e02e6bf87ac6b6d8c",
+    "git_tree": "6fa7e5175ad88dafde92a68352fa6b1f5c756e21",
+    "unrelated_nova_tyr_changes": "keep upstream Linux 7.3"
+  },
+  "gentoo": {
+    "patch_archive": "linux-gentoo-patches-7.1.9.tar.xz",
+    "patch_archive_url": "https://distfiles.gentoo.org/pub/proj/dist-kernel/patchsets/7.1/linux-gentoo-patches-7.1.9.tar.xz",
+    "patch_archive_sha256": "1a7393ca22474cf3b9f6c85f77055a5e4a92cb23af5d1a5f5f4541f776df0a7b",
+    "patch_archive_sha512": "1d2d466b005cc7537aad1e8222411dad8a86bb82c185f139a6972f8354b47f758fb8555ef04b2217cd082db5b1852ba00b5a5eb0673a57c6423dacbe606c7d39"
+  },
+  "series": [
+    {
+      "file": "patches/0001-fs-Enable-link-security-restrictions-by-default.patch",
+      "sha256": "f4dae5373a7a2f9f21e0aa1b56e5d7294ed28c3fc494391d6320526398c8fce5"
+    },
+    {
+      "file": "patches/0002-Address-Warray-bounds-warnings.patch",
+      "sha256": "327f3f20e0a400a723fd65eaddf930f82eae24c0838c9efef35535fd9668df4d"
+    },
+    {
+      "file": "patches/0003-Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch",
+      "sha256": "6e5fc7eec8ef7620375c86ba1de218aadf6172323e15b333b46ee21ee8b9e40e"
+    },
+    {
+      "file": "patches/0004-menuconfig-Allow-sorting-the-entries-alphabetically.patch",
+      "sha256": "fc46baa7bf297f9a5ba1f4274d2443fdb84f3e7c1d894c7489c2cecfc92fe182"
+    },
+    {
+      "file": "patches/0005-libbpf-workaround-Wmaybe-uninitialized-false-positiv.patch",
+      "sha256": "de94809ad8350671c8131e1859f90470cca90f93770b672ca64f69d61153e393"
+    },
+    {
+      "file": "patches/0006-Print-firmware-info-Reqs-CONFIG_GENTOO_PRINT_FIRMWAR.patch",
+      "sha256": "9244ed21f2e13bacd68c2f7c122c6a96313447d5da978abc6117f5aa86beee19"
+    },
+    {
+      "file": "patches/0007-tools-libbpf-add-WERROR-option.patch",
+      "sha256": "6d2758c93e64d3710422e810a50b3c220116b386e073d6d945e0343656ba2049"
+    },
+    {
+      "file": "patches/0008-Add-Gentoo-Linux-support-config-settings-and-default.patch",
+      "sha256": "883bfe6a591960ce247b17fff10c219a1e17bc0d1caa2987c4503204c241789b"
+    },
+    {
+      "file": "patches/0009-x86-tools-Only-use-unprocessed-UAPI-headers-for-vdso.patch",
+      "sha256": "b7e996c8d491e8f36e961a3761b68c4d19c49d60cdba85743a4b739f21b8b9cd"
+    },
+    {
+      "file": "patches/0010-aurora-linux-7.3-port-and-local-fixes.patch",
+      "sha256": "f5c33951145f03221818dd6b09e65397730ea15863bdfd06256480ce328bcfb6"
+    },
+    {
+      "file": "patches/0011-platform-keyring-configuration-guards.patch",
+      "sha256": "de1959c201f23ecb411b0036f06b97468a766f7b96ebb73a25bdc93af01a99a1"
+    }
+  ],
+  "package_revision": "r2",
+  "additional_patches": [
+    {
+      "file": "yume-sources-7.3.0-r2-bcm4378-rx-isolation.patch",
+      "sha256": "a5d205aee5d735ca06a2b0ec5f878ee2c55e48c82232419973ee868bee452b71",
+      "scope": "BCM4378 RX data, firmware-event and ioctl-response dedicated zeroed pages; strict active DMA IOMMU required; original length and pointer retained; PCIe chip ID initialized early; upstream TX and other-chip directions retained",
+      "hardware_tested": false,
+      "supersedes": "r1 selection defect and shared-page read exposure identified in the 2026-10-27 source review"
+    }
+  ]
+}
