@@ -161,3 +161,18 @@ src_compile() {
 	printf '%s\n' arch/arm64/boot/dts/apple/t8103-j293.dtb \
 		> "${WORKDIR}/build/arch/arm64/boot/dts/dtbs-list" || die
 }
+
+pkg_postinst() {
+	# The eclass only moves /usr/src/linux off a tree with this build's
+	# localversion, which carries ${PR}; after a revision bump the link,
+	# and the out-of-tree modules built against it, would stay behind.
+	local link=${EROOT}/usr/src/linux
+	local cur=$(readlink "${link}")
+	if [[ ${cur} == linux-${PV}-yume-r* && ${cur} != linux-${KV_FULL} ]]; then
+		ebegin "Updating ${link} symlink"
+		ln -f -n -s "linux-${KV_FULL}" "${link}"
+		eend ${?}
+	fi
+
+	kernel-build_pkg_postinst
+}
