@@ -1,0 +1,79 @@
+Start the session before the first frame launches startup apps.
+
+initServer() adds the pending monitors, and adding a monitor renders its
+first frame immediately (MonitorState.cpp: m_frameScheduler->onFrame()). That
+frame emits the start event, from which hyprland.start and exec-once launch
+apps. The activation-environment export and the hyprland-session.target start
+ran later, in startCompositor(), and asynchronously, so the target was always
+requested after those apps had started. Move the block into initServer(),
+before the monitors are added, and run both commands with execAndGet().
+
+diff --git a/src/Compositor.cpp b/src/Compositor.cpp
+index 25f0e63..7de7329 100644
+--- a/src/Compositor.cpp
++++ b/src/Compositor.cpp
+@@ -430,6 +430,35 @@ void CCompositor::initServer(std::string socketName, int socketFd) {
+ 
+     initManagers(STAGE_LATE);
+ 
++    // Export the activation environment and start hyprland-session.target
++    // synchronously, before the pending monitors are added below: adding a
++    // monitor renders its first frame at once (MonitorState.cpp, onFrame()), which
++    // emits the start event, and hyprland.start / exec-once launch apps from it.
++    // Upstream did this in startCompositor(), asynchronously and after those apps
++    // had started, so xdg-desktop-portal >= 1.22 (Requisite=graphical-session.target)
++    // refused their first call and D-Bus held it for its 120 s activation timeout.
++    if (
++        /* Session-less Hyprland usually means a nest, don't update the env in that case */
++        m_aqBackend->hasSession() &&
++        /* Activation environment management is not disabled */
++        !Env::envEnabled("HYPRLAND_NO_SD_VARS") &&
++        /* Being executed under systemd */
++        !getenv("MANAGERPID")) {
++        const auto CMD =
++#ifdef USES_SYSTEMD
++            "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP QT_QPA_PLATFORMTHEME PATH XDG_DATA_DIRS && hash "
++            "dbus-update-activation-environment 2>/dev/null && "
++#endif
++            "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORMTHEME PATH XDG_DATA_DIRS";
++        execAndGet(CMD);
++#ifdef USES_SYSTEMD
++        if (!Env::envEnabled("HYPRLAND_NO_SD_TARGET")) {
++            m_sdSessionTarget = true;
++            execAndGet("systemctl --user start hyprland-session.target");
++        }
++#endif
++    }
++
+     m_listeners.lock = g_pSessionLockManager->m_events.lock.listen([this] {
+         static int lock_count = 0;
+         // lock_count used to avoid triggering condition on initial forceLock()
+@@ -795,28 +824,6 @@ void CCompositor::removeLockFile() {
+ void CCompositor::startCompositor() {
+     signal(SIGPIPE, SIG_IGN);
+ 
+-    if (
+-        /* Session-less Hyprland usually means a nest, don't update the env in that case */
+-        m_aqBackend->hasSession() &&
+-        /* Activation environment management is not disabled */
+-        !Env::envEnabled("HYPRLAND_NO_SD_VARS") &&
+-        /* Being executed under systemd */
+-        !getenv("MANAGERPID")) {
+-        const auto CMD =
+-#ifdef USES_SYSTEMD
+-            "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP QT_QPA_PLATFORMTHEME PATH XDG_DATA_DIRS && hash "
+-            "dbus-update-activation-environment 2>/dev/null && "
+-#endif
+-            "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORMTHEME PATH XDG_DATA_DIRS";
+-        Config::Supplementary::executor()->spawn(CMD);
+-#ifdef USES_SYSTEMD
+-        if (!Env::envEnabled("HYPRLAND_NO_SD_TARGET")) {
+-            m_sdSessionTarget = true;
+-            Config::Supplementary::executor()->spawn("systemctl --user start hyprland-session.target");
+-        }
+-#endif
+-    }
+-
+     LOG(Log::DEBUG, "Running on WAYLAND_DISPLAY: {}", m_wlDisplaySocket);
+ 
+     g_pHyprRenderer->setCursorFromName("left_ptr");

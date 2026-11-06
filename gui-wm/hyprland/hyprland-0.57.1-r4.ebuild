@@ -119,11 +119,13 @@ PATCHES=(
 	# records "not inhibiting" and the idle lock fires with the toggle on.
 	"${FILESDIR}/hyprland-recheck-idle-inhibitors-on-layer-map.patch"
 	# Hyprland exports the activation environment and starts
-	# hyprland-session.target asynchronously, so exec-once / hyprland.start apps
-	# can call xdg-desktop-portal before graphical-session.target is active.
-	# Portal 1.22 (Requisite=graphical-session.target) then refuses, and D-Bus
-	# holds the call for 120 s: KeePassXC and Ghostty took two minutes to open.
-	"${FILESDIR}/hyprland-0.57.1-sync-session-target.patch"
+	# hyprland-session.target in startCompositor(), asynchronously, but the first
+	# frame (and with it hyprland.start / exec-once) already runs in initServer()
+	# when the monitors are added. Startup apps therefore call xdg-desktop-portal
+	# before graphical-session.target is active; portal 1.22
+	# (Requisite=graphical-session.target) refuses, and D-Bus holds the call for
+	# 120 s: KeePassXC and Ghostty took two minutes to open after login.
+	"${FILESDIR}/hyprland-0.57.1-session-before-first-frame.patch"
 )
 
 src_prepare() {
