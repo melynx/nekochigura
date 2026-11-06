@@ -118,6 +118,12 @@ PATCHES=(
 	# rebuilt window's first commit on every output hotplug, so the compositor
 	# records "not inhibiting" and the idle lock fires with the toggle on.
 	"${FILESDIR}/hyprland-recheck-idle-inhibitors-on-layer-map.patch"
+	# Hyprland exports the activation environment and starts
+	# hyprland-session.target asynchronously, so exec-once / hyprland.start apps
+	# can call xdg-desktop-portal before graphical-session.target is active.
+	# Portal 1.22 (Requisite=graphical-session.target) then refuses, and D-Bus
+	# holds the call for 120 s: KeePassXC and Ghostty took two minutes to open.
+	"${FILESDIR}/hyprland-0.57.1-sync-session-target.patch"
 )
 
 src_prepare() {

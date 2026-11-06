@@ -1,0 +1,24 @@
+Start the activation environment export and hyprland-session.target
+synchronously, before the first frame fires hyprland.start / exec-once.
+
+--- a/src/Compositor.cpp
++++ b/src/Compositor.cpp
+@@ -808,11 +808,16 @@
+             "dbus-update-activation-environment 2>/dev/null && "
+ #endif
+             "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORMTHEME PATH XDG_DATA_DIRS";
+-        Config::Supplementary::executor()->spawn(CMD);
++        // Run synchronously: hyprland.start / exec-once apps must not launch before the
++        // activation environment is exported and graphical-session.target is active.
++        // xdg-desktop-portal >= 1.22 has Requisite=graphical-session.target; an app that
++        // calls it earlier is refused, and D-Bus then holds the call for its 120 s
++        // activation timeout.
++        execAndGet(CMD);
+ #ifdef USES_SYSTEMD
+         if (!Env::envEnabled("HYPRLAND_NO_SD_TARGET")) {
+             m_sdSessionTarget = true;
+-            Config::Supplementary::executor()->spawn("systemctl --user start hyprland-session.target");
++            execAndGet("systemctl --user start hyprland-session.target");
+         }
+ #endif
+     }
