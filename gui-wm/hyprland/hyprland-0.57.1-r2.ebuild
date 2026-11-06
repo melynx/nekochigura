@@ -5,7 +5,7 @@ EAPI=8
 
 LUA_COMPAT=( lua5-4 lua5-5 )
 
-inherit lua-single cmake fcaps toolchain-funcs flag-o-matic
+inherit lua-single cmake fcaps systemd toolchain-funcs flag-o-matic
 
 DESCRIPTION="A dynamic tiling Wayland compositor that doesn't sacrifice on its looks"
 HOMEPAGE="https://github.com/hyprwm/Hyprland"
@@ -156,6 +156,13 @@ src_configure() {
 
 src_install() {
 	cmake_src_install
+
+	# CMake installs the unit under ${CMAKE_INSTALL_LIBDIR} (lib64), which the
+	# user manager never searches, so Hyprland's own start of the target fails.
+	if use systemd; then
+		systemd_douserunit "${ED}/usr/$(get_libdir)/systemd/user/hyprland-session.target"
+		rm -r "${ED}/usr/$(get_libdir)/systemd" || die
+	fi
 
 	if use dbus-session; then
 		exeinto /usr/libexec
