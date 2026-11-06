@@ -3,7 +3,8 @@
 
 EAPI=8
 
-LLVM_COMPAT=( 18 )
+# Clang 20 and newer accept counted_by on pointers, which GCC 16 enables.
+LLVM_COMPAT=( {20..22} )
 LLVM_OPTIONAL=1
 RUST_MIN_VER=1.91.0
 RUST_MAX_VER=1.91.0
@@ -24,23 +25,20 @@ SRC_URI="
 "
 S=${WORKDIR}/linux-${PV}-yume
 
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="~amd64"
 IUSE="apple debug"
 REQUIRED_USE="${LLVM_REQUIRED_USE} apple? ( arm64 )"
 
-DEPEND="=sys-kernel/yume-sources-${PVR}"
+DEPEND="~sys-kernel/yume-sources-${PV}"
 BDEPEND="
 	>=dev-util/bindgen-0.73.2:0
-	llvm-core/clang:18
-	arm64? ( llvm-core/llvm:18[llvm_targets_AArch64] )
-	amd64? (
-		llvm-core/llvm:18[llvm_targets_X86]
-		sys-devel/gcc:14
-	)
-	apple? (
-		dev-util/pahole
-		llvm-core/lld:18
-	)
+	$(llvm_gen_dep '
+		llvm-core/clang:${LLVM_SLOT}
+		arm64? ( llvm-core/llvm:${LLVM_SLOT}[llvm_targets_AArch64] )
+		amd64? ( llvm-core/llvm:${LLVM_SLOT}[llvm_targets_X86] )
+		apple? ( llvm-core/lld:${LLVM_SLOT} )
+	')
+	apple? ( dev-util/pahole )
 	!apple? ( debug? ( dev-util/pahole ) )
 "
 # Follow Gentoo: a newer virtual must also satisfy retained kernel versions.
@@ -121,12 +119,6 @@ src_configure() {
 
 	# Rust bindings need libclang even when the C compiler is GCC.
 	if ! use apple; then
-		if use amd64; then
-			# GCC 16 enables __counted_by_ptr, which libclang 18 rejects.
-			local -x CC=${CHOST}-gcc-14 CXX=${CHOST}-g++-14
-			local -x BUILD_CC=${CBUILD:-${CHOST}}-gcc-14
-			local -x BUILD_CXX=${CBUILD:-${CHOST}}-g++-14
-		fi
 		kernel-build_src_configure
 		return
 	fi
@@ -160,4 +152,19 @@ src_compile() {
 	# dtbs_install reads this inventory; retain exactly the built board.
 	printf '%s\n' arch/arm64/boot/dts/apple/t8103-j293.dtb \
 		> "${WORKDIR}/build/arch/arm64/boot/dts/dtbs-list" || die
+}
+
+pkg_postinst() {
+	# The eclass only moves /usr/src/linux off a tree with this build's
+	# localversion, which carries ${PR}; after a revision bump the link,
+	# and the out-of-tree modules built against it, would stay behind.
+	local link=${EROOT}/usr/src/linux
+	local cur=$(readlink "${link}")
+	if [[ ${cur} == linux-${PV}-yume-r* && ${cur} != linux-${KV_FULL} ]]; then
+		ebegin "Updating ${link} symlink"
+		ln -f -n -s "linux-${KV_FULL}" "${link}"
+		eend ${?}
+	fi
+
+	kernel-build_pkg_postinst
 }
