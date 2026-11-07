@@ -1,0 +1,120 @@
+From 67dfbede6ff8f0fbe92b49344a13d7c3e7bf8714 Mon Sep 17 00:00:00 2001
+From: Hans van Essen <hans@expaso.nl>
+Date: Tue, 3 Nov 2026 09:00:49 +0100
+Subject: [PATCH] Build on Linux 7.4
+
+Linux 7.4 changed two DRM interfaces that evdi uses:
+
+  - <drm/drm_fb_helper.h> moved to <drm/clients/drm_fbdev_helper.h>,
+    so evdi_drm_drv.h and evdi_fb.c fail with "drm/drm_fb_helper.h:
+    No such file or directory".
+  - struct drm_crtc_funcs and struct drm_plane_funcs lost their .reset
+    callback; the initial state now comes from .atomic_create_state.
+    evdi uses the default helpers, so drm_atomic_helper_crtc_reset and
+    drm_atomic_helper_plane_reset become
+    drm_atomic_helper_crtc_create_state and
+    drm_atomic_helper_plane_create_state.
+
+Add two conftest.sh probes, EVDI_HAVE_CLIENTS_DRM_FBDEV_HELPER_H and
+EVDI_HAVE_CRTC_PLANE_FUNCS_RESET, so older kernels keep the existing code.
+
+Tested on 7.4.0-rc1 with a DisplayLink screen (image on hotplug,
+unplug/replug and suspend/resume), and build-tested on 7.3.1
+and Ubuntu 7.0.0-42-generic, where the probes select the old paths.
+
+Signed-off-by: Hans van Essen <hans@expaso.nl>
+---
+ module/conftest.sh    | 17 +++++++++++++++++
+ module/evdi_drm_drv.h |  4 ++++
+ module/evdi_fb.c      |  4 ++++
+ module/evdi_modeset.c |  8 ++++++++
+ 4 files changed, 33 insertions(+)
+
+diff --git a/module/conftest.sh b/module/conftest.sh
+index eab25b11..3e364f5a 100755
+--- a/module/conftest.sh
++++ b/module/conftest.sh
+@@ -149,6 +149,23 @@ compile_test EVDI_HAVE_DRM_GEM_PLANE_HELPER_PREPARE_FB <<'EOF'
+ void *conftest = (void *)&drm_gem_plane_helper_prepare_fb;
+ EOF
+ 
++# <drm/drm_fb_helper.h> moved to <drm/clients/drm_fbdev_helper.h> in 7.4.
++compile_test EVDI_HAVE_CLIENTS_DRM_FBDEV_HELPER_H <<'EOF'
++#include <drm/clients/drm_fbdev_helper.h>
++static void conftest(void) { }
++EOF
++
++# drm_crtc_funcs/drm_plane_funcs lost .reset in 7.4 (use .atomic_create_state).
++compile_test EVDI_HAVE_CRTC_PLANE_FUNCS_RESET <<'EOF'
++#include <drm/drm_crtc.h>
++#include <drm/drm_plane.h>
++static void conftest(struct drm_crtc_funcs *c, struct drm_plane_funcs *p)
++{
++	c->reset = (void *)0;
++	p->reset = (void *)0;
++}
++EOF
++
+ # drm_mode_config_funcs lost its .output_poll_changed member in 6.12.
+ compile_test EVDI_HAVE_OUTPUT_POLL_CHANGED <<'EOF'
+ #include <drm/drm_mode_config.h>
+diff --git a/module/evdi_drm_drv.h b/module/evdi_drm_drv.h
+index 98a74fca..6227a5da 100644
+--- a/module/evdi_drm_drv.h
++++ b/module/evdi_drm_drv.h
+@@ -36,7 +36,11 @@
+ #include <drm/drm_rect.h>
+ #include <drm/drm_gem.h>
+ #include <drm/drm_framebuffer.h>
++#ifdef EVDI_HAVE_CLIENTS_DRM_FBDEV_HELPER_H
++#include <drm/clients/drm_fbdev_helper.h>
++#else
+ #include <drm/drm_fb_helper.h>
++#endif
+ 
+ #include "evdi_debug.h"
+ #include "tests/evdi_test.h"
+diff --git a/module/evdi_fb.c b/module/evdi_fb.c
+index b53405d3..433afd18 100644
+--- a/module/evdi_fb.c
++++ b/module/evdi_fb.c
+@@ -19,7 +19,11 @@
+ #endif
+ #include <drm/drm_crtc.h>
+ #include <drm/drm_crtc_helper.h>
++#ifdef EVDI_HAVE_CLIENTS_DRM_FBDEV_HELPER_H
++#include <drm/clients/drm_fbdev_helper.h>
++#else
+ #include <drm/drm_fb_helper.h>
++#endif
+ #include <drm/drm_atomic.h>
+ #include <drm/drm_print.h>
+ #ifdef EVDI_HAVE_ATOMIC_DIRTYFB
+diff --git a/module/evdi_modeset.c b/module/evdi_modeset.c
+index 57bf6733..d1b896b7 100644
+--- a/module/evdi_modeset.c
++++ b/module/evdi_modeset.c
+@@ -204,7 +204,11 @@ static void evdi_disable_vblank(__always_unused struct drm_crtc *crtc)
+ #endif
+ 
+ static const struct drm_crtc_funcs evdi_crtc_funcs = {
++#ifdef EVDI_HAVE_CRTC_PLANE_FUNCS_RESET
+ 	.reset                  = drm_atomic_helper_crtc_reset,
++#else
++	.atomic_create_state    = drm_atomic_helper_crtc_create_state,
++#endif
+ 	.destroy                = evdi_crtc_destroy,
+ 	.set_config             = drm_atomic_helper_set_config,
+ 	.page_flip              = drm_atomic_helper_page_flip,
+@@ -423,7 +427,11 @@ static const struct drm_plane_funcs evdi_plane_funcs = {
+ 	.update_plane = drm_atomic_helper_update_plane,
+ 	.disable_plane = drm_atomic_helper_disable_plane,
+ 	.destroy = drm_plane_cleanup,
++#ifdef EVDI_HAVE_CRTC_PLANE_FUNCS_RESET
+ 	.reset = drm_atomic_helper_plane_reset,
++#else
++	.atomic_create_state = drm_atomic_helper_plane_create_state,
++#endif
+ 	.atomic_duplicate_state = drm_atomic_helper_plane_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_plane_destroy_state,
+ };
