@@ -6,6 +6,10 @@
 		<name>Chua Zheng Leong</name>
 	</maintainer>
 
+	<use>
+		<flag name="apple">Apply the Aurora Apple Silicon patches and install the J293 configuration (7.4 and later)</flag>
+	</use>
+
 	<upstream>
 		<remote-id type="github">melynx/nekochigura</remote-id>
 	</upstream>
