@@ -1,0 +1,95 @@
+{
+  "project": "Yume Kernel",
+  "kernel_release": "7.4.0-rc1-yume-r1",
+  "upstream": {
+    "version": "7.4-rc1",
+    "commit": "6628e7d4c6b25c8d18f1345e3a20d21829aae7e4",
+    "archive": "linux-7.4-rc1.tar.gz",
+    "archive_url": "https://git.kernel.org/torvalds/t/linux-7.4-rc1.tar.gz",
+    "sha256": "b19dd413fa7cc4059de8dab234320858e86abdc15c7c4d839eff15b0e2ac39ee",
+    "release_signature_checked": false
+  },
+  "aurora_donor": {
+    "repository": "https://github.com/omacom/linux-aurora",
+    "commit": "1b4997bbab620051e01fb807c6561a483c0f06f6",
+    "via": "Yume 7.3.0 patch 0010, ported to 7.4-rc1",
+    "unrelated_nova_tyr_changes": "keep upstream Linux 7.4"
+  },
+  "gentoo": {
+    "patch_archive": "linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_url": "https://distfiles.gentoo.org/pub/proj/dist-kernel/patchsets/7.3/linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_sha256": "ff01ff66bc812109ab6470385cb6d6fb073e87eaa9100e0e40e57cfa5589b868"
+  },
+  "series": [
+    {
+      "file": "patches/0001-fs-Enable-link-security-restrictions-by-default.patch",
+      "sha256": "0c618a44f71a8b9672eececadcae5039c8a963b8da2d9f691bee08eb59f14443"
+    },
+    {
+      "file": "patches/0002-Address-Warray-bounds-warnings.patch",
+      "sha256": "43f8a85f1ea1c39f70e81ac7c6c491622cc0576081ef68ca632511f60952ec7b"
+    },
+    {
+      "file": "patches/0003-Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch",
+      "sha256": "0276a8d886b5706b89ef7e51296ae9394ed18159fe84cc8e6c6afbf55028bed9"
+    },
+    {
+      "file": "patches/0004-menuconfig-Allow-sorting-the-entries-alphabetically.patch",
+      "sha256": "f69a386fcf8754c1748cbff8fff6f5438d5795ee23c6989bf09d6a72b1ecb8c9"
+    },
+    {
+      "file": "patches/0005-libbpf-workaround-Wmaybe-uninitialized-false-positiv.patch",
+      "sha256": "d4d061b5898d9650bb2795dde9fc3df88f430383c0a8555afb6e2b613937a559"
+    },
+    {
+      "file": "patches/0006-Print-firmware-info-Reqs-CONFIG_GENTOO_PRINT_FIRMWAR.patch",
+      "sha256": "65c85e645d21121d7ff589383614af237b95b06fc70b363182e619bf514cd0da"
+    },
+    {
+      "file": "patches/0007-tools-libbpf-add-WERROR-option.patch",
+      "sha256": "23d5b9ff7aaab4c17fe8fcbb904ad8385d9186e88b816d4fdcefa2867e0de504"
+    },
+    {
+      "file": "patches/0008-x86-tools-Only-use-unprocessed-UAPI-headers-for-vdso.patch",
+      "sha256": "e5f6a402876dde48c4536982a5614b031524ccdcc433591a0bc2817e5edeb919"
+    },
+    {
+      "file": "patches/0009-Add-Gentoo-Linux-support-config-settings-and-default.patch",
+      "sha256": "8cd1bf87c1f968da7226f0a762673472b2c23b3a95e8fcae069a109da75b949b"
+    },
+    {
+      "file": "patches/0010-module-signing-accept-UEFI-db-keys-under-Secure-Boot.patch",
+      "sha256": "09d36bacf61004a082745cf8a4eb63eed7284d69af80554376b91e43da982f2f"
+    },
+    {
+      "file": "patches/0011-certs-keep-revocation-check-errors-final.patch",
+      "sha256": "82b3fcc677163663249b789efa92aae2f860b9288ce27e28b7f4956210f694bd"
+    }
+  ],
+  "series_apple": {
+    "applied_when": "USE=apple (arm64 only)",
+    "reason": "Aurora changes shared mm, scheduler, USB and IOMMU code; non-Apple builds stay on upstream code",
+    "patches": [
+      {
+        "file": "patches/1001-aurora-linux-7.4-port-and-local-fixes.patch",
+        "sha256": "b10cce330e7c60c45fa87e6a8107faf375a75688616792e0a7d3171f963c8d21"
+      },
+      {
+        "file": "patches/1002-wifi-brcmfmac-isolate-BCM4378-receive-DMA-storage.patch",
+        "sha256": "f91ab7440ef875c68bb2cf35126f4b526fc0580571a06aa2dfca5443e93d438c"
+      },
+      {
+        "file": "patches/1003-aurora-review-fixes.patch",
+        "sha256": "d979022d908b2d748ffe826b5f8f39580cd50008a7cdb373e481f6de4a86c39a"
+      }
+    ],
+    "bcm4378_rx_isolation_hardware_tested": false
+  },
+  "package_revision": "r1",
+  "r1_changes": {
+    "0010": "replaces platform-keyring-configuration-guards: UEFI db keys are accepted for module signatures only under Secure Boot (CONFIG_MODULE_SIG_PLATFORM, requires SYSTEM_REVOCATION_LIST, limited to x86 and arm64 with LOAD_UEFI_KEYS); the platform keyring is no longer linked into the secondary keyring",
+    "0011": "is_key_on_revocation_list() returns -ENOKEY only for a definite miss; any other result, such as a corrupted second signature from a revoked key, is a rejection",
+    "1001": "diff unchanged from r0; base description updated",
+    "1003": "Aurora port review fixes: APPLE_PMP firmware DMA guard, AOP SourceRing allocation order, DriverFile::as_raw removed, DRM_TYR depends on !ARCH_APPLE"
+  }
+}
