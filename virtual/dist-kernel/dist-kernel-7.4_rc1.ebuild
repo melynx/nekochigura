@@ -5,8 +5,7 @@ EAPI=8
 
 DESCRIPTION="Virtual to depend on any Distribution Kernel"
 SLOT="0/${PVR}"
-# A release candidate: machines opt in with package.accept_keywords "**".
-KEYWORDS=""
+KEYWORDS="~amd64"
 
 # Shadows ::gentoo, whose virtual does not accept sys-kernel/yume-kernel.
 RDEPEND="

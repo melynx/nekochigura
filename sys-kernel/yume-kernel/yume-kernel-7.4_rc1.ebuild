@@ -25,8 +25,7 @@ SRC_URI="
 "
 S=${WORKDIR}/linux-${PV}-yume
 
-# A release candidate: machines opt in with package.accept_keywords "**".
-KEYWORDS=""
+KEYWORDS="~amd64"
 IUSE="apple debug"
 REQUIRED_USE="${LLVM_REQUIRED_USE} apple? ( arm64 )"
 
