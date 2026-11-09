@@ -1,0 +1,104 @@
+{
+  "project": "Yume Kernel",
+  "kernel_release": "7.4.0-rc1-yume-r2",
+  "upstream": {
+    "version": "7.4-rc1",
+    "commit": "6628e7d4c6b25c8d18f1345e3a20d21829aae7e4",
+    "archive": "linux-7.4-rc1.tar.gz",
+    "archive_url": "https://git.kernel.org/torvalds/t/linux-7.4-rc1.tar.gz",
+    "sha256": "b19dd413fa7cc4059de8dab234320858e86abdc15c7c4d839eff15b0e2ac39ee",
+    "release_signature_checked": false
+  },
+  "aurora_donor": {
+    "repository": "https://github.com/aurora-silicon/linux",
+    "branch": "integration/aurora",
+    "commit": "6ff31cbfa20f18d32b05af622420de72a1d10ecd",
+    "base": "Linux 7.3 (c03c1a14507d)",
+    "via": "git merge of v7.4-rc1 into the donor; conflicts resolved with the r1 port of omacom/linux-aurora 1b4997bb as reference",
+    "omitted": "34 binary M4 GPU selftest fixtures under tools/testing/selftests/drivers/gpu/asahi-m4/fixtures (not carried by a text patch, unused by kernel builds)",
+    "previous_donor": "https://github.com/omacom/linux-aurora 1b4997bbab620051e01fb807c6561a483c0f06f6 (r0, r1)"
+  },
+  "gentoo": {
+    "patch_archive": "linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_url": "https://distfiles.gentoo.org/pub/proj/dist-kernel/patchsets/7.3/linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_sha256": "ff01ff66bc812109ab6470385cb6d6fb073e87eaa9100e0e40e57cfa5589b868"
+  },
+  "series": [
+    {
+      "file": "patches/0001-fs-Enable-link-security-restrictions-by-default.patch",
+      "sha256": "0c618a44f71a8b9672eececadcae5039c8a963b8da2d9f691bee08eb59f14443"
+    },
+    {
+      "file": "patches/0002-Address-Warray-bounds-warnings.patch",
+      "sha256": "43f8a85f1ea1c39f70e81ac7c6c491622cc0576081ef68ca632511f60952ec7b"
+    },
+    {
+      "file": "patches/0003-Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch",
+      "sha256": "0276a8d886b5706b89ef7e51296ae9394ed18159fe84cc8e6c6afbf55028bed9"
+    },
+    {
+      "file": "patches/0004-menuconfig-Allow-sorting-the-entries-alphabetically.patch",
+      "sha256": "f69a386fcf8754c1748cbff8fff6f5438d5795ee23c6989bf09d6a72b1ecb8c9"
+    },
+    {
+      "file": "patches/0005-libbpf-workaround-Wmaybe-uninitialized-false-positiv.patch",
+      "sha256": "d4d061b5898d9650bb2795dde9fc3df88f430383c0a8555afb6e2b613937a559"
+    },
+    {
+      "file": "patches/0006-Print-firmware-info-Reqs-CONFIG_GENTOO_PRINT_FIRMWAR.patch",
+      "sha256": "65c85e645d21121d7ff589383614af237b95b06fc70b363182e619bf514cd0da"
+    },
+    {
+      "file": "patches/0007-tools-libbpf-add-WERROR-option.patch",
+      "sha256": "23d5b9ff7aaab4c17fe8fcbb904ad8385d9186e88b816d4fdcefa2867e0de504"
+    },
+    {
+      "file": "patches/0008-x86-tools-Only-use-unprocessed-UAPI-headers-for-vdso.patch",
+      "sha256": "e5f6a402876dde48c4536982a5614b031524ccdcc433591a0bc2817e5edeb919"
+    },
+    {
+      "file": "patches/0009-Add-Gentoo-Linux-support-config-settings-and-default.patch",
+      "sha256": "8cd1bf87c1f968da7226f0a762673472b2c23b3a95e8fcae069a109da75b949b"
+    },
+    {
+      "file": "patches/0010-module-signing-accept-UEFI-db-keys-under-Secure-Boot.patch",
+      "sha256": "09d36bacf61004a082745cf8a4eb63eed7284d69af80554376b91e43da982f2f"
+    },
+    {
+      "file": "patches/0011-certs-keep-revocation-check-errors-final.patch",
+      "sha256": "82b3fcc677163663249b789efa92aae2f860b9288ce27e28b7f4956210f694bd"
+    }
+  ],
+  "series_apple": {
+    "applied_when": "USE=apple (arm64 only)",
+    "reason": "Aurora changes shared mm, scheduler, USB and IOMMU code; non-Apple builds stay on upstream code",
+    "patches": [
+      {
+        "file": "patches/1001-aurora-silicon-linux-7.4-port.patch",
+        "sha256": "78ff090e1342ab1d5cdc5705c4084ee518267f9cca364ed930127fa8f6968cf4"
+      },
+      {
+        "file": "patches/1002-wifi-brcmfmac-isolate-BCM4378-receive-DMA-storage.patch",
+        "sha256": "2249143431aa1b626504506123049fd29de7d22be48bdc39d5f62e0d092103c4"
+      }
+    ],
+    "bcm4378_rx_isolation_hardware_tested": false,
+    "gpu_drm_name": "aurora (module aurora.ko, alias asahi); Mesa must accept the aurora DRM name"
+  },
+  "package_revision": "r2",
+  "r2_changes": {
+    "0001-0011": "unchanged from r1",
+    "1001": "Apple support rebased from omacom/linux-aurora 1b4997bb onto aurora-silicon/linux integration/aurora 6ff31cbf, with the 7.4 API port and the r1 review fixes (former 1003) folded in; also fixes two teardown defects present in aurora-silicon: SEP retains its OOL buffers just before sending the first address, and AOP retains endpoint and RTKit buffers when an endpoint stop is not acknowledged on SoCs that do not shut the co-processor down",
+    "1002": "BCM4378 RX isolation unchanged in effect; the RX DMA direction now comes from aurora-silicon's brcmf_msgbuf_rx_dma_direction()",
+    "1003": "removed; folded into 1001"
+  },
+  "validation": {
+    "date": "2026-11-09",
+    "host": "neko-epyc7443",
+    "build": "J293 config (yume-7.3.0-j293) olddefconfig, LLVM 20.1.8, Rust 1.91.0, stock bindgen 0.73.2: Image, modules and all Apple DTBs built; Rust layout assertions passed",
+    "qemu": "QEMU virt (arm64, -cpu max): user4k=on page contract 11/11 native and 4K, 4K mm smoke 16417 checks pass, Rust KUnit suites pass; user4k=off refuses 4K as designed",
+    "series_apply": "patch --fuzz=0 onto the linux-7.4-rc1 archive reproduces the git tree except the omitted fixtures",
+    "apple_hardware_tested": false,
+    "built_through_ebuild": false
+  }
+}
