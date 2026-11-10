@@ -14,7 +14,7 @@ S=${WORKDIR}/${MY_P}
 
 LICENSE="GPL-2"
 SLOT="${PV}"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="apple"
 REQUIRED_USE="apple? ( arm64 )"
 # Source-tree test fixtures must retain their original binary contents.

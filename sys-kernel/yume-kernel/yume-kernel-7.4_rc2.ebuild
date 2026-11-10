@@ -25,7 +25,7 @@ SRC_URI="
 "
 S=${WORKDIR}/linux-${PV}-yume
 
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="apple debug"
 REQUIRED_USE="${LLVM_REQUIRED_USE} apple? ( arm64 )"
 
