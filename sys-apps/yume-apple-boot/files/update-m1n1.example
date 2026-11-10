@@ -1,0 +1,7 @@
+# /etc/default/update-m1n1: what update-m1n1 assembles into m1n1/boot.bin.
+#M1N1=/usr/lib/yume-apple-boot/m1n1.bin
+#U_BOOT=/usr/lib/yume-apple-boot/u-boot-nodtb.bin
+# Required: the device trees m1n1 chooses from (a glob).
+#DTBS=/usr/lib/modules/<kernel>/dtb/apple/t*.dtb
+# Set to any value to stop kernel installs from rebuilding boot.bin.
+#M1N1_UPDATE_DISABLED=1

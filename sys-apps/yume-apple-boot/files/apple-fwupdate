@@ -1,0 +1,63 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Re-extract the Apple vendor firmware on the system ESP from the copy the
+# macOS-side installer saved (all_firmware.tar.gz, kernelcache). The installer
+# writes it to <ESP>/asahi; this system keeps it in <ESP>/apple-firmware.
+# The previous vendorfw directory is kept as vendorfw.old. The initramfs
+# loads <ESP>/vendorfw/firmware.cpio at every boot, so the next boot uses it,
+# and falls back to vendorfw.old when vendorfw has no firmware.cpio.
+set -euo pipefail
+shopt -s nullglob
+
+. /usr/lib/yume-apple-boot/esp.sh
+
+die() { echo "apple-fwupdate: $*" >&2; exit 1; }
+# The boot hook's test: a directory holds firmware only with a firmware.cpio.
+has_firmware() { [[ -s ${1}/firmware.cpio ]]; }
+
+esp_mount || die "cannot mount the system ESP"
+esp=${ESP_DIR}
+trap 'rm -rf "${esp}/vendorfw.new"; esp_release' EXIT
+source=${APPLE_FW_SOURCE:-${esp}/apple-firmware}
+[[ -s ${source}/all_firmware.tar.gz ]] \
+	|| die "no ${source}/all_firmware.tar.gz to extract from (the installer leaves it in ${esp}/asahi: move that directory to ${esp}/apple-firmware, or set APPLE_FW_SOURCE)"
+
+rm -rf "${esp}/vendorfw.new"
+mkdir "${esp}/vendorfw.new"
+aurora-fwextract "${source}" "${esp}/vendorfw.new"
+has_firmware "${esp}/vendorfw.new" || die "extraction produced no firmware.cpio"
+
+# Keep the boot-time files the extractor does not produce, from whichever
+# copies are left.
+for keep in "${esp}"/vendorfw/* "${esp}"/vendorfw.old/*; do
+	name=${keep##*/}
+	[[ -e ${esp}/vendorfw.new/${name} ]] || cp -a "${keep}" "${esp}/vendorfw.new/"
+done
+sync -f "${esp}/vendorfw.new"
+
+# Only a vendorfw with firmware replaces vendorfw.old. Otherwise (an update
+# stopped between the renames, or a damaged vendorfw) vendorfw.old is the
+# last good copy: keep it and discard the unusable vendorfw.
+rotated=
+if has_firmware "${esp}/vendorfw"; then
+	rm -rf "${esp}/vendorfw.old"
+	mv "${esp}/vendorfw" "${esp}/vendorfw.old"
+	rotated=1
+else
+	rm -rf "${esp}/vendorfw"
+fi
+if ! mv "${esp}/vendorfw.new" "${esp}/vendorfw"; then
+	if [[ -n ${rotated} ]]; then
+		mv "${esp}/vendorfw.old" "${esp}/vendorfw" \
+			|| die "could not install the new firmware or restore the old one; the next boot falls back to vendorfw.old"
+		die "could not install the new firmware; the previous firmware is back in place"
+	fi
+	die "could not install the new firmware; vendorfw.old is unchanged and the next boot falls back to it"
+fi
+sync -f "${esp}"
+if has_firmware "${esp}/vendorfw.old"; then
+	echo "Vendor firmware updated in ${esp}/vendorfw (previous copy: vendorfw.old)"
+else
+	echo "Vendor firmware installed in ${esp}/vendorfw"
+fi
+echo "The new firmware loads at the next boot."

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+[Unit]
+Description=Watch the battery charge limit for changes
+
+[Path]
+PathChanged=/sys/class/power_supply/macsmc-battery/charge_control_end_threshold

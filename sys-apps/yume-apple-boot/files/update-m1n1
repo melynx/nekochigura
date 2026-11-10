@@ -1,0 +1,64 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# Build m1n1 stage 2 (m1n1/boot.bin on the system ESP): the m1n1 binary, the
+# device trees, gzipped U-Boot, then m1n1 options. Settings come from
+# /etc/default/update-m1n1 (M1N1, U_BOOT, DTBS, M1N1_UPDATE_DISABLED) and
+# options from /etc/m1n1.conf. An optional argument names the output file.
+set -euo pipefail
+shopt -s nullglob
+
+. /usr/lib/yume-apple-boot/esp.sh
+
+M1N1=/usr/lib/yume-apple-boot/m1n1.bin
+U_BOOT=/usr/lib/yume-apple-boot/u-boot-nodtb.bin
+DTBS=
+CONFIG=/etc/m1n1.conf
+[[ -r /etc/default/update-m1n1 ]] && . /etc/default/update-m1n1
+[[ -n ${M1N1_UPDATE_DISABLED:-} ]] && exit 0
+
+die() { echo "update-m1n1: $*" >&2; exit 1; }
+
+[[ -s ${M1N1} ]] || die "m1n1 binary ${M1N1} is missing"
+[[ -s ${U_BOOT} ]] || die "U-Boot binary ${U_BOOT} is missing"
+[[ -n ${DTBS} ]] || die "DTBS is unset; set it in /etc/default/update-m1n1"
+# shellcheck disable=SC2206 # DTBS is a glob by design
+dtbs=( ${DTBS} )
+(( ${#dtbs[@]} )) || die "DTBS (${DTBS}) matches no files"
+for dtb in "${dtbs[@]}"; do
+	[[ $(head -c4 "${dtb}" | od -An -tx1 | tr -d ' \n') == d00dfeed ]] \
+		|| die "${dtb} is not a flattened device tree"
+done
+
+options=$(mktemp)
+trap 'rm -f "${options}" "${target:-}.new"; esp_release' EXIT
+if [[ -r ${CONFIG} ]]; then
+	while IFS= read -r line; do
+		case ${line} in
+			''|\#*) ;;
+			chosen.*=*|display=*|mitigations=*) echo "${line}" >> "${options}" ;;
+			*) echo "update-m1n1: ignoring unknown option: ${line}" >&2 ;;
+		esac
+	done < "${CONFIG}"
+fi
+
+target=${1:-}
+if [[ -z ${target} ]]; then
+	esp_mount || die "cannot mount the system ESP"
+	target=${ESP_DIR}/m1n1/boot.bin
+fi
+
+{
+	cat "${M1N1}" "${dtbs[@]}"
+	gzip -cn "${U_BOOT}"
+	cat "${options}"
+} > "${target}.new"
+sync "${target}.new"
+
+if [[ -e ${target} ]] && cmp -s "${target}" "${target}.new"; then
+	echo "m1n1 unchanged at ${target}"
+	exit 0
+fi
+[[ -e ${target} ]] && cp --preserve=timestamps -f "${target}" "${target}.old"
+mv -f "${target}.new" "${target}"
+sync -f "${target}"
+echo "m1n1 updated at ${target} (${#dtbs[@]} device trees)"

@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Restore the saved battery charge limit (charge_control_end_threshold) when
+# the SMC battery appears, and start the unit that saves later changes.
+SUBSYSTEM!="power_supply", GOTO="yume_apple_battery_end"
+KERNEL!="macsmc-battery", GOTO="yume_apple_battery_end"
+
+IMPORT{file}="/etc/udev/macsmc-battery.conf"
+ENV{CHARGE_CONTROL_END_THRESHOLD}=="[0-9]|[0-9][0-9]|100", ATTR{charge_control_end_threshold}="$env{CHARGE_CONTROL_END_THRESHOLD}"
+TAG+="systemd", ENV{SYSTEMD_WANTS}+="yume-apple-battery-save.path"
+
+LABEL="yume_apple_battery_end"

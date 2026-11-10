@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+[Unit]
+Description=Save the battery charge limit for the next boot
+ConditionPathExists=/sys/class/power_supply/macsmc-battery/charge_control_end_threshold
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'v=$(cat /sys/class/power_supply/macsmc-battery/charge_control_end_threshold) && printf "CHARGE_CONTROL_END_THRESHOLD=%%s\\n" "$v" > /etc/udev/macsmc-battery.conf.new && mv /etc/udev/macsmc-battery.conf.new /etc/udev/macsmc-battery.conf'

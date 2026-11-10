@@ -1,0 +1,7 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+# kernel-install plugin: rebuild m1n1 stage 2 after a kernel is added or removed.
+case ${1:-} in
+	add|remove) exec /usr/bin/update-m1n1 ;;
+esac
+exit 0

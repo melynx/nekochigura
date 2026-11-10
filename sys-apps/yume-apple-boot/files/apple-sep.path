@@ -1,0 +1,11 @@
+# Load the Secure Enclave driver once the macOS iBoot container partition is
+# present: the driver reads its xART records at probe.
+[Unit]
+Description=Load Apple SEP when the iBoot container appears
+
+[Path]
+PathExists=/dev/disk/by-partlabel/iBootSystemContainer
+Unit=apple-sep.service
+
+[Install]
+WantedBy=multi-user.target

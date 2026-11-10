@@ -1,0 +1,16 @@
+# Started by apple-sep.path. The built-in microphones stay silent until the
+# SEP is up; /lib/modprobe.d/yume-apple-sep.conf keeps the driver read-only.
+[Unit]
+Description=Apple SEP and Touch ID
+After=local-fs.target
+RequiresMountsFor=/var/lib /usr/lib/firmware
+ConditionPathExists=/dev/disk/by-partlabel/iBootSystemContainer
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/modprobe apple-sep
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target
