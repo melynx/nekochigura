@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<use>
+		<flag name="lv2">Build the LV2 plugins</flag>
+		<flag name="vst">Build the VST2 plugins</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">lsp-plugins/lsp-plugins</remote-id>
+	</upstream>
+</pkgmetadata>
