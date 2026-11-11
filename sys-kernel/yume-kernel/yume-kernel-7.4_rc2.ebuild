@@ -159,16 +159,20 @@ src_compile() {
 }
 
 pkg_postinst() {
-	# The eclass only moves /usr/src/linux off a tree with this build's
-	# localversion, which carries ${PR}; after a revision bump the link,
-	# and the out-of-tree modules built against it, would stay behind.
-	# Match on KV_FULL, not PV: an rc tree is linux-7.4.0-rc2-yume-rN.
+	# The eclass will not move /usr/src/linux off a Yume tree: it rejects
+	# rc versions, and our localversion carries ${PR}. Move it here off any
+	# older Yume tree, before emerge rebuilds out-of-tree modules against
+	# it in the same run. A revision bump does not trigger that rebuild;
+	# run @module-rebuild on the builders after one.
 	local link=${EROOT}/usr/src/linux
 	local cur=$(readlink "${link}")
-	if [[ ${cur} == linux-${KV_FULL%-r*}-r* && ${cur} != linux-${KV_FULL} ]]; then
-		ebegin "Updating ${link} symlink"
-		ln -f -n -s "linux-${KV_FULL}" "${link}"
-		eend ${?}
+	if [[ ${cur} == linux-*-yume-r* && ${cur} != linux-${KV_FULL} ]]; then
+		local newest=$(printf '%s\n' "${cur#linux-}" "${KV_FULL}" | sort -V | tail -n 1)
+		if [[ ${newest} == "${KV_FULL}" ]]; then
+			ebegin "Updating ${link} symlink"
+			ln -f -n -s "linux-${KV_FULL}" "${link}"
+			eend ${?}
+		fi
 	fi
 
 	kernel-build_pkg_postinst
