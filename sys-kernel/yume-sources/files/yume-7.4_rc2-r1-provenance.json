@@ -1,0 +1,107 @@
+{
+  "project": "Yume Kernel",
+  "kernel_release": "7.4.0-rc2-yume-r1",
+  "upstream": {
+    "version": "7.4-rc2",
+    "commit": "7475ea8b58616b33c04afb976cf0fbaad9dd63fb",
+    "archive": "linux-7.4-rc2.tar.gz",
+    "archive_url": "https://git.kernel.org/torvalds/t/linux-7.4-rc2.tar.gz",
+    "sha256": "010063d5fc7bb3a5f1fb116cff45abe4977e8a8205b7841773505680c7a014bb",
+    "release_signature_checked": false,
+    "archive_contents_checked": "identical to git archive of tag v7.4-rc2; embedded commit id 7475ea8b"
+  },
+  "aurora_donor": {
+    "repository": "https://github.com/aurora-silicon/linux",
+    "branch": "integration/aurora",
+    "commit": "6ff31cbfa20f18d32b05af622420de72a1d10ecd",
+    "base": "Linux 7.3 (c03c1a14507d)",
+    "via": "git merge of v7.4-rc1 into the donor (conflicts resolved with the r1 port of omacom/linux-aurora 1b4997bb as reference), then git merge of v7.4-rc2 (22 conflicted files)",
+    "omitted": "34 binary M4 GPU selftest fixtures under tools/testing/selftests/drivers/gpu/asahi-m4/fixtures (not carried by a text patch, unused by kernel builds)",
+    "previous_donor": "https://github.com/omacom/linux-aurora 1b4997bbab620051e01fb807c6561a483c0f06f6 (r0, r1)"
+  },
+  "gentoo": {
+    "patch_archive": "linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_url": "https://distfiles.gentoo.org/pub/proj/dist-kernel/patchsets/7.3/linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_sha256": "ff01ff66bc812109ab6470385cb6d6fb073e87eaa9100e0e40e57cfa5589b868"
+  },
+  "series": [
+    {
+      "file": "patches/0001-fs-Enable-link-security-restrictions-by-default.patch",
+      "sha256": "0c618a44f71a8b9672eececadcae5039c8a963b8da2d9f691bee08eb59f14443"
+    },
+    {
+      "file": "patches/0002-Address-Warray-bounds-warnings.patch",
+      "sha256": "43f8a85f1ea1c39f70e81ac7c6c491622cc0576081ef68ca632511f60952ec7b"
+    },
+    {
+      "file": "patches/0003-Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch",
+      "sha256": "e3af7f15819ee44e897f3b7febc1a6ed7a9ebd0a308cbf055e9fd88df6e04177"
+    },
+    {
+      "file": "patches/0004-menuconfig-Allow-sorting-the-entries-alphabetically.patch",
+      "sha256": "f69a386fcf8754c1748cbff8fff6f5438d5795ee23c6989bf09d6a72b1ecb8c9"
+    },
+    {
+      "file": "patches/0005-libbpf-workaround-Wmaybe-uninitialized-false-positiv.patch",
+      "sha256": "d4d061b5898d9650bb2795dde9fc3df88f430383c0a8555afb6e2b613937a559"
+    },
+    {
+      "file": "patches/0006-Print-firmware-info-Reqs-CONFIG_GENTOO_PRINT_FIRMWAR.patch",
+      "sha256": "65c85e645d21121d7ff589383614af237b95b06fc70b363182e619bf514cd0da"
+    },
+    {
+      "file": "patches/0007-tools-libbpf-add-WERROR-option.patch",
+      "sha256": "23d5b9ff7aaab4c17fe8fcbb904ad8385d9186e88b816d4fdcefa2867e0de504"
+    },
+    {
+      "file": "patches/0008-x86-tools-Only-use-unprocessed-UAPI-headers-for-vdso.patch",
+      "sha256": "e5f6a402876dde48c4536982a5614b031524ccdcc433591a0bc2817e5edeb919"
+    },
+    {
+      "file": "patches/0009-Add-Gentoo-Linux-support-config-settings-and-default.patch",
+      "sha256": "8cd1bf87c1f968da7226f0a762673472b2c23b3a95e8fcae069a109da75b949b"
+    },
+    {
+      "file": "patches/0010-module-signing-accept-UEFI-db-keys-under-Secure-Boot.patch",
+      "sha256": "09d36bacf61004a082745cf8a4eb63eed7284d69af80554376b91e43da982f2f"
+    },
+    {
+      "file": "patches/0011-certs-keep-revocation-check-errors-final.patch",
+      "sha256": "82b3fcc677163663249b789efa92aae2f860b9288ce27e28b7f4956210f694bd"
+    },
+    {
+      "file": "patches/0012-ASoC-soc-core-reset-rtd-num_components-after-allocat.patch",
+      "sha256": "4820ef654413aa70a2b86fc0018bffc8bf75a86b132225f036cf092f7dcdddd3"
+    }
+  ],
+  "series_apple": {
+    "applied_when": "USE=apple (arm64 only)",
+    "reason": "Aurora changes shared mm, scheduler, USB and IOMMU code; non-Apple builds stay on upstream code",
+    "patches": [
+      {
+        "file": "patches/1001-aurora-silicon-linux-7.4-port.patch",
+        "sha256": "54f64cd9f5f7ed7a73563b61fb37a4928c819e0308f4073e90a72899abc695ce"
+      },
+      {
+        "file": "patches/1002-wifi-brcmfmac-isolate-BCM4378-receive-DMA-storage.patch",
+        "sha256": "3dcef5352f88032ecf11ba5548652ec34e2410c300ba036e01ed69c5061a9798"
+      }
+    ],
+    "bcm4378_rx_isolation_hardware_tested": false,
+    "gpu_drm_name": "aurora (module aurora.ko, alias asahi); Mesa must accept the aurora DRM name"
+  },
+  "package_revision": "r1",
+  "validation": {
+    "date": "2026-11-11",
+    "host": "neko-epyc7443 (git) and neko-yoga7i-258v (hardware)",
+    "series_apply": "patch --fuzz=0 of series (0001-0012) onto v7.4-rc2 equals common74rc2 plus 0012; series then series-apple equals yume74rc2 plus 0012 (1001's soc-core.c hunk applies at a 6-line offset), except the files r0 also does not reproduce",
+    "hardware": "0012 alone, as a db-signed snd-soc-core.ko in /lib/modules/7.4.0-rc2-yume-r0/updates on neko-yoga7i-258v: no Oops, CS35L56 amps Live, sof-soundwire card, speakers and microphone confirmed by czl; reboot completes; power-off not yet tested",
+    "built_through_ebuild": false,
+    "boot_tested": false,
+    "apple_hardware_tested": false
+  },
+  "r1_changes": {
+    "0012": "Emanuele Ghidoli's 'ASoC: soc-core: reset rtd->num_components after allocation' (lore 20261109102536.357134-1-ghidoliemanuele@gmail.com, v1, Reviewed-by Takashi Iwai, not yet merged upstream at r1). v7.4-rc2's 4dd10fbbeb9c made soc_new_pcm_runtime() use devm_kzalloc_flex(), which presets the __counted_by() counter num_components to the slot count when the compiler has __builtin_counted_by_ref() (GCC 16 here); snd_soc_rtd_add_component() then stores past components[] and no component is attached to the card. On neko-yoga7i-258v this oopsed in snd_soc_card_get_kcontrol during CS35L56 probe on every r0 boot. Kees Cook prefers a separate allocation-size counter; replace 0012 with whatever lands upstream.",
+    "0001-0011, 1001, 1002": "unchanged from 7.4_rc2 (r0)"
+  }
+}
