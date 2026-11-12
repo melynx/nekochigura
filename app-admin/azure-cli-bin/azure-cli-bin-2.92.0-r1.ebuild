@@ -23,7 +23,10 @@ REQUIRED_USE="elibc_glibc"
 RDEPEND="
 	app-arch/bzip2:0/1
 	dev-libs/libffi:0/8
-	dev-libs/openssl:0/3
+	|| (
+		dev-libs/openssl-compat:3
+		dev-libs/openssl:0/3
+	)
 	elibc_glibc? ( >=sys-libs/glibc-2.38 )
 	sys-apps/util-linux
 	virtual/zlib:0/1
