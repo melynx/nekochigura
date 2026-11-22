@@ -18,7 +18,7 @@ RDEPEND="
 	sys-apps/eza
 	app-shells/fish
 	media-libs/fontconfig
-	x11-terms/kitty
+	x11-terms/ghostty
 	x11-misc/matugen
 	media-fonts/space-grotesk
 	app-shells/starship
