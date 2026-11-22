@@ -1,0 +1,11 @@
+--- a/dots/.config/quickshell/ii/modules/ii/verticalBar/VerticalBar.qml
++++ b/dots/.config/quickshell/ii/modules/ii/verticalBar/VerticalBar.qml
+@@ -55,7 +55,7 @@
+                 }
+                 property bool superShow: false
+                 property bool mustShow: hoverRegion.containsMouse || superShow
+-                exclusionMode: ExclusionMode.Ignore
++                exclusionMode: ExclusionMode.Normal
+                 exclusiveZone: (Config?.options.bar.autoHide.enable && (!mustShow || !Config?.options.bar.autoHide.pushWindows)) ? 0 :
+                     Appearance.sizes.baseVerticalBarWidth + (Config.options.bar.cornerStyle === 1 ? Appearance.sizes.hyprlandGapsOut : 0)
+                 WlrLayershell.namespace: "quickshell:verticalBar"

@@ -1,0 +1,11 @@
+--- a/dots/.config/quickshell/ii/modules/waffle/bar/WaffleBar.qml
++++ b/dots/.config/quickshell/ii/modules/waffle/bar/WaffleBar.qml
+@@ -20,7 +20,7 @@
+                 id: barRoot
+                 required property var modelData
+                 screen: modelData
+-                exclusionMode: ExclusionMode.Ignore
++                exclusionMode: ExclusionMode.Normal
+                 exclusiveZone: implicitHeight
+                 WlrLayershell.namespace: "quickshell:bar"
+ 
