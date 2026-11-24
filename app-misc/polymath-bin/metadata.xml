@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>melynx@gmail.com</email>
+		<name>Chua Zheng Leong</name>
+	</maintainer>
+	<longdescription>
+		Polymath is Flux Group's configurator for the Flux Keyboard: key layouts,
+		per-key displays and firmware updates. This package repackages the
+		upstream Debian build, which bundles its Flutter runtime, an FFmpeg/mpv
+		media stack, rkdeveloptool and the keyboard's RP2040 firmware.
+	</longdescription>
+</pkgmetadata>

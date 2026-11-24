@@ -1,0 +1,10 @@
+# Flux Keyboard devices: grant the active local session access via uaccess,
+# instead of upstream's world-writable MODE="0666".
+
+# Flux Keyboard (USB vendor 3761): HID/raw USB and its serial console
+SUBSYSTEM=="usb", ATTRS{idVendor}=="3761", TAG+="uaccess"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="3761", TAG+="uaccess"
+
+# Rockchip mask-ROM (2207:350a), used by the bundled rkdeveloptool to flash
+# the keyboard's display controller
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2207", ATTRS{idProduct}=="350a", TAG+="uaccess"
