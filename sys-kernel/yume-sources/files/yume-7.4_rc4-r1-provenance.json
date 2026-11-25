@@ -1,0 +1,117 @@
+{
+  "project": "Yume Kernel",
+  "kernel_release": "7.4.0-rc4-yume-r1",
+  "upstream": {
+    "version": "7.4-rc4",
+    "commit": "b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f",
+    "archive": "linux-7.4-rc4.tar.gz",
+    "archive_url": "https://git.kernel.org/torvalds/t/linux-7.4-rc4.tar.gz",
+    "sha256": "9f13091e6dd2d3576ad86e0c42ffa76b9993805a3f3a00f06981b242ea48aef9",
+    "release_signature_checked": false,
+    "archive_contents_checked": "identical to git archive of tag v7.4-rc4; embedded commit id b6a9fa34"
+  },
+  "aurora_donor": {
+    "repository": "https://github.com/aurora-silicon/linux",
+    "branch": "integration/aurora",
+    "commit": "6ff31cbfa20f18d32b05af622420de72a1d10ecd",
+    "base": "Linux 7.3 (c03c1a14507d)",
+    "via": "git merge of v7.4-rc1 into the donor (conflicts resolved with the r1 port of omacom/linux-aurora 1b4997bb as reference), then git merge of v7.4-rc2 (22 conflicted files), then git merge of v7.4-rc4 (7 conflicted files)",
+    "omitted": "34 binary M4 GPU selftest fixtures under tools/testing/selftests/drivers/gpu/asahi-m4/fixtures (not carried by a text patch, unused by kernel builds)",
+    "previous_donor": "https://github.com/omacom/linux-aurora 1b4997bbab620051e01fb807c6561a483c0f06f6 (r0, r1)"
+  },
+  "gentoo": {
+    "patch_archive": "linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_url": "https://distfiles.gentoo.org/pub/proj/dist-kernel/patchsets/7.3/linux-gentoo-patches-7.3.1.tar.xz",
+    "patch_archive_sha256": "ff01ff66bc812109ab6470385cb6d6fb073e87eaa9100e0e40e57cfa5589b868"
+  },
+  "series": [
+    {
+      "file": "patches/0001-fs-Enable-link-security-restrictions-by-default.patch",
+      "sha256": "0c618a44f71a8b9672eececadcae5039c8a963b8da2d9f691bee08eb59f14443"
+    },
+    {
+      "file": "patches/0002-Address-Warray-bounds-warnings.patch",
+      "sha256": "43f8a85f1ea1c39f70e81ac7c6c491622cc0576081ef68ca632511f60952ec7b"
+    },
+    {
+      "file": "patches/0003-Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch",
+      "sha256": "e3af7f15819ee44e897f3b7febc1a6ed7a9ebd0a308cbf055e9fd88df6e04177"
+    },
+    {
+      "file": "patches/0004-menuconfig-Allow-sorting-the-entries-alphabetically.patch",
+      "sha256": "f69a386fcf8754c1748cbff8fff6f5438d5795ee23c6989bf09d6a72b1ecb8c9"
+    },
+    {
+      "file": "patches/0005-libbpf-workaround-Wmaybe-uninitialized-false-positiv.patch",
+      "sha256": "d4d061b5898d9650bb2795dde9fc3df88f430383c0a8555afb6e2b613937a559"
+    },
+    {
+      "file": "patches/0006-Print-firmware-info-Reqs-CONFIG_GENTOO_PRINT_FIRMWAR.patch",
+      "sha256": "65c85e645d21121d7ff589383614af237b95b06fc70b363182e619bf514cd0da"
+    },
+    {
+      "file": "patches/0007-tools-libbpf-add-WERROR-option.patch",
+      "sha256": "23d5b9ff7aaab4c17fe8fcbb904ad8385d9186e88b816d4fdcefa2867e0de504"
+    },
+    {
+      "file": "patches/0008-x86-tools-Only-use-unprocessed-UAPI-headers-for-vdso.patch",
+      "sha256": "e5f6a402876dde48c4536982a5614b031524ccdcc433591a0bc2817e5edeb919"
+    },
+    {
+      "file": "patches/0009-Add-Gentoo-Linux-support-config-settings-and-default.patch",
+      "sha256": "8cd1bf87c1f968da7226f0a762673472b2c23b3a95e8fcae069a109da75b949b"
+    },
+    {
+      "file": "patches/0010-module-signing-accept-UEFI-db-keys-under-Secure-Boot.patch",
+      "sha256": "09d36bacf61004a082745cf8a4eb63eed7284d69af80554376b91e43da982f2f"
+    },
+    {
+      "file": "patches/0011-certs-keep-revocation-check-errors-final.patch",
+      "sha256": "82b3fcc677163663249b789efa92aae2f860b9288ce27e28b7f4956210f694bd"
+    },
+    {
+      "file": "patches/0012-clk-rockchip-rk3399-add-85.5-MHz-rate-to-PLL-rate-table.patch",
+      "sha256": "6b2c1cd4c99d7b660a9e6a621d2ccad749482147e0ed8b0bd1fd5b6ede0a610d"
+    },
+    {
+      "file": "patches/0013-drm-rockchip-vop-don-t-round-the-pixel-clock-when-the-encoder-owns-the-PLL.patch",
+      "sha256": "1448415ef3bc60ee244a858976edac9adeea787234efdf8937c886bf9bf4ec35"
+    },
+    {
+      "file": "patches/0014-clk-rockchip-rk3399-add-181.25-MHz-rate-to-PLL-rate-table.patch",
+      "sha256": "8877944a42414029ed07671790a373f91a276354732e55e4c59e53847177d547"
+    }
+  ],
+  "series_apple": {
+    "applied_when": "USE=apple (arm64 only)",
+    "reason": "Aurora changes shared mm, scheduler, USB and IOMMU code; non-Apple builds stay on upstream code",
+    "patches": [
+      {
+        "file": "patches/1001-aurora-silicon-linux-7.4-port.patch",
+        "sha256": "f4c637e729aac43b444c8a365e4890afebbe2cd1f7be6c9072e860b8671d89ad"
+      },
+      {
+        "file": "patches/1002-wifi-brcmfmac-isolate-BCM4378-receive-DMA-storage.patch",
+        "sha256": "3dcef5352f88032ecf11ba5548652ec34e2410c300ba036e01ed69c5061a9798"
+      }
+    ],
+    "bcm4378_rx_isolation_hardware_tested": false,
+    "gpu_drm_name": "aurora (module aurora.ko, alias asahi); Mesa must accept the aurora DRM name"
+  },
+  "package_revision": "r1",
+  "validation": {
+    "date": "2026-11-25",
+    "host": "neko-rockpi4c-rk3399:builder (patch application, test build) and neko-rockpi4c-rk3399 (hardware)",
+    "series_apply": "patch --fuzz=0 of series (0001-0014) onto the v7.4-rc4 archive: 14 applied; series then series-apple: 16 applied. The generic result differs from the 7.4_rc4 yume-sources tree only in drivers/clk/rockchip/clk-rk3399.c, drivers/gpu/drm/rockchip/rockchip_drm_vop.c, dw_hdmi-rockchip.c and rockchip_drm_drv.h",
+    "hardware": "0012-0014 on the 7.4_rc4 generic sources, built by hand with the 7.4.0-rc4-yume .config and LOCALVERSION -yume-lgtest (same four patched files, byte-identical) and booted on neko-rockpi4c-rk3399 (HDMI-A-1 to an LG ULTRAWIDE). With the custom 216 MHz EDID: vpll and dclk_vop0 216 MHz on vpll from boot, picture without the 297 MHz modeset kick. Without drm.edid_firmware/video=: vpll and dclk_vop0 181.25 MHz, mode 2560x1080 at 59.98 Hz, picture, monitor reports 2560x1080/60Hz (czl). No failed units, no Oops.",
+    "built_through_ebuild": false,
+    "boot_tested": false,
+    "apple_hardware_tested": false
+  },
+  "r1_changes": {
+    "0012": "Vasily Khoruzhick, 'clk: rockchip: rk3399: add 85.5 MHz rate to PLL rate table' (dri-devel/linux-clk 2026-09-01, 1/2; Reviewed-by Alexey Charkov 2026-10-30; not merged at r1). Carried because 0013 is its series.",
+    "0013": "Vasily Khoruzhick, 'drm/rockchip: vop: don't round the pixel clock when the encoder owns the PLL' (2/2 of the same series; Chaoyi Chen: approach okay, commit wording and atomic_check vs mode_fixup open; not merged at r1). vop_crtc_mode_fixup() rounded the requested clock on the dclk composite while VPLL still ran at its old rate, so a 216 MHz mode ran at 200 MHz from CPLL (55.6 Hz, LG blank). Replace with whatever lands upstream.",
+    "0014": "Local: RK3036_PLL_RATE(181250000, 6, 725, 4, 4, 1, 0), 2900 MHz VCO, so the LG ULTRAWIDE's native 2560x1080@59.98 mode passes dw_hdmi_rockchip_mode_valid(). Not sent upstream.",
+    "scope": "All three change RK3399-only code (CONFIG_CLK_RK3399, CONFIG_DRM_ROCKCHIP). Kernels without those options build the same code as 7.4_rc4; the revision bump renames the release to 7.4.0-rc4-yume-r1 everywhere (czl, 2026-11-25)."
+  }
+}
