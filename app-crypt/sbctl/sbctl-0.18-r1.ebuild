@@ -1,6 +1,6 @@
 # Copyright 2022-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-# nekochigura: ::gentoo's sbctl-0.18, unchanged except KEYWORDS. ::gentoo has
+# nekochigura: ::gentoo's sbctl-0.18 with KEYWORDS and RDEPEND changed. ::gentoo has
 # no arm64 keyword; this copy is for neko-rockpi4c-rk3399 (U-Boot UEFI Secure
 # Boot). Only ~arm64: this overlay outranks ::gentoo at equal versions, so
 # amd64 machines keep resolving to ::gentoo's ~amd64 ebuild.
@@ -24,6 +24,9 @@ SLOT="0"
 KEYWORDS="~arm64"
 
 DEPEND="sys-apps/pcsc-lite"
+# nekochigura: sbctl links libpcsclite.so.1, so it is needed at run time too;
+# ::gentoo lists it in DEPEND only.
+RDEPEND="${DEPEND}"
 
 BDEPEND="app-text/asciidoc
 	verify-sig? ( sec-keys/openpgp-keys-foxboron )"
